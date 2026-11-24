@@ -99,7 +99,7 @@ npm run release:package
 
 ```bash
 git clone --depth 1 --branch main \
-  https://github.com/XiaoSiKe/01-ai-club-website.git /tmp/01aiclub-bootstrap
+  https://github.com/XiaoSiKe/01PLAYER-website.git /tmp/01aiclub-bootstrap
 bash /tmp/01aiclub-bootstrap/deploy/bootstrap.sh init
 ```
 
@@ -118,7 +118,7 @@ TLS 脚本会签发 `club.01aiedu.com` 证书、切换到 HTTPS 配置并启用�
 - 流水线名称：`01aiclub-website-prod`
 - 流水线 ID：`5236605`
 - 版本化配置：`deploy/aliyun-flow.yml`
-- 代码源：公共 GitHub 仓库 `XiaoSiKe/01-ai-club-website`
+- 代码源：公共 GitHub 仓库 `XiaoSiKe/01PLAYER-website`
 - 触发条件：`main` 分支 push 经 GitHub Actions 检查通过后，以 HTTPS 自动触发云效并等待线上版本验收
 - 构建集群：云效香港公共集群
 - 私密变量组：`01aiclub-website-prod-secrets`

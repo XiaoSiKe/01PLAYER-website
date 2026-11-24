@@ -1,5 +1,5 @@
 ---
-name: 零一 AI 日新社｜01AIClub
+name: 零一玩家｜01PLAYER
 description: 以透视扫描空间承载开源探索、公益教学与长期共建的黑白科技视觉系统。
 colors:
   canvas-black: "#090909"
@@ -65,7 +65,7 @@ components:
     height: "100vh"
 ---
 
-# Design System: 零一 AI 日新社｜01AIClub
+# Design System: 零一玩家｜01PLAYER
 
 ## 图片内存预算（2026-10-27）
 

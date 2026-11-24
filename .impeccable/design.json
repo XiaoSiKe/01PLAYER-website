@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-08-31T00:32:00+08:00",
-  "title": "Design System: 零一 AI 日新社｜01AIClub",
+  "title": "Design System: 零一玩家｜01PLAYER",
   "extensions": {
     "colorMeta": {
       "canvas-black": {
@@ -69,7 +69,7 @@
       "name": "Release Pill",
       "kind": "chip",
       "description": "首屏方向标识。",
-      "html": "<span class=\"ds-release-pill\"><b>01</b> FZU AI CLUB</span>",
+      "html": "<span class=\"ds-release-pill\"><b>01</b> 01PLAYER</span>",
       "css": ".ds-release-pill{display:inline-flex;align-items:center;gap:10px;color:rgba(245,245,245,.58);background:rgba(42,42,42,.2);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 14px 5px 6px;font:600 15px/1 sans-serif}.ds-release-pill b{display:grid;place-items:center;height:31px;padding:0 13px;color:#f5f5f5;background:rgba(245,245,245,.2);border-radius:999px}"
     },
     {
