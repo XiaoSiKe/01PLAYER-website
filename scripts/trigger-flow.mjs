@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-const repository = 'XiaoSiKe/01-ai-club-website';
+const repositoryId = 1351584381;
 const production = 'https://club.01aiedu.com';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export function validatePush(event, commit) {
-  if (event.repository?.full_name !== repository || event.ref !== 'refs/heads/main'
+  if (event.repository?.id !== repositoryId || event.ref !== 'refs/heads/main'
     || event.deleted || !/^[a-f0-9]{40}$/.test(commit || '') || /^0+$/.test(commit)
     || event.after !== commit) {
     throw new Error('仅允许当前仓库 main 分支的本次推送触发发布。');
@@ -70,7 +70,7 @@ async function main() {
   if (process.env.GITHUB_STEP_SUMMARY) {
     const { appendFileSync } = await import('node:fs');
     appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-      `官网已发布 [${commit.slice(0, 7)}](https://github.com/${repository}/commit/${commit})。\n\n[访问官网](${production}/)\n`);
+      `官网已发布 [${commit.slice(0, 7)}](https://github.com/${event.repository.full_name}/commit/${commit})。\n\n[访问官网](${production}/)\n`);
   }
 }
 

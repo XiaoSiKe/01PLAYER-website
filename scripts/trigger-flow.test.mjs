@@ -4,7 +4,7 @@ import { triggerFlow, validatePush, waitForProduction } from './trigger-flow.mjs
 
 const commit = 'a'.repeat(40);
 const event = { ref: 'refs/heads/main', after: commit, deleted: false,
-  repository: { full_name: 'XiaoSiKe/01-ai-club-website', clone_url: 'https://github.com/XiaoSiKe/01-ai-club-website.git' } };
+  repository: { id: 1351584381, full_name: 'XiaoSiKe/01PLAYER-website', clone_url: 'https://github.com/XiaoSiKe/01PLAYER-website.git' } };
 const webhook = 'https://flow-openapi.aliyun.com/scm/webhook/test-placeholder';
 const response = (body, status = 200) => new Response(JSON.stringify(body), { status });
 const immediate = async () => {};
@@ -23,10 +23,15 @@ test('the HTTPS Flow receiver gets the real main push JSON', async () => {
 test('feature branches, other repos, deleted branches and mismatched revisions cannot deploy', () => {
   for (const invalid of [
     { ...event, ref: 'refs/heads/codex/change' },
-    { ...event, repository: { full_name: 'somewhere/else' } },
+    { ...event, repository: { ...event.repository, id: 123 } },
     { ...event, deleted: true },
     { ...event, after: 'b'.repeat(40) },
   ]) assert.throws(() => validatePush(invalid, commit));
+});
+
+test('a renamed repository keeps the same deployment identity', () => {
+  const beforeRename = { ...event, repository: { ...event.repository, full_name: 'XiaoSiKe/previous-name' } };
+  assert.doesNotThrow(() => validatePush(beforeRename, commit));
 });
 
 test('HTTP 200 with an application error fails after bounded retries', async () => {

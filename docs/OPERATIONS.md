@@ -35,7 +35,7 @@ GitHub 工作流在触发云效后会等待官网 `version.json` 返回本次 ma
 
 相关入口：
 
-- [GitHub 构建与发布](https://github.com/XiaoSiKe/01-ai-club-website/actions/workflows/ci.yml)
+- [GitHub 构建与发布](https://github.com/XiaoSiKe/01PLAYER-website/actions/workflows/ci.yml)
 - [云效运行状态](https://flow.aliyun.com/pipelines/5236605/current)
 - `node --test scripts/trigger-flow.test.mjs`：验证分支/仓库/提交保护、HTTPS 限制、应用错误、网络重试和线上版本验收。
 
