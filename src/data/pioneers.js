@@ -1,4 +1,6 @@
-import { memberPortraits } from './member-portraits.js';
+import { pagePaths } from './page-paths.js';
+import { siteRows } from '../editorial/content.js';
+import { memberPortraits, sharedPortrait } from './member-portraits.js';
 import { localizedSearchText } from '../i18n/translate.js';
 import { branches } from './branches.js';
 
@@ -45,12 +47,15 @@ const roster = [
   ['郑瀚', '福州理工大学', 'Zhenghan816'],
   ['陈日杰', '泉州海洋职业学院', null, 'chen-rijie'],
   ['林含悦', '福州大学', 'midmoon-fox'],
+  ['许钧泓', '福州软件职业技术学院', 'encoXJH'],
 ];
 
+export const stockPortraitById = Object.fromEntries(roster.map(([name,,github,id]) => [id || github, memberPortraits[name]]));
+
 // Fifth column: user-confirmed joining date in YYYY-MM-DD format, when supplied.
-export const pioneers = roster.map(([name, university, github, memberId, joinedAt]) => {
+export const pioneers = siteRows('pioneers', roster.map(([name, university, github, memberId, joinedAt]) => {
   const suppliedPhoto = memberPortraits[name];
-  const foundedBranch = branches.find(branch => branch.leader?.name === name);
+  const foundedBranch = branches.find(branch => branch.leader?.memberId ? branch.leader.memberId === (memberId || github) : branch.leader?.name === name);
   return {
     id: memberId || github,
     name: name || github,
@@ -59,7 +64,7 @@ export const pioneers = roster.map(([name, university, github, memberId, joinedA
     founding: foundedBranch ? {
       date: foundedBranch.founded,
       name: foundedBranch.name,
-      href: `./?branch=${encodeURIComponent(foundedBranch.id)}#cooperation`,
+      href: `${pagePaths.cooperation}?branch=${encodeURIComponent(foundedBranch.id)}`,
     } : null,
     href: github ? `https://github.com/${github}` : undefined,
     photo: suppliedPhoto || '',
@@ -67,6 +72,9 @@ export const pioneers = roster.map(([name, university, github, memberId, joinedA
     photoFit: 'contain',
     focus: '50% 50%',
   };
+})).map(member => {
+  const photo = sharedPortrait(member.name, member.id, member.photo, stockPortraitById[member.id]);
+  return photo === member.photo ? member : {...member, photo, photoPlaceholder: !photo};
 });
 
 export function searchPioneers(query, translate = value => value) {

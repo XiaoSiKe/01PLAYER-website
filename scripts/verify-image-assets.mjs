@@ -8,6 +8,7 @@ import { imageSource } from '../src/components/imageSource.js';
 import { tunnelCardWidth } from '../src/components/heroImages.js';
 import { pioneers } from '../src/data/pioneers.js';
 import { businesses } from '../src/data/business.js';
+import { contactQr } from '../src/data/community.js';
 import { activityPhotos } from '../src/data/activity-photos.js';
 import assets from '../src/data/image-assets.json' with { type: 'json' };
 
@@ -100,6 +101,7 @@ for (const [viewportWidth, budget] of [[390, 3_400_000], [1440, 9_000_000], [150
 for (const pioneer of pioneers) {
   assert.ok(bytes(imageSource(pioneer.photo, 80, 100, 1.5)) <= 128 * 128 * 4, `${pioneer.name}: small portrait budget`);
 }
-assert.equal(imageSource('/images/join-lingyiyang-wechat.jpg', 300, 300), '/images/join-lingyiyang-wechat.jpg');
+assert.ok(existsSync(join(publicRoot, contactQr.image)), 'official contact QR asset exists');
+assert.equal(imageSource(contactQr.image, 300, 300), contactQr.image);
 assert.equal(imageSource('/images/partners/chinamobile.svg', 144, 34), '/images/partners/chinamobile.svg');
 console.log(`Image assets verified: ${Object.keys(assets).length} sources, ${variants.size} variants, avatars ≤96px, carousel RGBA ${(textureBytes / 1e6).toFixed(2)} MB before mipmaps.`);

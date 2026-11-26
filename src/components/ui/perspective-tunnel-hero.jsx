@@ -2,14 +2,13 @@
 import { motion, useTransform, useReducedMotion, useMotionValue, useSpring } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../../Language';
-import { activityPhotos } from '../../data/activity-photos';
 import BorderGlow, { clearBorderGlow, updateBorderGlow } from '../../BorderGlow';
 import ResponsiveImage from '../ResponsiveImage';
 import ImageLightbox from '../ImageLightbox';
-import { tunnelCardWidth } from '../heroImages';
+import { tunnelCardWidth, tunnelPhotos } from '../heroImages';
 import './perspective-tunnel-hero.css';
 
-const TUNNEL_CARDS = activityPhotos.map((item, index) => {
+const TUNNEL_CARDS = tunnelPhotos.map((item, index) => {
   const goldenAngle = index * 137.5 * (Math.PI / 180);
   return {
     item, index,
@@ -153,7 +152,7 @@ export default function PerspectiveTunnelHero({ children }) {
     openerRef.current = opener;
     setSelectedPhoto({
       ...item,
-      organization: item.organization || '零一 AI 日新社',
+      organization: item.organization || '零一玩家',
       title: item.title || item.alt,
       aspectRatio: item.width / item.height,
     });
@@ -200,7 +199,7 @@ export default function PerspectiveTunnelHero({ children }) {
     <motion.div className="tunnel-hero__anchor" style={{ scale: reduce ? 1 : titleScale, opacity: reduce ? 1 : titleOpacity }}>
       {children}
     </motion.div>
-    <div className="tunnel-hero__photos" role="group" aria-label="社团活动照片">
+    <div className="tunnel-hero__photos" role="group" aria-label="零一玩家活动照片">
       {TUNNEL_CARDS.map(card => <TunnelCard key={card.item.id} card={card} progress={progress} pointer={pointer} total={TUNNEL_CARDS.length} stage={stage} reduce={reduce} onOpen={openPhoto} />)}
     </div>
     {selectedPhoto && <ImageLightbox item={selectedPhoto} opener={openerRef.current} onClose={() => setSelectedPhoto(null)} />}

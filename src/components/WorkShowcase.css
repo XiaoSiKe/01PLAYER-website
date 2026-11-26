@@ -1,0 +1,90 @@
+.home-core-section { margin-top: clamp(52px, 7vw, 104px); }
+
+.home-work-panels {
+  display: flex;
+  gap: 8px;
+  box-sizing: content-box;
+  min-block-size: clamp(134.64px, 14.688vw, 189.72px);
+  margin: 0;
+  padding: clamp(16px, 2vw, 28px);
+  list-style: none;
+}
+
+.home-work-panel {
+  flex: 1 1 0%;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+  border: 1px solid #ffffff24;
+  border-radius: 28px;
+  background: #080808;
+  transition: flex-grow 380ms cubic-bezier(.23, 1, .32, 1), border-color 280ms ease-out;
+}
+
+.home-work-panel[data-active='true'] {
+  flex-grow: 2.1667;
+  border-color: #ffffff4d;
+}
+
+.home-work-panel-link {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  color: #fff;
+  text-decoration: none;
+}
+
+.home-work-panel-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  border-radius: inherit;
+}
+
+.home-work-panel-copy { position: relative; z-index: 1; padding: 12px 24px; min-inline-size: 0; }
+.home-work-panel-copy h3 {
+  margin: 0;
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+.home-work-panel-copy p {
+  max-width: 34ch;
+  max-block-size: 0;
+  overflow: hidden;
+  margin: 0;
+  color: #ffffffba;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 220ms ease-out, transform 280ms ease-out;
+}
+#work-plaza-description {
+  max-width: none;
+}
+.home-work-description-ending { white-space: nowrap; }
+.home-work-panel[data-active='true'] p {
+  max-block-size: none;
+  margin-top: 8px;
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 720px) {
+  .home-work-panels { flex-direction: column; min-block-size: 192.78px; gap: 4px; }
+  .home-work-panel, .home-work-panel[data-active='true'] { flex: 1 0 auto; }
+  .home-work-panel { min-block-size: 44px; border-radius: 22px; }
+  .home-work-panel-copy { padding: 4px 18px; }
+  .home-work-panel-copy h3 { font-size: 21px; }
+  .home-work-panel-copy p { font-size: 13px; line-height: 1.45; }
+  .home-work-panel[data-active='true'] p { margin-top: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-work-panel, .home-work-panel-copy p { transition: none; }
+}

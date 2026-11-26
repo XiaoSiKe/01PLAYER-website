@@ -1,0 +1,454 @@
+/* Public gallery and event calendar share the site's theme and retain their own reading rhythm. */
+.community-page--listing .community-shell {
+  width: min(1512px, calc(100% - clamp(40px, 9vw, 156px)));
+  padding-top: clamp(100px, 8.3vw, 138px);
+}
+.discovery-detail-actions { display: flex; justify-content: flex-end; }
+.community-page :is(.discovery-detail-back--inline, .project-detail-edit) {
+  flex: none;
+  min-height: 44px;
+  padding: 8px 14px;
+}
+.community-page :is(.discovery-detail-back--inline, .project-detail-edit) .specular-button__label { gap: 6px; }
+.plaza-popular { margin: 0 0 clamp(26px, 3vw, 44px); }
+.plaza-results { min-block-size: 50svh; }
+.discovery-action { width: fit-content; }
+.community-page .community-results { margin: 14px 0 17px; font-variant-numeric: tabular-nums; }
+.plaza-tools, .calendar-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--community-border);
+}
+.calendar-tools { justify-content: flex-start; }
+.calendar-categories { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+.community-page .filter-choice {
+  padding-inline: 16px;
+  min-height: 44px;
+  font-size: 14px;
+}
+.community-page .filter-choice[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--site-ink) 14%, var(--site-background));
+  font-weight: 650;
+}
+.community-page .community-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.4vw, 26px); }
+.community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) {
+  --listing-columns: 4;
+  --listing-gap: clamp(10px, 1.3vw, 20px);
+  gap: var(--listing-gap);
+}
+.community-page .plaza-popular .community-grid {
+  --listing-columns: 3;
+  display: flex;
+  flex-wrap: wrap;
+}
+.plaza-popular .community-grid > .community-list-card {
+  flex: 1 1 calc((100% - (var(--listing-columns) - 1) * var(--listing-gap)) / var(--listing-columns));
+}
+.community-page :is(.plaza-results .community-grid, .calendar-cards) {
+  display: grid;
+  grid-template-columns: repeat(var(--listing-columns), minmax(0, 1fr));
+}
+:is(.plaza-popular, .plaza-results, .calendar-cards) .community-list-card-cover { max-height: 196px; }
+.community-page .community-art { color: #a8c7ff; background: #202f53; }
+.community-page .community-art--map { background: #b9ded1; color: #185b49; }
+.community-page .community-art--echo { background: #432c50; color: #f3b4e4; }
+.community-page .community-art--orbit { background: #c1daf0; color: #214c83; }
+.community-page .community-art--lens { background: #503629; color: #f7bf8c; }
+.community-page .community-art--garden { background: #edd1a3; color: #695116; }
+.community-page .community-art svg { transform: none; }
+.signup-panel > .border-glow-content {
+  padding: clamp(20px, 2.1vw, 34px);
+}
+.project-detail-side .community-reactions { display: flex; flex-wrap: wrap; }
+.project-detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .38fr); gap: clamp(24px, 5vw, 72px); align-items: start; }
+.project-detail-main { min-width: 0; display: grid; gap: clamp(26px, 4vw, 52px); }
+.project-detail-main h2, .project-detail-side h2 { margin: 0 0 14px; font-size: clamp(21px, 1.7vw, 26px); }
+.project-detail-main .community-prose { margin: 0; }
+.project-detail-main .community-prose, .event-intro .community-prose { font-size: clamp(16px, 1.25vw, 18px); line-height: 1.85; }
+.project-detail-main .community-prose p { max-width: 64ch; margin: 0; }
+.project-detail-media .community-art { aspect-ratio: 16 / 10; max-height: 520px; }
+.project-detail-media .community-art:has(img[src]) svg { visibility: hidden; }
+.project-detail-media .community-art img { object-fit: contain; background: var(--site-background); }
+.project-image-action {
+  position: absolute;
+  inset: auto 12px 12px auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  background: #101010e8;
+  color: #fff;
+  font-size: 14px;
+}
+.project-detail-side {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px 0 18px;
+  border-block: 1px solid var(--community-border);
+}
+.project-detail-side h2 { margin: 0; }
+.project-detail-facts { display: grid; gap: 13px; margin: 0; overflow-wrap: anywhere; }
+.project-detail-facts dt { margin-bottom: 4px; color: var(--community-muted); font-size: 14px; }
+.project-detail-facts dd { margin: 0; line-height: 1.5; font-size: 17px; }
+.project-recruitment-section { padding-top: 18px; border-top: 1px solid var(--community-border); }
+.calendar-highlights {
+  display: grid;
+  gap: clamp(10px, 1.3vw, 18px);
+  grid-template-columns: minmax(0, 1fr) minmax(292px, .25fr);
+  margin-top: clamp(18px, 2.4vw, 32px);
+}
+.calendar-featured {
+  display: grid;
+  align-self: center;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: inherit;
+}
+.calendar-signup:only-child { grid-column: 1 / -1; }
+.calendar-signup {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: 10px;
+  padding-block: 12px;
+}
+.calendar-signup h2 {
+  --signup-leading: 1.16;
+  margin: 0;
+  font-size: clamp(28px, 2.5vw, 36px);
+  font-weight: 650;
+  line-height: var(--signup-leading);
+}
+.calendar-signup-line {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: calc(var(--signup-line-size) * var(--signup-leading));
+}
+.calendar-signup-line + .calendar-signup-line {
+  --signup-tracking: -.025em;
+  margin-top: 2px;
+  font-size: clamp(37px, 3.4vw, 48px);
+  font-weight: 750;
+}
+.calendar-signup-samples { position: absolute; inset: 0; overflow: hidden; visibility: hidden; }
+.calendar-signup-sample { display: block; width: max-content; font-size: 100px; }
+.calendar-signup-word, .calendar-signup-sample { letter-spacing: var(--signup-tracking, normal); white-space: nowrap; }
+.calendar-signup-word { grid-area: 1 / 1; justify-self: start; }
+:is(.calendar-signup-word, .calendar-signup-sample) > span { display: inline-block; }
+.calendar-signup p {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  color: var(--community-muted);
+  font-size: 17px;
+  font-size: clamp(16px, calc(100cqi / 17), 17px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.calendar-signup p span { white-space: nowrap; }
+.calendar-lead > .border-glow-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 44.8%);
+  min-height: 192px;
+}
+.calendar-lead .calendar-card-text {
+  min-width: 0;
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(8px, .95vw, 14px);
+  padding: 14px clamp(12px, 1.2vw, 18px);
+  overflow-wrap: anywhere;
+}
+.calendar-lead-details { display: grid; gap: 5px; }
+.calendar-labels { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 10px; color: var(--community-muted); font-size: 13px; }
+.calendar-lead .calendar-labels { gap: 6px 10px; color: var(--site-ink); font-size: clamp(16px, 1.4vw, 19px); font-weight: 620; line-height: 1.25; }
+.calendar-labels [data-event-status] { font-weight: 650; }
+.calendar-labels :is([data-event-status="open"], [data-event-status="active"]) { display: inline-flex; align-items: center; gap: 6px; }
+.calendar-labels :is([data-event-status="open"], [data-event-status="active"])::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.community-page { --event-closed-ink: #ff858c; }
+html[data-theme="light"] .community-page { --event-closed-ink: #af2634; }
+.community-page :is([data-event-status="closed"], [data-event-status="ended"]) { color: var(--event-closed-ink); }
+.calendar-lead { --featured-open-ink: #84baff; --featured-active-ink: #c9a6ff; }
+html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featured-active-ink: #632da2; }
+.calendar-lead [data-event-status="open"] { color: var(--featured-open-ink); }
+.calendar-lead [data-event-status="active"] { color: var(--featured-active-ink); }
+.calendar-lead .calendar-labels :is([data-event-status="open"], [data-event-status="active"]) {
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.calendar-event-title { margin: 0; font-size: clamp(23px, 2.22vw, 33px); line-height: 1.2; font-weight: 700; text-wrap: balance; }
+.calendar-lead:is(:hover, :focus-visible) .calendar-event-title { text-decoration: underline; text-underline-offset: 3px; }
+.calendar-lead .calendar-card-text p {
+  color: var(--community-muted);
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0;
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.calendar-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--community-muted); font-size: 13px; line-height: 1.6; }
+.community-list-card-footer .calendar-facts { gap: 2px 9px; font-size: 12px; line-height: 1.4; }
+.calendar-lead .calendar-facts { gap: 3px 12px; font-size: 15px; line-height: 1.45; }
+.calendar-facts span { display: inline-flex; align-items: center; gap: 6px; }
+.calendar-facts svg { width: 15px; height: 15px; }
+.event-poster { position: relative; isolation: isolate; overflow: hidden; min-width: 0; background: #294868; display: grid; place-items: center; }
+:is(.calendar-lead, .calendar-card) .event-poster { background: #202024; }
+.event-poster .event-poster-mark { display: block; width: min(32%, 142px); max-height: 60%; opacity: .58; }
+.calendar-lead .event-poster-mark { width: min(48%, 56px); }
+.calendar-card .event-poster-mark { width: min(32%, 56px); }
+.event-poster .event-poster-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.12); }
+.calendar-program, .event-linked { margin-top: clamp(35px, 5vw, 78px); scroll-margin-top: 94px; }
+.calendar-program { margin-top: clamp(20px, 3.4vw, 48px); }
+.plaza-results-title, .calendar-head, .event-linked > h2 { margin: 0 0 18px; font-size: clamp(23px, 2.1vw, 33px); letter-spacing: -.025em; font-weight: 580; }
+:is(.plaza-results-title, .calendar-head) { margin: 0; white-space: nowrap; }
+.calendar-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-inline-start: auto; }
+.calendar-controls .language-switcher__trigger { min-height: 44px; }
+.event-detail-meta { display: flex; align-items: center; gap: 10px 20px; }
+.event-detail-meta > p { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.event-detail-meta .discovery-detail-back--inline { margin-inline-start: auto; }
+.discovery-detail {
+  --detail-header-height: 76px;
+  --detail-menu-height: 60px;
+}
+.detail-hero {
+  --hero-surface: #171719;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  border: 1px solid var(--community-border);
+  border-radius: 12px;
+  background: var(--hero-surface);
+  color: #fff;
+}
+.detail-hero-media {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4;
+  min-height: 172px;
+  max-height: 332px;
+}
+.detail-hero-media > :is(.event-poster, .community-art) { position: absolute; inset: 0; aspect-ratio: auto; }
+.detail-hero-media > .event-poster { background: #232327; }
+.detail-hero-media::before, .detail-hero-media::after {
+  position: absolute;
+  content: '';
+  pointer-events: none;
+}
+.detail-hero-media::before {
+  inset: 45% 0 0;
+  z-index: 1;
+  backdrop-filter: blur(8px);
+  mask-image: linear-gradient(transparent, #000 82%);
+}
+.detail-hero-media::after {
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, transparent 36%, #17171966 68%, var(--hero-surface) 100%);
+}
+.detail-hero-caption {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 30px;
+  margin-top: -24px;
+  padding: 0 clamp(16px, 3vw, 42px) clamp(18px, 2.3vw, 30px);
+}
+.detail-hero-copy { min-width: 0; align-self: flex-start; }
+.detail-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(31px, 4.4vw, 58px);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+.detail-hero-copy p {
+  max-width: 64ch;
+  margin: 9px 0 0;
+  color: #dedee2;
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.detail-hero-attribution { display: grid; flex-shrink: 0; gap: 5px; max-width: min(30%, 26ch); text-align: end; overflow-wrap: anywhere; }
+.detail-hero-attribution .community-source { color: #dedee2; font-size: 14px; }
+.community-page:has(.discovery-detail) .homepage-background { opacity: .10; }
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.discovery-detail) { scroll-behavior: smooth; }
+}
+.detail-section-nav {
+  position: sticky;
+  top: var(--detail-header-height);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 18px;
+  margin-bottom: clamp(24px, 3vw, 42px);
+  padding-block: 8px;
+  background: var(--site-background);
+  border-bottom: 1px solid var(--community-border);
+}
+.detail-section-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2vw, 26px);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.detail-section-links a {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 44px;
+  border-bottom: 2px solid transparent;
+  color: var(--community-muted);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.community-page .detail-section-links a:is(:hover, [aria-current="location"]) {
+  border-color: var(--site-ink);
+  color: var(--site-ink);
+}
+.community-page .detail-section-links a:focus-visible { outline-offset: -2px; }
+.detail-section-actions { display: flex; flex-shrink: 0; align-items: center; gap: 8px; }
+.project-detail-media:hover .project-image-action { text-decoration: underline; text-underline-offset: 4px; }
+.discovery-detail .detail-section { scroll-margin-top: calc(var(--detail-header-height) + var(--detail-menu-height) + 18px); }
+@media (width > 760px) {
+  .discovery-detail[data-pin-sidebar] .detail-sidebar { position: sticky; top: calc(var(--detail-header-height) + var(--detail-menu-height) + 20px); }
+}
+.event-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, .4fr);
+  grid-template-areas: "intro info";
+  align-items: start;
+  gap: 24px clamp(26px, 6vw, 88px);
+}
+.event-intro { grid-area: intro; min-width: 0; }
+.event-intro .community-prose { margin: 0 0 28px; }
+.event-intro .community-prose h2 { margin: 0 0 10px; font-size: clamp(22px, 1.7vw, 26px); }
+.event-intro .community-prose p { margin: 0; }
+.event-intro .community-prose ol { margin: 8px 0 0; padding-inline-start: 1.5em; color: var(--community-muted); line-height: 1.5; }
+.event-intro .community-prose li + li { margin-top: 4px; }
+.event-entry { grid-area: info; display: grid; gap: 16px; min-width: 0; padding-bottom: 16px; border-bottom: 1px solid var(--community-border); }
+.event-entry > h2 { margin: 0; font-size: 22px; font-weight: 620; }
+.event-entry .calendar-labels { font-size: 18px; }
+.event-entry-facts { display: grid; gap: 14px; margin: 0; overflow-wrap: anywhere; }
+.event-entry-facts dt, .event-signup-heading > span { font-size: 16px; color: var(--community-muted); }
+.event-entry-facts dd, .event-signup-heading h3 { font-size: 19px; line-height: 1.5; }
+.event-entry-facts dd { margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+.event-entry-actions { display: grid; justify-items: start; gap: 10px; padding-top: 14px; border-top: 1px solid var(--community-border); }
+.event-entry-actions h3 { margin: 0; font-size: 18px; }
+.event-album-link { display: inline-flex; justify-self: start; align-items: center; gap: 8px; min-height: 44px; }
+.signup-panel h2 { display: flex; align-items: center; gap: 8px; font-size: 21px; margin: 0; }
+.signup-panel > .border-glow-content > p, .signup-panel .signup-code p { color: var(--community-muted); line-height: 1.65; font-size: 14px; margin: 10px 0 17px; }
+.signup-panel .signup-status { border-top: 1px solid var(--community-border); padding-top: 14px; margin-bottom: 0; }
+.signup-code img { display: block; width: min(174px,100%); height: auto; padding: 7px; background: #fff; border-radius: 8px; }
+.signup-panel .signup-code p { margin: 8px 0 0; }
+.signup-panel--embedded { padding-top: 14px; border-top: 1px solid var(--community-border); }
+.event-signup-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.event-signup-heading h3 { margin: 0; font-weight: inherit; }
+.signup-panel--embedded p, .signup-panel--embedded .signup-code p {
+  color: var(--community-muted);
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 8px 0 12px;
+}
+.signup-panel--embedded .signup-status { padding-top: 0; border-top: 0; }
+.community-page .signup-mobile { display: none; }
+.registration-legacy { max-width: 620px; margin-inline: auto; }
+.registration-legacy .community-heading { gap: 12px; }
+@media (max-width: 1140px) {
+  .community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) { --listing-columns: 3; }
+  .calendar-lead .calendar-card-text { padding-block: 8px; }
+}
+@media (max-width: 1050px) {
+  .community-page .community-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .community-page .community-detail-layout { grid-template-columns: minmax(0,1fr) minmax(240px, .46fr); gap: 23px; }
+  .calendar-highlights { grid-template-columns: 1fr; }
+}
+@media (max-width: 880px) {
+  .community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) { --listing-columns: 2; }
+}
+@media (max-width: 760px) {
+  .community-page .community-shell { width: calc(100% - 36px); padding-top: 86px; }
+  .community-page--branded .community-shell { padding-top: 122px; }
+  .community-page .community-detail-layout { grid-template-columns: 1fr; gap: 22px; }
+  .detail-hero-caption { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .detail-hero-attribution { display: flex; flex-wrap: wrap; max-width: 100%; gap: 6px 14px; text-align: start; }
+  .discovery-detail { --detail-header-height: 112px; }
+  .project-detail-layout { grid-template-columns: minmax(0, 1fr); }
+  .event-detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "info" "intro"; gap: 22px; }
+  .community-page .community-detail-layout aside { position: static; }
+  .calendar-program { min-block-size: 50svh; }
+}
+@media (max-height: 540px) {
+  .detail-hero-media {
+    min-height: 90px;
+    max-height: clamp(90px, 28svh, 140px);
+  }
+  .detail-section-nav { position: static; }
+}
+@media (max-width: 600px) {
+  .calendar-featured { grid-auto-flow: row; }
+  .calendar-lead > .border-glow-content { min-height: 160px; }
+  .calendar-controls { width: 100%; flex-wrap: nowrap; }
+  .calendar-categories { gap: 6px; }
+  .community-page .filter-choice { padding-inline: 11px; }
+  .plaza-tools .community-filter-controls { width: 100%; }
+  .plaza-tools .community-search { flex-basis: 100%; }
+  .community-page .community-grid { gap: 12px; }
+}
+@media (max-width: 480px) {
+  .calendar-card .calendar-labels { font-size: 12px; }
+}
+@media (max-width: 374px) {
+  .community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) { --listing-columns: 1; }
+  .community-page .community-grid { grid-template-columns: 1fr; }
+}
+@media (pointer: coarse) {
+  .community-page .signup-mobile { display: inline-flex; }
+  .community-page .signup-desktop { display: none; }
+}
+
+.discovery-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.community-page .fixed-wrapper:not([data-open]) > .staggered-menu-header {
+  background: color-mix(in srgb, var(--site-background) 96%, transparent);
+}
+.community-page:has(.discovery-detail) .fixed-wrapper:not([data-open]) > .staggered-menu-header {
+  background: var(--site-background);
+}
+.community-page #community-main :is(button, a, input, summary) { scroll-margin-block-start: 88px; }
+.community-page #community-main .discovery-detail :is(.event-detail-layout, .project-detail-layout, .event-linked) :is(button, a, input, summary) {
+  scroll-margin-block-start: calc(var(--detail-header-height) + var(--detail-menu-height) + 12px);
+}

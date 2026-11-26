@@ -1,6 +1,7 @@
+import { siteRows } from '../editorial/content.js';
 // Replace each example with real activity photos and captions when available.
 // Keep isExample: true until the image and its description are factual.
-export const communityMoments = [
+export const communityMoments = siteRows('communityMoments', [
   {
     id: 'salon',
     category: '交流与分享',
@@ -25,21 +26,27 @@ export const communityMoments = [
     title: '屏幕之外，也有同路人。',
     description: '值得留下的，不只有项目完成的那一刻。一起翻看笔记，聊聊新的发现，也能让我们更了解彼此。',
     image: '/images/community-together.webp',
-    imageAlt: 'AI 生成社团日常场景示意图：四位同学在教室窗边一起翻看笔记并交流',
+    imageAlt: 'AI 生成社区日常场景示意图：四位同学在教室窗边一起翻看笔记并交流',
     isExample: true,
   },
-];
+]);
 
 // The QR and its decoded URL were supplied by the club. Add account when verified.
 export const wechatChannel = {
-  name: '零一 AI 日新社',
+  name: '零一玩家',
   account: '',
-  url: 'http://weixin.qq.com/r/mp/PyMIEA-EpVLarUtz93Yt',
-  qr: '/images/join-official-wechat-qr.jpg',
+  url: 'http://weixin.qq.com/r/mp/dSfawqjE6-WUreyh93Jn',
+  qr: '/images/join-official-wechat-qr.png',
+};
+
+export const contactQr = {
+  // Keep the existing editorial slot while updating its default QR asset.
+  assetKey: '/images/join-lingyiyang-wechat.jpg',
+  image: '/images/join-xiaoyi-wechat-qr.svg',
 };
 
 // Local, complete example articles. A real published article can use its own url.
-export const communityPublications = [
+export const communityPublications = siteRows('communityPublications', [
   {
     id: 'first-question',
     category: '学习手记',
@@ -82,4 +89,4 @@ export const communityPublications = [
       '我们希望这里可以容纳半成品、不同观点和暂时没有答案的问题。持续交流的意义，也许就在于下一次仍然愿意带着新问题回来。',
     ],
   },
-];
+]);

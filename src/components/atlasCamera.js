@@ -76,13 +76,13 @@ const ramp = (value, start, end) => {
 
 // Visibility follows the presentation scale, not the navigation destination.
 // Adjacent ranges overlap so reversing a zoom never exposes an empty map.
-export function atlasLayerOpacity(layer, scale) {
+export function atlasLayerOpacity(layer, scale, hasLocalCoverage = true) {
   switch (layer) {
     case 'world': return 1 - ramp(scale, 4, 6);
     case 'china': return 1 - ramp(scale, 24, 32);
     case 'fujian': return ramp(scale, 3.5, 6) * (1 - ramp(scale, 180, 260));
-    case 'fuzhou': return ramp(scale, 40, 70) * (1 - ramp(scale, 450, 650));
-    case 'local': return ramp(scale, 200, 350);
+    case 'fuzhou': return ramp(scale, 40, 70) * (hasLocalCoverage ? 1 - ramp(scale, 450, 650) : 1);
+    case 'local': return hasLocalCoverage ? ramp(scale, 200, 350) : 0;
     default: return 0;
   }
 }

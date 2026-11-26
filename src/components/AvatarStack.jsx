@@ -193,7 +193,7 @@ export function AvatarStack({
             type={item.href ? undefined : 'button'}
             href={item.href}
             className="avatar-stack__avatar"
-            aria-label={item.href ? t("查看{0}的领航先锋介绍", [item.name]) : t(item.name)}
+            aria-label={item.href ? t("查看{0}的成员介绍", [item.name]) : t(item.name)}
             tabIndex={roving === index ? 0 : -1}
             onPointerEnter={event => { if (event.pointerType !== 'touch') setActiveIndex(index); }}
             onPointerLeave={event => {

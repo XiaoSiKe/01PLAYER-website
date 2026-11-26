@@ -1,3 +1,4 @@
+import { memberPageLink } from './people-navigation.js';
 import { memberPortraits } from './member-portraits.js';
 import { pioneers } from './pioneers.js';
 
@@ -6,8 +7,9 @@ const membersWithPortraits = names => names.map(name => {
   const pioneer = pioneerByName.get(name);
   return {
     name,
-    src: memberPortraits[name],
-    href: pioneer ? `./?page=pioneers&member=${encodeURIComponent(pioneer.id)}` : undefined,
+    memberId: pioneer?.id,
+    src: pioneer?.photo || memberPortraits[name],
+    href: pioneer ? memberPageLink(pioneer.id) : undefined,
   };
 });
 

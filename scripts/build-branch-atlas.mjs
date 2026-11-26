@@ -19,9 +19,11 @@ const branchCampusIds = new Set(branches.map(branch => branch.osmId));
 const campuses = JSON.parse(readFileSync(new URL('../src/data/maps/campus-outlines.json', import.meta.url), 'utf8'))
   .filter(item => branchCampusIds.has(item.osm_id));
 const campusCoordinates = campuses.flatMap(item => item.geojson.coordinates.flat(item.geojson.type === 'Polygon' ? 1 : 2));
+const softwareNeighborhood = JSON.parse(readFileSync(new URL('../src/data/maps/fzrjxy-neighborhood.geojson', import.meta.url), 'utf8'));
+const [softwareWest, softwareSouth, softwareEast, softwareNorth] = softwareNeighborhood.bbox;
 const localClipBounds = [
-  projection([Math.min(119.10, ...campusCoordinates.map(p => p[0] - .015)), Math.max(26.13, ...campusCoordinates.map(p => p[1] + .015))]),
-  projection([Math.max(119.30, ...campusCoordinates.map(p => p[0] + .015)), Math.min(25.98, ...campusCoordinates.map(p => p[1] - .015))]),
+  projection([Math.min(119.10, softwareWest, ...campusCoordinates.map(p => p[0] - .015)), Math.max(26.13, softwareNorth, ...campusCoordinates.map(p => p[1] + .015))]),
+  projection([Math.max(119.30, softwareEast, ...campusCoordinates.map(p => p[0] + .015)), Math.min(25.98, softwareSouth, ...campusCoordinates.map(p => p[1] - .015))]),
 ];
 const localProjection = geoMercator().center([119.18, 26.05]).scale(200).translate([0, 0])
   .clipExtent(localClipBounds);
@@ -46,9 +48,10 @@ const fz = normalize(fuzhou);
 const qz = normalize(quanzhou);
 const campusIds = Object.fromEntries(branches.map(branch => [branch.osmId, branch.id]));
 const campusFeatures = normalize({ type: 'FeatureCollection', features: campuses.map(item => ({ type: 'Feature', geometry: item.geojson, properties: { adcode: campusIds[item.osm_id], name: item.name } })) });
-const neighborhood = JSON.parse(readFileSync(new URL('../src/data/maps/fuzhou-neighborhood.geojson', import.meta.url), 'utf8'));
 const featuredCampusIds = new Set(campuses.map(item => `${item.osm_type}:${item.osm_id}`));
-const neighborhoodFeatures = neighborhood.features.filter(item => !featuredCampusIds.has(item.properties.id));
+const fuzhouNeighborhood = JSON.parse(readFileSync(new URL('../src/data/maps/fuzhou-neighborhood.geojson', import.meta.url), 'utf8'));
+const neighborhoodFeatures = [...fuzhouNeighborhood.features, ...softwareNeighborhood.features]
+  .filter(item => !featuredCampusIds.has(item.properties.id));
 const countryFeatures = feature(world, world.objects.countries).features.filter(f => !['156', '158'].includes(String(f.id)));
 const schoolPoints = branches.map(branch => ({ id: branch.id, point: projection(branch.coordinates) }));
 const xs = schoolPoints.map(s => s.point[0]);

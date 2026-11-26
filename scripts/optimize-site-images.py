@@ -15,7 +15,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / 'output/image-optimization/report.json'
-BACKUP = ROOT / 'output/image-originals'
+BACKUP = ROOT / 'deliverables/原始素材'
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()

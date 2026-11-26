@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useState } from 'react';
 import { createTranslator, initialLocale, LOCALE_STORAGE_KEY, normalizeLocale } from './i18n/translate';
+import { COMMUNITY_SLOGAN } from './data/positioning';
 import './i18n/language.css';
 
 const LanguageContext = createContext(null);
@@ -24,12 +25,12 @@ export function LanguageProvider({ children }) {
       url.searchParams.set('lang', locale);
       window.history.replaceState(window.history.state, '', url);
     }
-    const brand = t('零一 AI 日新社｜01AIClub');
-    document.querySelector('meta[name="description"]')?.setAttribute('content', `${brand} — ${t('从零到一，让技术进步成为每个人的机会')}`);
+    const brand = t('零一玩家｜01PLAYER');
+    document.querySelector('meta[name="description"]')?.setAttribute('content', `${brand} — ${t(COMMUNITY_SLOGAN)}`);
     for (const property of ['og:site_name', 'og:title']) {
       document.querySelector(`meta[property="${property}"]`)?.setAttribute('content', brand);
     }
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('从零到一，让技术进步成为每个人的机会'));
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', t(COMMUNITY_SLOGAN));
   }, [locale, t]);
 
   const value = useMemo(() => ({ locale, setLocale: changeLocale, t, formatDate }), [locale, changeLocale, t, formatDate]);

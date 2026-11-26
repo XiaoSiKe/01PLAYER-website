@@ -1,0 +1,96 @@
+.account-brand .account-title {
+  --account-title-fill-motion: 480ms cubic-bezier(.65, 0, .35, 1) var(--account-title-fill-delay) forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 24px);
+  min-height: 3.5rem;
+  font-size: clamp(29.04px, 4.224vw, 47.52px);
+  margin: 0 auto;
+}
+.account-title-logo {
+  display: block;
+  flex: none;
+  width: clamp(198px, 39.6vw, 246.4px);
+  height: auto;
+  color: #fff;
+}
+html[data-theme='light'] .account-title-logo {
+  color: #000;
+}
+.account-brand .account-title .account-title-label {
+  display: block;
+  flex: 0 1 var(--account-title-width);
+  width: var(--account-title-width);
+  min-width: 0;
+  height: auto;
+  overflow: visible;
+  user-select: none;
+}
+@media (max-width: 368px) {
+  .account-brand .account-title {
+    gap: 0;
+    margin-inline: -18px;
+  }
+}
+.account-title text {
+  font-size: var(--account-title-font-size);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+.account-title-outline,
+.account-logo-outline {
+  fill: none;
+  stroke: var(--community-muted);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.account-title-outline {
+  stroke-width: 1.6;
+}
+.account-logo-outline {
+  stroke-width: .9px;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation:
+    account-title-draw var(--account-title-draw-duration) cubic-bezier(.16, 1, .3, 1) forwards,
+    account-logo-outline-exit var(--account-title-fill-motion);
+}
+.account-title-outline tspan {
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+  animation: account-title-draw var(--account-title-draw-duration) cubic-bezier(.16, 1, .3, 1)
+    var(--account-title-letter-delay) forwards;
+}
+.account-title-fill {
+  fill: currentColor;
+}
+.account-title-wipe {
+  transform: scaleX(0);
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: account-title-wipe var(--account-title-fill-motion);
+}
+@keyframes account-title-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes account-title-wipe {
+  to { transform: scaleX(1); }
+}
+@keyframes account-logo-outline-exit {
+  to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-title-outline,
+  .account-logo-outline {
+    visibility: hidden;
+  }
+  .account-title-outline tspan,
+  .account-logo-outline {
+    animation: none;
+  }
+  .account-title-wipe {
+    animation: none;
+    transform: none;
+  }
+}

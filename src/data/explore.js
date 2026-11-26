@@ -1,15 +1,14 @@
-const albumUrl = id => `https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzYzNzg5MjMyOQ==&action=getalbum&album_id=${id}#wechat_redirect`;
+import { siteRows } from '../editorial/content.js';
 
-export const learningFolderItems = [
-  { id: 'thinking', title: '零一文章', href: albumUrl('4707060559798894592') },
-  { id: 'experience', title: '零一大学', href: albumUrl('4739814244253466626') },
-  { id: 'partnerships', title: '零一合作', href: albumUrl('4769373749131640836') }
-];
+const albumUrl = id => `https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=${id}#wechat_redirect`;
 
-export const practiceFolderItems = [
-  { id: 'hackathon', title: '零一黑客松', href: albumUrl('4711506613004959746') },
-  { id: 'salon', title: '零一沙龙', href: albumUrl('4707063203418374148') },
-  { id: 'business', title: '零一商业', href: albumUrl('4734259802745634816') },
-  { id: 'research', title: '零一科研与竞赛', href: albumUrl('4739811477355003905') },
-  { id: 'activities', title: '日常活动', href: albumUrl('4716909649869176840') }
-];
+export const learningFolderItems = siteRows('learningFolderItems', [
+  { id: 'thinking', title: '零一文章', href: albumUrl('4716921209454706690') },
+  { id: 'partnerships', title: '零一合作', href: albumUrl('4797998250400268293') },
+]);
+
+export const practiceFolderItems = siteRows('practiceFolderItems', [
+  { id: 'hackathon', title: '玩家计划', href: albumUrl('4716922803005014019') },
+  { id: 'plaza', title: '共创广场', href: albumUrl('4716921710573371394') },
+  { id: 'team-events', title: '零一团建', href: albumUrl('4716908909473677313') },
+]);

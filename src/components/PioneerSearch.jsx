@@ -3,10 +3,10 @@ import { useId, useRef, useState } from 'react';
 import { searchRosterMembers } from '../data/pioneers';
 
 const PIONEER_LABELS = {
-  search: '领航先锋姓名搜索',
-  input: '搜索领航先锋姓名',
+  search: '先锋玩家姓名搜索',
+  input: '搜索先锋玩家姓名',
   placeholder: '搜索先锋姓名',
-  results: '匹配的领航先锋',
+  results: '匹配的先锋玩家',
   empty: '没有找到相关先锋',
 };
 

@@ -11,7 +11,7 @@ export default function MentorsPage() {
   const { t } = useLanguage();
   useEffect(() => {
     const title = document.title;
-    document.title = t('启航导师 · 零一 AI 日新社');
+    document.title = t('启航导师 · 零一玩家');
     return () => { document.title = title; };
   }, [t]);
 
@@ -20,7 +20,7 @@ export default function MentorsPage() {
     <SiteNavigation standalone />
     <div className="mentors-page__content">
       <TeamShowcase members={mentors} headingAs="h1" headingContent={<>
-        <span className="mentors-page__eyebrow"><BrandTitle text={t("零一 AI 日新社｜Mentor")} /></span>
+        <span className="mentors-page__eyebrow"><BrandTitle text={t("零一玩家｜Mentor")} /></span>
         <span className="mentors-page__headline"><BrandTitle text={t("启航")} /><BrandTitle text={t("导师")} /></span>
       </>} />
     </div>

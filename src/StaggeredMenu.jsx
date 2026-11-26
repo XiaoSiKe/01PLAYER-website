@@ -1,12 +1,13 @@
 import { useLanguage } from './Language';
 import React, { useCallback, useId, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import ResponsiveImage from './components/ResponsiveImage';
+import ClubLogo from './components/ClubLogo';
 import './StaggeredMenu.css';
 
-const MENU_LABEL = '社团导航';
+const MENU_LABEL = '社区导航';
 const CLOSE_LABEL = '关闭';
 const OFFSCREEN_PERCENT = 110;
+const identity = text => text;
 const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export const StaggeredMenu = ({
@@ -17,7 +18,6 @@ export const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
   logoHref = '#top',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
@@ -25,11 +25,13 @@ export const StaggeredMenu = ({
   changeMenuColorOnOpen = true,
   isFixed = false,
   closeOnClickAway = true,
+  textOnly = false,
+  headerBrand,
   headerActions,
   onMenuOpen,
   onMenuClose
 }) => {
-  const { t } = useLanguage();
+  const t = useLanguage()?.t ?? identity;
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const keyboardOpenRef = useRef(false);
@@ -37,8 +39,6 @@ export const StaggeredMenu = ({
   const panelRef = useRef(null);
   const preLayersRef = useRef(null);
   const preLayerElsRef = useRef([]);
-  const plusHRef = useRef(null);
-  const plusVRef = useRef(null);
   const iconRef = useRef(null);
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
@@ -57,11 +57,9 @@ export const StaggeredMenu = ({
     const ctx = gsap.context(() => {
       const panel = panelRef.current;
       const preContainer = preLayersRef.current;
-      const plusH = plusHRef.current;
-      const plusV = plusVRef.current;
       const icon = iconRef.current;
       const textInner = textInnerRef.current;
-      if (!panel || !plusH || !plusV || !icon || !textInner) return;
+      if (!panel || !icon || !textInner) return;
 
       let preLayers = [];
       if (preContainer) {
@@ -74,8 +72,6 @@ export const StaggeredMenu = ({
       if (preContainer) {
         gsap.set(preContainer, { xPercent: 0, opacity: 1 });
       }
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
       gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
       gsap.set(textInner, { yPercent: 0 });
       if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
@@ -508,23 +504,16 @@ export const StaggeredMenu = ({
           ));
         })()}
       </div>
-      <header className="staggered-menu-header" aria-label={t("零一 AI 日新社导航")}>
-        <a className="sm-logo" href={logoHref} aria-label={t("返回零一 AI 日新社首页顶部")}>
-          <ResponsiveImage eager
-            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
-            alt={t("零一 AI 日新社")}
-            className="sm-logo-img"
-            draggable={false}
-            width={110}
-            height={24}
-          />
+      <header className={`staggered-menu-header${textOnly ? ' staggered-menu-header--text-only' : ''}${headerBrand ? ' staggered-menu-header--branded' : ''}`} aria-label={t("零一玩家导航")}>
+        <a className={headerBrand ? 'sm-branded-entry' : 'sm-logo'} href={logoHref} aria-label={t("返回零一玩家首页顶部")}>
+          {headerBrand || <ClubLogo className="sm-logo-img" />}
         </a>
         <div className="sm-header-actions">
-          {headerActions}
+          {!textOnly && (headerBrand ? <div className="sm-brand-controls">{headerActions}</div> : headerActions)}
           <button
             ref={toggleBtnRef}
             className="sm-toggle"
-            aria-label={t(open ? '关闭社团菜单' : '打开社团菜单')}
+            aria-label={t(open ? '关闭社区菜单' : '打开社区菜单')}
             aria-expanded={open}
             aria-controls={panelId}
             onClick={toggleMenu}
@@ -540,8 +529,8 @@ export const StaggeredMenu = ({
               </span>
             </span>
             <span ref={iconRef} className="sm-icon" aria-hidden="true">
-              <span ref={plusHRef} className="sm-icon-line" />
-              <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+              <span className="sm-icon-line" />
+              <span className="sm-icon-line sm-icon-line-v" />
             </span>
           </button>
         </div>
@@ -551,7 +540,7 @@ export const StaggeredMenu = ({
         id={panelId}
         ref={panelRef}
         className="staggered-menu-panel"
-        aria-label={t("社团导航")}
+        aria-label={t("社区导航")}
         aria-hidden={!open}
         inert={!open}
       >

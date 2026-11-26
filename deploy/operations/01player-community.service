@@ -1,0 +1,27 @@
+[Unit]
+Description=01PLAYER community API
+After=network.target
+ConditionPathExists=/opt/01player-runtime/current/dist/index.html
+
+[Service]
+Type=simple
+User=01player-runtime
+Group=01player-runtime
+WorkingDirectory=/opt/01player-runtime/current
+Environment=NODE_ENV=production HOST=127.0.0.1 PORT=4173
+EnvironmentFile=/etc/01player-runtime/bridge.env
+EnvironmentFile=/etc/01player-runtime/community.env
+ExecStartPre=/opt/node-v24.22.3/bin/node /opt/01player-runtime/current/deploy/operations/check-community-route.mjs community
+ExecStart=/opt/node-v24.22.3/bin/node server/start.mjs
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=45
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/01player-runtime/community
+
+[Install]
+WantedBy=multi-user.target

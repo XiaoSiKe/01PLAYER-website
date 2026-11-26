@@ -12,7 +12,7 @@
     const style = getComputedStyle(title);
     return [style.fontFamily, style.fontSize, style.fontWeight, style.lineHeight].join('|');
   });
-  const uniformTitles = titles.length === 9 && new Set(fonts).size === 1;
+  const uniformTitles = titles.length === 6 && new Set(fonts).size === 1;
   const descriptionsHidden = [...bento.querySelectorAll('p')].every(p => getComputedStyle(p).display === 'none');
   const folders = [...bento.querySelectorAll('.home-explore-folder-frame')].map(folder => folder.getBoundingClientRect());
   const foldersSeparate = folders[1].top >= folders[0].bottom && Math.abs(folders[0].left - folders[1].left) < 1;

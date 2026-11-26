@@ -66,7 +66,10 @@ export function createAtlasPainter(canvas, atlas) {
       if (stroke) { context.globalAlpha = alpha * strokeAlpha; context.strokeStyle = stroke; context.lineWidth = lineWidth / scale; context.stroke(item.path); }
       drawn++;
     };
-    const opacity = Object.fromEntries(['world','china','fujian','fuzhou','local'].map(layer => [layer,atlasLayerOpacity(layer,scale)]));
+    // Retain district geography when the camera leaves the detailed map data.
+    const hasLocalCoverage = intersects(atlas.bounds.local, windowBounds);
+    const opacity = Object.fromEntries(['world','china','fujian','fuzhou','local']
+      .map(layer => [layer, atlasLayerOpacity(layer, scale, hasLocalCoverage)]));
     if (opacity.world > .001) {
       for (const item of geometry.context) shape(item,p.world,p.worldLine,.65,opacity.world*.65);
       shape({path:geometry.graticule},null,p.worldLine,.4,opacity.world*.16);

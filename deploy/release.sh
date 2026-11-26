@@ -2,9 +2,10 @@
 set -euo pipefail
 umask 022
 
-readonly ROOT=/var/www/01aiclub
 readonly VERIFY=/usr/local/lib/01aiclub/verify-archive.py
-readonly CONTROL=/etc/01aiclub
+readonly CONTROL=/etc/01PLAYER
+ROOT=$(python3 /usr/local/lib/01aiclub/static-site.py "$CONTROL/static-root")
+readonly ROOT
 staging=''
 archive_staging=''
 switched=0
@@ -40,7 +41,7 @@ trap 'exit 130' INT
 
 [[ $(id -un) == 01aiclub-deploy ]] || die '必须以 01aiclub-deploy 执行。'
 for directory in "$ROOT" "$ROOT/releases" "$ROOT/shared" "$ROOT/shared/successful" "$ROOT/shared/archives"; do
-  [[ -d "$directory" && "$(readlink -f "$directory")" == "$directory" ]] || die '日新社官网目录异常。'
+  [[ -d "$directory" && "$(readlink -f "$directory")" == "$directory" ]] || die '零一玩家官网目录异常。'
 done
 exec 9>"$ROOT/shared/deploy.lock"
 flock -w 120 9 || die '等待上一发布释放锁超时。'
@@ -75,12 +76,12 @@ target="$ROOT/releases/$release"
 switched=1
 point_to "$target"
 site_get '/version.json' | cmp -s - "$target/version.json" || die '版本健康检查失败。'
-site_get '/' | grep '零一 AI 日新社' > /dev/null || die '首页健康检查失败。'
-site_get '/lingyi-logo.jpg' > /dev/null || die 'Logo 健康检查失败。'
+site_get '/' | cmp -s - "$target/index.html" || die '首页健康检查失败。'
+site_get '/lingyi-logo.jpg' | cmp -s - "$target/lingyi-logo.jpg" || die 'Logo 响应与制品不匹配。'
 for extension in js css; do
   asset=$(find "$target/assets" -type f -name "*.$extension" -print -quit)
   [[ -n "$asset" ]] || die "缺少 $extension 资源。"
-  site_get "${asset#"$target"}" > /dev/null || die "$extension 资源健康检查失败。"
+  site_get "${asset#"$target"}" | cmp -s - "$asset" || die "${asset#"$target"} 响应与制品不匹配。"
 done
 
 if [[ "${1:-}" != --rollback && ! -f "$ROOT/shared/archives/$release.tgz" ]]; then
@@ -97,7 +98,7 @@ if [[ -n "$old_target" && "$old_target" != "$target" ]]; then
 fi
 touch "$ROOT/shared/successful/$release"
 switched=0
-printf '日新社官网版本已验证并激活：%s\n' "$release"
+printf '零一玩家官网版本已验证并激活：%s\n' "$release"
 
 while IFS= read -r expired; do
   valid_release "$expired" || continue
