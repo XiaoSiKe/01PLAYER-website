@@ -871,6 +871,8 @@ a {
   filter: grayscale(1) contrast(2);
 }
 
+#join-contact .home-join-qr { transform: scale(1.05); }
+
 .home-join-qr--inverse {
   filter: grayscale(1) invert(1) contrast(2);
 }
