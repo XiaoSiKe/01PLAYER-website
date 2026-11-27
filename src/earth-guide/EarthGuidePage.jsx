@@ -6,6 +6,7 @@ import { AccountHeading } from '../community/account/AccountAccess';
 import { useLanguage } from '../Language';
 import { groups as bundledGroups } from './chapters';
 import { useGuideContent } from './useGuideContent';
+import GuideFolders from './GuideFolders';
 import { findArticleHeading, GuideHeading, GuideMarkdown, readArticle } from './GuideMarkdown';
 import './earth-guide.css';
 
@@ -64,16 +65,7 @@ function GuideOverview({ groups }) {
     </section>
     <section className="guide-reading" aria-labelledby="reading">
       <h2 id="reading">章节目录</h2>
-      <div className="guide-chapters">
-        {groups.map(group => <section className="guide-chapter-group" key={group.id} aria-labelledby={group.id}>
-          <h3 id={group.id} tabIndex={-1}><FiFolder aria-hidden="true" />{group.title}</h3>
-          <ul>
-            {group.chapters.map(chapter => <li key={chapter.id}>
-              <a href={`#${chapter.id}`}>{chapter.title}<FiArrowRight aria-hidden="true" /></a>
-            </li>)}
-          </ul>
-        </section>)}
-      </div>
+      <GuideFolders groups={groups} />
     </section>
   </article>;
 }

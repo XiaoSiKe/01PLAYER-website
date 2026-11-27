@@ -44,15 +44,15 @@ export async function triggerFlow({ webhook, event, commit, fetchImpl = fetch, w
 }
 
 export async function waitForProduction({ commit, fetchImpl = fetch, wait = pause }) {
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 120; attempt++) {
     try {
       const response = await fetchImpl(`${production}/version.json`, {
         cache: 'no-store', signal: AbortSignal.timeout(5000),
       });
       const version = await response.json();
-      if (response.ok && version.commit === commit) return;
+      if (response.ok && version.commit === commit && version.source !== 'working-tree-snapshot') return;
     } catch { /* A transient CDN/network error must not stop the next check. */ }
-    if (attempt < 29) await wait(5000);
+    if (attempt < 119) await wait(5000);
   }
   throw new Error('等待发布超时：官网版本尚未更新为本次提交，请检查云效运行记录。');
 }

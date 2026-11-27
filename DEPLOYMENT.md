@@ -146,3 +146,10 @@ curl -fsS https://club.01aiedu.com/version.json
 - `arch.25thgame.vip` 与 `www.01yang.space` 保持原状态。
 
 完整日常操作、日志、回滚与故障处理见 [docs/OPERATIONS.md](./docs/OPERATIONS.md)。
+
+
+## 2026-11-27 云效触发修复
+
+官网仓库更名后，云效控制台保留了旧代码源 `01-ai-club-website`，导致 GitHub 推送被拒绝并返回 1400003。已在流水线 5236605 将代码源和触发设置更新到 `https://github.com/XiaoSiKe/01PLAYER-website.git` 的 `main`。代码源地址与本仓库 `deploy/aliyun-flow.yml` 一致。更名后再次核对控制台已保存的代码源和触发设置。
+
+GitHub Actions 检查通过后触发云效，随后最多等待十分钟，核对正式官网 `version.json` 与本次合并提交一致。PR 只执行检查，合并到 `main` 才触发发布。构建和静态发布继续使用现有受限通道。
