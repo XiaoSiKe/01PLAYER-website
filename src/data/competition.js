@@ -1,3 +1,4 @@
+import { siteRows } from '../editorial/content.js';
 // Names follow the user-provided certificates, including every listed teammate.
 const certificates = [
   { title: '2026 中国电机工程学会杯全国大学生电工数学建模竞赛 · 二等奖',
@@ -21,7 +22,7 @@ const photoTitles = [
 ];
 const asset = (prefix, index) => `/images/competition/${prefix}-${String(index + 1).padStart(2, '0')}`;
 const certificateRatios = [595.276 / 841.89, 595.3 / 841.9, 841.9 / 595.3, 16 / 9, 595.28 / 841.89, 842 / 595];
-export const competitionItems = [
+export const competitionItems = siteRows('competitionItems', [
   ...certificates.map((certificate, index) => ({
     ...certificate,
     id: `certificate-${index + 1}`, kind: 'certificate',
@@ -47,4 +48,4 @@ export const competitionItems = [
     fullAspectRatio: [1921 / 1279, 1921 / 1280, 1920 / 1279, 1707 / 1280][index],
     image: `${asset('competition', index)}-thumb.webp`, fullImage: `${asset('competition', index)}.webp`,
   })),
-].map(item => ({ ...item, credit: item.participants?.join('、') }));
+].map(item => ({ ...item, credit: item.participants?.join('、') })));

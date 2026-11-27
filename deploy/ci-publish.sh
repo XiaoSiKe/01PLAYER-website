@@ -28,7 +28,7 @@ chmod 600 "$ci_ssh_dir/key"
 ssh-keygen -yf "$ci_ssh_dir/key" > /dev/null
 archive="$ci_ssh_dir/release.tgz"
 COPYFILE_DISABLE=1 tar -czf "$archive" -C dist .
-printf '日新社官网制品 SHA-256：'
+printf '零一玩家官网制品 SHA-256：'
 sha256sum "$archive" | cut -d ' ' -f 1
 ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
   -o UserKnownHostsFile=deploy/known_hosts -o ConnectTimeout=15 \

@@ -1,0 +1,21 @@
+[Unit]
+Description=01PLAYER origin availability probe
+After=network.target nginx.service
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=01player-gatus-origin
+WorkingDirectory=/var/lib/01player-gatus-origin
+Environment=GATUS_CONFIG_PATH=/etc/01player-monitor/origin.yaml
+BindReadOnlyPaths=/etc/01player-monitor/origin-hosts:/etc/hosts
+ExecStart=/opt/01player-monitor/gatus-v5.38.0
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

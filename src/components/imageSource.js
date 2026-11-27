@@ -1,9 +1,11 @@
+import { siteAsset } from '../editorial/content.js';
 import assets from '../data/image-assets.json' with { type: 'json' };
 
 // Select by decoded pixels, not compressed bytes. Never ask a high-DPR phone
 // to decode a desktop image for a small avatar. QR sources are left untouched.
 export function imageSource(src, width, height = Infinity, dpr = 1.5, fit = 'contain') {
-  const asset = assets[src];
+  src = siteAsset(src);
+  const asset = globalThis.__clubContent?.images?.[src] || assets[src];
   if (!asset) return src;
   const scale = fit === 'cover'
     ? Math.max(width / asset.width, height / asset.height)
@@ -14,6 +16,7 @@ export function imageSource(src, width, height = Infinity, dpr = 1.5, fit = 'con
 }
 
 export function imageDimensions(src) {
-  const asset = assets[src];
+  src = siteAsset(src);
+  const asset = globalThis.__clubContent?.images?.[src] || assets[src];
   return asset ? { width: asset.width, height: asset.height } : {};
 }

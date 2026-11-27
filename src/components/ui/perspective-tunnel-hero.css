@@ -1,3 +1,7 @@
+.tunnel-hero__track::after { content: ''; display: block; height: 720px; }
+@media (pointer: coarse) {
+  .tunnel-hero__track::after { height: 400px; }
+}
 .tunnel-hero { position: absolute; inset: 0; overflow: hidden; background: transparent; color: var(--site-ink); }
 .tunnel-hero__anchor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .tunnel-hero__anchor .hero-content { pointer-events: none; }

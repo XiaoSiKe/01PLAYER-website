@@ -1,0 +1,28 @@
+[Unit]
+Description=01PLAYER editorial and operations console
+After=network.target
+ConditionPathExists=/opt/01player-runtime/current/cms/.next/BUILD_ID
+
+[Service]
+Type=simple
+User=01player-runtime
+Group=01player-runtime
+WorkingDirectory=/opt/01player-runtime/current/cms
+Environment=NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
+Environment=PATH=/opt/node-v24.22.3/bin:/usr/bin:/bin
+EnvironmentFile=/etc/01player-runtime/bridge.env
+EnvironmentFile=/etc/01player-runtime/cms.env
+ExecStartPre=/opt/node-v24.22.3/bin/node /opt/01player-runtime/current/deploy/operations/check-community-route.mjs cms
+ExecStart=/opt/node-v24.22.3/bin/npm run start
+Restart=on-failure
+RestartSec=4
+TimeoutStopSec=60
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/01player-runtime/cms /var/cache/01player-cms
+
+[Install]
+WantedBy=multi-user.target

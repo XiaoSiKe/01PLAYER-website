@@ -1,6 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
-import { useTheme } from './Theme';
-import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
+import { useRef, useEffect, useImperativeHandle, useState } from 'react';
+import { useTheme } from './ThemeControl';
 import './SpecularButton.css';
 
 const PAD = 20;
@@ -64,6 +63,7 @@ const SpecularButton = (buttonProps) => {
   const light = theme === 'light';
   const {
     children = 'Get Started',
+    as,
     size = 'lg',
     radius = 18,
     tint = '#ffffff',
@@ -80,12 +80,15 @@ const SpecularButton = (buttonProps) => {
     followMouse = true,
     proximity = 250,
     autoAnimate = false,
+    staticShine = false,
+    shineOnInteraction = false,
     disabled = false,
     onClick,
     href,
     target,
     rel,
     ariaLabel,
+    ref,
     className = '',
     type = 'button',
     ...elementProps
@@ -94,7 +97,9 @@ const SpecularButton = (buttonProps) => {
   const fxRef = useRef(null);
   const propsRef = useRef({});
   const requestRenderRef = useRef(null);
-  const [glReady, setGlReady] = useState(false);
+  const entryPointerRef = useRef(null);
+  const [rendererApi, setRendererApi] = useState(null);
+  const deferMenuShine = elementProps['aria-haspopup'] === 'menu';
   propsRef.current = {
     radius,
     lineColor,
@@ -110,9 +115,60 @@ const SpecularButton = (buttonProps) => {
   };
 
   useEffect(() => {
+    if (staticShine || typeof IntersectionObserver === 'undefined') return;
     const btn = btnRef.current;
+    const rendererPreference = window.matchMedia('(any-pointer: fine) and (prefers-reduced-motion: no-preference)');
     let nearby = false;
-    const update = () => setGlReady(nearby && !document.hidden);
+    let active = true;
+    let hovered = false;
+    let focused = btn.contains(document.activeElement);
+    let releaseTimer;
+    let activationTimer;
+    const canRender = () => active && nearby && !document.hidden && rendererPreference.matches;
+    const interacting = () => !shineOnInteraction || hovered || focused;
+    const canActivate = () => interacting() && !(deferMenuShine && btn.getAttribute('aria-expanded') === 'true');
+    const activate = () => {
+      if (!canRender()) {
+        setRendererApi(null);
+        return;
+      }
+      if (!canActivate()) return;
+      import('./specular-renderer.js').then(api => {
+        if (canRender() && canActivate()) setRendererApi(api);
+      }).catch(() => { /* The static rim and the button already work. */ });
+    };
+    const update = () => {
+      window.clearTimeout(activationTimer);
+      // An immediate click should open the menu before creating a WebGL context for its rim.
+      if (deferMenuShine && canRender() && canActivate()) activationTimer = window.setTimeout(activate, 150);
+      else activate();
+    };
+    const renew = () => {
+      window.clearTimeout(releaseTimer);
+      update();
+    };
+    const release = () => {
+      if (interacting()) return;
+      window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(() => setRendererApi(null), 500);
+    };
+    const enter = event => {
+      if (event.pointerType === 'touch' || btn.matches(':disabled, [aria-disabled="true"]')) return;
+      hovered = true;
+      entryPointerRef.current = event;
+      renew();
+    };
+    const leave = () => {
+      hovered = false;
+      entryPointerRef.current = null;
+      release();
+    };
+    const focusIn = () => { focused = true; renew(); };
+    const focusOut = event => {
+      if (btn.contains(event.relatedTarget)) return;
+      focused = false;
+      release();
+    };
     // Release offscreen contexts instead of accumulating one for every visited
     // button. The margin prepares the original rim before it enters the screen.
     const observer = new IntersectionObserver(([entry]) => {
@@ -120,17 +176,34 @@ const SpecularButton = (buttonProps) => {
       update();
     }, { rootMargin: '200px' });
     observer.observe(btn);
+    if (shineOnInteraction) {
+      btn.addEventListener('pointerenter', enter);
+      btn.addEventListener('pointerleave', leave);
+      btn.addEventListener('focusin', focusIn);
+      btn.addEventListener('focusout', focusOut);
+    }
     document.addEventListener('visibilitychange', update);
+    rendererPreference.addEventListener('change', update);
     return () => {
+      active = false;
+      window.clearTimeout(releaseTimer);
+      window.clearTimeout(activationTimer);
+      entryPointerRef.current = null;
+      btn.removeEventListener('pointerenter', enter);
+      btn.removeEventListener('pointerleave', leave);
+      btn.removeEventListener('focusin', focusIn);
+      btn.removeEventListener('focusout', focusOut);
       observer.disconnect();
       document.removeEventListener('visibilitychange', update);
+      rendererPreference.removeEventListener('change', update);
     };
-  }, []);
+  }, [staticShine, shineOnInteraction, deferMenuShine]);
 
   useEffect(() => {
     const btn = btnRef.current;
     const fx = fxRef.current;
-    if (!btn || !fx || !glReady) return;
+    if (!btn || !fx || !rendererApi || staticShine) return;
+    const { Renderer, Program, Mesh, Triangle, Color } = rendererApi;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let renderer;
@@ -173,15 +246,17 @@ const SpecularButton = (buttonProps) => {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const sizeRef = { w: 1, h: 1 };
     let reduceMotion = motionPreference.matches;
-    let inView = !('IntersectionObserver' in window);
+    let inView = typeof IntersectionObserver === 'undefined';
     let pointerAngle = null;
     let proximityT = 0;
-    let focused = btn === document.activeElement;
+    let focused = btn.contains(document.activeElement);
     let angle = 2.4;
     let idleAngle = 2.4;
     let brightness = 0;
     let last = performance.now();
     let frame = 0;
+    let pointerFrame = 0;
+    let queuedPointer = null;
     const line = new Color();
     const base = new Color();
 
@@ -241,8 +316,11 @@ const SpecularButton = (buttonProps) => {
     ro.observe(btn);
     resize();
 
-    const onPointerMove = event => {
-      if (!inView || document.hidden || event.pointerType === 'touch' || !propsRef.current.followMouse || btn.matches(':disabled, [aria-disabled="true"]')) return;
+    const updatePointer = () => {
+      pointerFrame = 0;
+      const event = queuedPointer;
+      queuedPointer = null;
+      if (!event || !inView || document.hidden || !propsRef.current.followMouse || btn.matches(':disabled, [aria-disabled="true"]')) return;
       const rect = btn.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -263,20 +341,37 @@ const SpecularButton = (buttonProps) => {
       }
       requestRender();
     };
+    const onPointerMove = event => {
+      if (!inView || document.hidden || event.pointerType === 'touch' || !propsRef.current.followMouse) return;
+      if (shineOnInteraction && (!(event.target instanceof Node) || !btn.contains(event.target))) return;
+      queuedPointer = event;
+      if (!pointerFrame) pointerFrame = requestAnimationFrame(updatePointer);
+    };
+    const cancelPointerUpdate = () => {
+      cancelAnimationFrame(pointerFrame);
+      pointerFrame = 0;
+      queuedPointer = null;
+    };
     const clearPointer = () => {
+      cancelPointerUpdate();
       if (proximityT === 0) return;
       pointerAngle = null;
       proximityT = 0;
       requestRender();
     };
     const onFocus = () => { focused = true; requestRender(); };
-    const onBlur = () => { focused = false; requestRender(); };
+    const onBlur = event => {
+      if (btn.contains(event.relatedTarget)) return;
+      focused = false;
+      requestRender();
+    };
     const onMotionChange = event => {
       reduceMotion = event.matches;
       requestRender();
     };
     const onVisibilityChange = () => {
       cancelAnimationFrame(frame);
+      cancelPointerUpdate();
       frame = 0;
       pointerAngle = null;
       proximityT = 0;
@@ -286,11 +381,13 @@ const SpecularButton = (buttonProps) => {
       inView = entry.isIntersecting;
       if (!inView) {
         cancelAnimationFrame(frame);
+        cancelPointerUpdate();
         frame = 0;
         pointerAngle = null;
         proximityT = 0;
         brightness = focused || propsRef.current.autoAnimate ? 1 : 0;
       } else {
+        if (entryPointerRef.current) onPointerMove(entryPointerRef.current);
         requestRender();
       }
     }) : null;
@@ -301,13 +398,15 @@ const SpecularButton = (buttonProps) => {
     document.documentElement.addEventListener('pointerleave', clearPointer);
     document.addEventListener('visibilitychange', onVisibilityChange);
     motionPreference.addEventListener('change', onMotionChange);
-    btn.addEventListener('focus', onFocus);
-    btn.addEventListener('blur', onBlur);
+    btn.addEventListener('focusin', onFocus);
+    btn.addEventListener('focusout', onBlur);
+    if (shineOnInteraction) btn.addEventListener('pointerleave', clearPointer);
     requestRender();
 
     return () => {
       requestRenderRef.current = null;
       cancelAnimationFrame(frame);
+      cancelPointerUpdate();
       ro.disconnect();
       observer?.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
@@ -316,29 +415,32 @@ const SpecularButton = (buttonProps) => {
       document.documentElement.removeEventListener('pointerleave', clearPointer);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       motionPreference.removeEventListener('change', onMotionChange);
-      btn.removeEventListener('focus', onFocus);
-      btn.removeEventListener('blur', onBlur);
+      btn.removeEventListener('focusin', onFocus);
+      btn.removeEventListener('focusout', onBlur);
+      btn.removeEventListener('pointerleave', clearPointer);
       if (gl.canvas.parentNode === fx) fx.removeChild(gl.canvas);
       geometry.remove();
       program.remove();
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [glReady]);
+  }, [rendererApi, staticShine, shineOnInteraction]);
 
   useEffect(() => {
     requestRenderRef.current?.();
   }, [radius, lineColor, baseColor, intensity, shineSize, shineFade, thickness, speed, followMouse, proximity, autoAnimate]);
 
-  const Element = href ? 'a' : 'button';
+  // An unavailable link must not navigate through pointer, keyboard or a context menu.
+  const link = Boolean(href) && !disabled;
+  const Element = as || (link ? 'a' : 'button');
+  useImperativeHandle(ref, () => btnRef.current, [Element]);
 
   return (
     <Element
       {...elementProps}
       ref={btnRef}
-      {...(href ? { href, target, rel } : { type, disabled })}
-      aria-disabled={href && disabled ? true : undefined}
-      aria-label={ariaLabel}
-      data-static-shine={!glReady || undefined}
+      {...(link ? { href, target, rel } : Element === 'button' ? { type: href ? 'button' : type, disabled } : {})}
+      aria-label={ariaLabel ?? elementProps['aria-label']}
+      data-static-shine={staticShine || !rendererApi || undefined}
       onClick={onClick}
       className={`specular-button specular-button--${size}${className ? ` ${className}` : ''}`}
       style={{

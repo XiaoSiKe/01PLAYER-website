@@ -53,13 +53,13 @@ async function prepareImages(sources) {
   }
 }
 
-export default function StartupGate({ loadPage, homepage, projectId }) {
+export default function StartupGate({ loadPage, homepage, projectId, skipIntro = false }) {
   const { t } = useLanguage();
   const [Page, setPage] = useState(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     let active = true;
-    const sources = startupImageSources(homepage, window.innerWidth, window.devicePixelRatio);
+    const sources = skipIntro ? [] : startupImageSources(homepage, window.innerWidth, window.devicePixelRatio);
     setFailed(false);
     Promise.all([
       loadPage(),
@@ -71,9 +71,10 @@ export default function StartupGate({ loadPage, homepage, projectId }) {
     })
       .catch(() => { if (active) setFailed(true); });
     return () => { active = false; };
-  }, [loadPage, homepage]);
+  }, [loadPage, homepage, skipIntro]);
 
   if (Page) return <Page projectId={projectId} />;
+  if (skipIntro && !failed) return null;
   return <main className="project-loading startup-loading" aria-busy={!failed} data-startup-state={failed ? 'error' : 'loading'}>
     <div className="startup-loading__content">
       <UniqueLoading text={t(failed ? '加载遇到问题' : '正在准备首屏')} />

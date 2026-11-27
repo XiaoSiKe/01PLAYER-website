@@ -1,6 +1,8 @@
+import { sharedPortrait } from './member-portraits.js';
+import { siteRows } from '../editorial/content.js';
 import { ezcutBusinessMembers, exdrinkBusinessMembers, smartbotBusinessMembers, timetableBusinessMembers, physicsosBusinessMembers } from './business-members.js';
 
-export const businesses = [
+export const businesses = siteRows('businesses', [
   {
     id: 'ezcut',
     cutout: true,
@@ -31,7 +33,7 @@ export const businesses = [
     alt: '零一智械 Logo',
     title: '零一智械',
     subtitle: '让 AI 触手可及，让好奇得到回应！',
-    captionCredit: '零一 AI 日新社｜福理工分社',
+    captionCredit: '零一玩家｜福理工分社',
     href: 'https://smartbot.01aiedu.com/',
     members: smartbotBusinessMembers,
     membersExample: false,
@@ -59,4 +61,10 @@ export const businesses = [
     members: physicsosBusinessMembers,
     membersExample: false,
   },
-];
+]).map(business => ({
+  ...business,
+  members: (business.members || []).map(member => ({
+    ...member,
+    src: sharedPortrait(member.name, member.memberId, member.src),
+  })),
+}));

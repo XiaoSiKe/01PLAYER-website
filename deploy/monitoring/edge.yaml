@@ -1,0 +1,48 @@
+storage:
+  type: sqlite
+  path: /data/gatus.db
+web:
+  address: 127.0.0.1
+  port: 8088
+endpoints:
+  - name: dns
+    group: edge
+    url: 223.5.5.5
+    interval: 1m
+    dns:
+      query-name: club.01aiedu.com
+      query-type: CNAME
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
+      - "[BODY] == pat(*club.01aiedu.com.w.kunlunaq.com*)"
+  - name: edge-tls
+    group: edge
+    url: https://club.01aiedu.com/version.json
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+      - "len([BODY].commit) == 40"
+  - name: homepage
+    group: edge
+    url: https://club.01aiedu.com/
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == pat(*零一玩家*)"
+  - name: event-api
+    group: edge
+    url: https://club.01aiedu.com/api/community/health
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].service == 01player-community"
+      - "[BODY].status == ok"
+      - "[BODY].demo == false"
+  - name: admin-login
+    group: edge
+    url: https://club.01aiedu.com/admin/login
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == pat(*data-staff-login*)"

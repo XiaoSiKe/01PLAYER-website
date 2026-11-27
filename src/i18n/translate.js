@@ -1,3 +1,4 @@
+import { siteCopy } from '../editorial/content.js';
 import english from './en.json' with { type: 'json' };
 import traditional from './zh-Hant.json' with { type: 'json' };
 
@@ -29,7 +30,8 @@ export function createTranslator(locale) {
   const translate = (value, parameters = []) => {
     if (typeof value !== 'string') return value;
     const key = value.trim();
-    const message = dictionary && Object.hasOwn(dictionary, key) ? value.replace(key, () => dictionary[key]) : value;
+    const edited = siteCopy(key, locale);
+    const message = edited ? value.replace(key, () => edited) : dictionary && Object.hasOwn(dictionary, key) ? value.replace(key, () => dictionary[key]) : value;
     return message.replace(/\{(\d+)\}/g, (token, index) => parameters[index] === undefined ? token : String(translate(parameters[index])));
   };
   return translate;

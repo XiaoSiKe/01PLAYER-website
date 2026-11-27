@@ -1,5 +1,6 @@
 // Member avatars shared by project teams and the pioneers roster.
 export const memberPortraits = {
+  '许钧泓': '/images/pioneers/enco-xjh.jpg',
   '玉华': '/images/business-members-ezcut/01-yuhua.webp',
   '徐裕恒': '/images/business-members-ezcut/02-xuyuheng.webp',
   '吴耀辉': '/images/business-members-ezcut/03-wuyaohui.webp',
@@ -41,3 +42,13 @@ export const memberPortraits = {
   '陈日杰': '/images/pioneers/chen-rijie.png',
   '林含悦': '/images/pioneers/lin-hanyue.png',
 };
+
+export function sharedPortrait(name, id, portrait, original = memberPortraits[name]) {
+  const sections = globalThis.__clubContent?.sections;
+  if (!sections || portrait && portrait !== original) return portrait;
+  for (const roster of [sections.pioneers, sections.leadership]) {
+    const member = roster?.find(row => id ? row.id === id : row.name === name);
+    if (member?.photo && member.photo !== original) return member.photo;
+  }
+  return portrait;
+}

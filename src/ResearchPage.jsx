@@ -9,7 +9,7 @@ export default function ResearchPage() {
   const { t } = useLanguage();
   useEffect(() => {
     const prior = document.title;
-    document.title = t('零一科研 · 01 AI CLUB');
+    document.title = t('零一科研 · 01PLAYER');
     return () => { document.title = prior; };
   }, [t]);
   return <main className="research-page">

@@ -11,11 +11,14 @@ export default function TeamShowcase({ members, headingAs: Heading = 'h4', headi
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const activeId = hoveredId || selectedId;
-  const interact = memberId => ({
+  const highlight = memberId => ({
     onPointerEnter: () => setHoveredId(memberId),
     onPointerLeave: () => setHoveredId(null),
     onFocus: () => setHoveredId(memberId),
     onBlur: () => setHoveredId(null),
+  });
+  const interact = memberId => ({
+    ...highlight(memberId),
     onClick: () => setSelectedId(current => current === memberId ? null : memberId),
     'aria-pressed': selectedId === memberId,
   });
@@ -36,15 +39,27 @@ export default function TeamShowcase({ members, headingAs: Heading = 'h4', headi
           </div>)}
         </div>
         <div className="team-showcase__members">
-          {members.map(member => <button
-            key={member.id} type="button" className="team-showcase__member"
-            data-active={activeId === member.id} data-dimmed={Boolean(activeId && activeId !== member.id)}
-            aria-label={t("{0}，{1}", [member.name, member.role])} {...interact(member.id)}
-          >
-            <span className="team-showcase__member-name"><i aria-hidden="true" /><strong>{t(member.name)}</strong></span>
-            <span className="team-showcase__role">{t(member.role)}</span>
-            <span className="team-showcase__description">{t(member.description)}</span>
-          </button>)}
+          {members.map(member => {
+            const Profile = member.homepage ? 'div' : 'button';
+            const name = <strong>{t(member.name)}</strong>;
+            const profileControls = member.homepage ? highlight(member.id) : {
+              type: 'button',
+              'aria-label': t("{0}，{1}", [member.name, member.role]),
+              ...interact(member.id),
+            };
+            return <div key={member.id} className="team-showcase__profile"
+              data-dimmed={Boolean(activeId && activeId !== member.id)}>
+              <Profile className="team-showcase__member" data-active={activeId === member.id} {...profileControls}>
+                <span className="team-showcase__member-name">
+                  <i aria-hidden="true" />
+                  {member.homepage ? <a className="team-showcase__homepage" href={member.homepage}
+                    target="_blank" rel="noopener noreferrer" aria-label={t("{0}主页（新窗口）", [member.name])}>{name}</a> : name}
+                </span>
+                <span className="team-showcase__role">{t(member.role)}</span>
+                <span className="team-showcase__description">{t(member.description)}</span>
+              </Profile>
+            </div>;
+          })}
         </div>
       </div>
     </section>

@@ -1,0 +1,176 @@
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('../assets/fonts/mona-sans-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+.community-page--detail {
+  --detail-control-fill: color-mix(in srgb, var(--site-ink) 9%, var(--site-background));
+  background: var(--site-background);
+  font: 14px/1.5 var(--site-font-family);
+}
+.community-page.community-page--detail .community-shell {
+  width: 100%;
+  padding: 118px 0 70px;
+}
+.community-page .gallery-demo-link {
+  border: 1px solid var(--community-border);
+  background: var(--site-ink);
+  color: var(--site-background);
+}
+.gallery-detail-inner {
+  width: min(100%, 1100px);
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+.detail-share-link { width: min(170px, 26vw); background: var(--site-surface); border: 1px solid var(--community-border); color: var(--site-ink); }
+
+.community-page--detail .detail-hero {
+  --hero-surface: var(--site-background);
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  color: var(--site-ink);
+  font-family: 'Mona Sans', var(--site-font-family);
+}
+.community-page--detail .detail-hero-media {
+  height: clamp(220px, 36vw, 320px);
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: auto;
+}
+.community-page--detail .detail-hero-media::before { content: none; }
+.community-page--detail .detail-hero-media::after {
+  background: linear-gradient(180deg, transparent 0%, transparent 50%, var(--site-background) 100%);
+}
+.community-page--detail .detail-hero-caption {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 21px;
+  margin-top: -18px;
+  padding-bottom: 31.5px;
+}
+.detail-hero-thumbnail {
+  position: relative;
+  flex: 0 0 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--community-border);
+}
+.detail-hero-thumbnail > :is(.event-poster, .community-art) { position: absolute; inset: 0; aspect-ratio: auto; }
+.community-page--detail .detail-hero-copy { flex: 1; min-width: 0; }
+.community-page--detail .detail-hero-copy h1 {
+  font-size: clamp(30px, 4.6vw, 52px);
+  font-weight: 700;
+  letter-spacing: normal;
+  line-height: 1.08;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+.community-page--detail .detail-hero-copy p {
+  max-width: none;
+  margin: 10.5px 0 0;
+  color: var(--community-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.community-page--detail .detail-hero-attribution {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  max-width: none;
+  margin-top: 13px;
+  text-align: start;
+}
+.community-page--detail .detail-hero-attribution > * {
+  padding: 3px 8px;
+  border: 1px solid var(--community-border);
+  border-radius: 5px;
+  background: var(--detail-control-fill);
+  color: var(--community-muted);
+  font-size: 12px;
+}
+.discovery-detail--event .detail-hero-caption { margin-inline: auto; }
+
+.gallery-demo-link, .discovery-detail .detail-share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--community-border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+.discovery-detail .detail-share-button {
+  color: var(--site-ink);
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+.discovery-detail .detail-share-button:hover { background: var(--detail-control-fill); }
+.discovery-detail .detail-section-nav, .discovery-detail .detail-section-actions { flex-wrap: wrap; }
+.discovery-detail .detail-section-actions { max-width: 100%; }
+.gallery-related-event {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  margin-bottom: 26px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--community-border);
+}
+.gallery-related-event h2 {
+  margin: 0;
+  color: var(--community-muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.gallery-related-event a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.community-page--detail :is(.project-detail-layout,.event-detail-layout) {
+  grid-template-columns: minmax(0,1fr) minmax(250px,.38fr);
+  gap: clamp(24px, 5vw, 64px);
+}
+.community-page--detail :is(.project-detail-side,.event-entry) {
+  gap: 16px;
+  padding: 14px 0 18px;
+  border-block: 1px solid var(--community-border);
+}
+.community-page--detail :is(.project-detail-side,.event-entry) h2 { margin: 0; font-size: 22px; }
+.community-page--detail :is(.project-detail-main,.event-intro) .community-prose { font-size: clamp(16px, 1.3vw, 18px); line-height: 1.75; }
+.community-page--detail :is(.project-detail-main, .event-intro) .community-prose p { line-height: 1.55; }
+.community-page--detail :is(.project-detail-main,.event-intro) :is(.community-prose,.project-media-section) h2 {
+  margin: 0 0 13px;
+  font-size: 22px;
+  font-weight: 650;
+}
+.community-page--detail :is(.project-detail-facts,.event-entry-facts) dt { font-size: 14px; }
+.community-page--detail :is(.project-detail-facts,.event-entry-facts) dd,
+.community-page--detail .event-signup-heading h3 { font-size: 17px; }
+.community-page--detail .event-entry .calendar-labels { font-size: 16px; }
+
+@media (max-width: 1023px) {
+  .community-page--detail :is(.project-detail-layout,.event-detail-layout) { grid-template-columns: minmax(0,1fr); gap: 26px; }
+  .community-page--detail .event-detail-layout { grid-template-areas: 'info' 'intro'; }
+  .community-page--detail .detail-sidebar { position: static; }
+}
+@media (max-width: 760px) {
+  .gallery-detail-inner { padding-inline: 16px; }
+  .community-page--detail .detail-hero-caption { margin-top: -6px; padding-bottom: 22px; gap: 10px; }
+  .detail-hero-thumbnail { display: none; }
+  .community-page--detail .detail-hero-copy h1 { font-size: clamp(30px, 6vw, 38px); }
+  .discovery-detail .detail-section-actions { gap: 6px; }
+  .community-page .discovery-detail .detail-section-actions :is(.gallery-demo-link, .project-detail-edit, .detail-share-button) {
+    padding-inline: 9px;
+    font-size: 13px;
+  }
+}
+@media (max-height: 540px) {
+  .community-page--detail .detail-hero-media { height: clamp(120px, 31svh, 178px); }
+}

@@ -1,0 +1,23 @@
+[Unit]
+Description=Apply versioned 01PLAYER CMS database migrations
+Conflicts=01player-cms.service
+Before=01player-cms.service
+ConditionPathExists=/opt/01player-runtime/current/cms/.next/BUILD_ID
+
+[Service]
+Type=oneshot
+User=01player-runtime
+Group=01player-runtime
+WorkingDirectory=/opt/01player-runtime/current/cms
+Environment=NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
+Environment=PATH=/opt/node-v24.22.3/bin:/usr/bin:/bin
+EnvironmentFile=/etc/01player-runtime/bridge.env
+EnvironmentFile=/etc/01player-runtime/cms.env
+ExecStart=/opt/node-v24.22.3/bin/npm run migrate
+TimeoutStartSec=300
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/01player-runtime/cms /var/cache/01player-cms

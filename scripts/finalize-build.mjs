@@ -1,18 +1,21 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { lstatSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = join(root, 'dist');
-const commit = (process.env.BUILD_VCS_NUMBER || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })).trim();
+const snapshot = !process.env.BUILD_VCS_NUMBER && !existsSync(join(root, '.git'));
+const commit = (process.env.BUILD_VCS_NUMBER || (snapshot
+  ? '8c32b33c29af79255aee90cf7c3d90b90704517f'
+  : execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }))).trim();
 
 if (!/^[a-f0-9]{40}$/.test(commit)) throw new Error('无法确定有效的 Git 提交 SHA。');
 
 writeFileSync(
   join(dist, 'version.json'),
-  `${JSON.stringify({ commit, builtAt: new Date().toISOString() }, null, 2)}\n`,
+  `${JSON.stringify({ commit, ...(snapshot ? { source: 'working-tree-snapshot' } : {}), builtAt: new Date().toISOString() }, null, 2)}\n`,
   'utf8',
 );
 

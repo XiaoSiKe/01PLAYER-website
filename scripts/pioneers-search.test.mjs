@@ -19,7 +19,7 @@ test('blank and unmatched input do not expose unrelated members', () => {
 
 test('new and existing member IDs, schools, portraits and GitHub links remain valid', () => {
   assert.equal(new Set(pioneers.map(member => member.id)).size, pioneers.length);
-  assert.equal(pioneers.length, 38);
+  assert.equal(pioneers.length, 39);
   const member = pioneers.find(member => member.id === 'likezz-rh');
   assert.deepEqual([member.name, member.university, member.href, member.photoPlaceholder],
     ['张荣晖', '福州大学', 'https://github.com/likezz-rh', false]);
@@ -32,24 +32,30 @@ test('new and existing member IDs, schools, portraits and GitHub links remain va
 test('founders link to the corresponding branch and retain their independent joining dates', () => {
   const founder = pioneers.find(member => member.id === 'XiaoSiKe');
   assert.deepEqual(founder.founding, {
-    date: '2026-09-01', name: '零一 AI 日新社', href: './?branch=fzu#cooperation',
+    date: '2026-09-01', name: '零一玩家', href: '/cooperation?branch=fzu',
   });
   const eug = pioneers.find(member => member.id === 'Eug-Y');
   assert.equal(eug.joinedAt, '2026-09-01');
   assert.equal(eug.founding.date, '2026-10-26');
-  assert.equal(eug.founding.href, './?branch=fit#cooperation');
+  assert.equal(eug.founding.href, '/cooperation?branch=fit');
   const quanzhou = pioneers.find(member => member.id === 'qwq2008123-star');
-  assert.equal(quanzhou.founding.href, './?branch=qzoi#cooperation');
+  assert.equal(quanzhou.founding.href, '/cooperation?branch=qzoi');
   const spark = pioneers.find(member => member.id === 'Sparkfengtu');
   assert.equal(spark.joinedAt, '2026-10-21');
   assert.deepEqual(spark.founding, {
-    date: '2026-10-22', name: '闽江分社', href: './?branch=mju#cooperation',
+    date: '2026-10-22', name: '闽江分社', href: '/cooperation?branch=mju',
   });
   const wu = pioneers.find(member => member.id === 'wu-yaohui');
   assert.equal(wu.founding, null);
   assert.equal(wu.joinedAt, '2026-10-30');
   assert.equal(wu.href, 'https://github.com/1302707875wu');
-  assert.equal(pioneers.filter(member => member.founding).length, 7);
+  const xu = searchPioneers('许钧泓')[0];
+  assert.equal(xu.university, '福州软件职业技术学院');
+  assert.equal(xu.href, 'https://github.com/encoXJH');
+  assert.deepEqual(xu.founding, {
+    date: '2026-11-25', name: '福软分社', href: '/cooperation?branch=fzrjxy',
+  });
+  assert.equal(pioneers.filter(member => member.founding).length, 8);
   const datedMembers = pioneers.filter(member => member.joinedAt !== null);
   assert.equal(datedMembers.length, 32);
   assert(datedMembers.every(member => /^2026-\d{2}-\d{2}$/.test(member.joinedAt)));

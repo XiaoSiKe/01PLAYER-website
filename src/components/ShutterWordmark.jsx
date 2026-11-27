@@ -1,41 +1,29 @@
 import { useLanguage } from '../Language';
-/** Geometric glyphs adapted from the user's Shutter Glyph Footer.
- * The closing emblem is the original club logo, with a gentle fragment interaction.
- */
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+/** Interactive display of the approved 01PLAYER outlines and standalone mark. */
+import { useEffect, useId, useRef, useState } from 'react';
 import './ShutterWordmark.css';
 
 const CAP = 100;
+const PADDING = 12;
+// Visible bounds of the official SVG in the animation's 100 × 100 coordinates.
+const LOGO_INK = { x: 21.147, y: 20.019, width: 61.867, height: 58.38 };
+const LOGO_SCALE = CAP / LOGO_INK.height;
+const LOGO_X = -LOGO_INK.x * LOGO_SCALE;
+const LOGO_Y = -LOGO_INK.y * LOGO_SCALE;
+const GLYPH_START = LOGO_INK.width * LOGO_SCALE + CAP / 4;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const f = n => String(Math.round(n * 100) / 100);
-const rect = (x, y, w, h) => `M${x} ${y}H${x + w}V${y + h}H${x}Z`;
-const slant = (x1, y1, x2, y2, t) => `M${x1} ${y1}H${x1 + t}L${x2 + t} ${y2}H${x2}Z`;
-const at = (cx, cy, rx, ry, degrees) => {
-  const a = degrees * Math.PI / 180;
-  return `${f(cx + rx * Math.cos(a))} ${f(cy + ry * Math.sin(a))}`;
-};
-const band = (cx, cy, rx, ry, tx, ty, a0, a1) => {
-  const large = Math.abs(a1 - a0) > 180 ? 1 : 0;
-  const cw = a1 > a0 ? 1 : 0;
-  return `M${at(cx, cy, rx, ry, a0)}A${rx} ${ry} 0 ${large} ${cw} ${at(cx, cy, rx, ry, a1)}L${at(cx, cy, rx - tx, ry - ty, a1)}A${rx - tx} ${ry - ty} 0 ${large} ${1 - cw} ${at(cx, cy, rx - tx, ry - ty, a0)}Z`;
-};
-const ring = () => 'M0 50A50 50 0 1 1 100 50A50 50 0 1 1 0 50ZM21 50A29 33 0 1 1 79 50A29 33 0 1 1 21 50Z';
-const bowl = (x, y, w, h, t, tb) => {
-  const ry = h / 2;
-  const rx = Math.min(w - t, ry * .95);
-  const sx = x + w - rx;
-  return `M${x} ${y}H${sx}A${rx} ${ry} 0 0 1 ${sx} ${y + h}H${x}ZM${x + t} ${y + tb}H${sx}A${rx - t} ${ry - tb} 0 0 1 ${sx} ${y + h - tb}H${x + t}Z`;
-};
-const GLYPHS = {
-  '0': { w: 100, d: [ring()] },
-  '1': { w: 56, d: ['M5 18 28 0H43V83H56V100H0V83H22V28L5 39Z'] },
-  A: { w: 96, d: [slant(37, 0, 0, 100, 23), slant(37, 0, 73, 100, 23), rect(18, 60, 60, 16)] },
-  I: { w: 21, d: [rect(0, 0, 21, 100)] },
-  C: { w: 90, d: [band(45, 50, 45, 50, 21, 17, -40, -320)] },
-  L: { w: 68, d: [rect(0, 0, 19, 100), rect(0, 83, 68, 17)] },
-  U: { w: 86, d: [rect(0, 0, 19, 60), rect(67, 0, 19, 60), band(43, 58, 43, 42, 19, 17, 0, 180)] },
-  B: { w: 84, d: [rect(0, 0, 19, 100), bowl(0, 0, 78, 52, 19, 17), bowl(0, 35, 84, 65, 19, 17)] },
-};
+const GLYPHS = [
+  { ch: "0", x: 0, w: 184.271, scaleX: 0.709, d: "M33 0H227C242 0 253 11 253 27V36C253 40 254 42 257 44Q260 46 260 51V70Q260 76 257 78C254 80 253 83 253 87V99C253 137 234 162 203 162H174C159 162 151 156 143 146L138 140Q130 130 122 140L117 146C109 156 101 162 86 162H57C26 162 7 137 7 99V87C7 83 6 80 3 78Q0 76 0 70V51Q0 46 3 44C6 42 7 40 7 36V27C7 11 18 0 33 0Z M46 31H214Q225 31 225 44V97C225 118 214 130 195 130H184C173 130 166 124 159 115L153 107C140 91 120 91 107 107L101 115C94 124 87 130 76 130H65C46 130 35 118 35 97V44Q35 31 46 31Z" },
+  { ch: "1", x: 197.589, w: 87.845, scaleX: 0.762, d: "M1 34C11 19 26 9 46 4C57 1 67 0 76 0H88C101 0 112 10 115 26C116 29 114 31 112 29C107 25 103 23 98 21V162H52V41C35 36 17 38 3 43C0 44 -2 39 1 34Z" },
+  { ch: "P", x: 306.769, w: 108.977, scaleX: 0.762, d: "M0 0H119L143 24V84L121 106H41V162H0Z M43 21H76L117 53L76 85H43L84 53Z" },
+  { ch: "L", x: 427.94, w: 105.929, scaleX: 0.762, d: "M0 0H40V128H128L139 139V162H0Z" },
+  { ch: "A", x: 541.489, w: 121.933, scaleX: 0.762, d: "M58 0H109L162 162H116L106 128H58L48 162H2Z M66 95H99L83 47Z" },
+  { ch: "Y", x: 674.091, w: 126.505, scaleX: 0.762, d: "M0 0H47L83 60L119 0H166L106 98V162H60V98Z" },
+  { ch: "E", x: 811.265, w: 110.501, scaleX: 0.762, d: "M0 0H145V32H41V65H114L128 80L114 95H41V130H145V162H0Z" },
+  { ch: "R", x: 934.722, w: 114.312, scaleX: 0.762, d: "M0 0H123L146 22V81L126 99H112L150 162H101L64 103H45V162H0Z M45 34V69H96L102 63V40L96 34Z" },
+];
+const WORDMARK_WIDTH = GLYPH_START + GLYPHS.at(-1).x + GLYPHS.at(-1).w;
 const approach = (from, to, dt) => to + (from - to) * Math.pow(.88, Math.min(dt, .1) * 60);
 
 export default function ShutterWordmark() {
@@ -54,17 +42,6 @@ export default function ShutterWordmark() {
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState(false);
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const { items, logoX, logoY, width, height } = useMemo(() => {
-    let x = 0;
-    const items = Array.from('01 AI CLUB').map(ch => {
-      const glyph = GLYPHS[ch] || { w: 42, d: [] };
-      const item = { ch, x, y: 0, ...glyph };
-      x += glyph.w + 12;
-      return item;
-    });
-    return { items, logoX: x + 16, logoY: 0, width: x + 116, height: CAP };
-  }, []);
-
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => { setReduced(media.matches); if (media.matches) setExpanded(false); };
@@ -127,8 +104,12 @@ export default function ShutterWordmark() {
   const onPointer = event => {
     if (event.pointerType === 'touch') return;
     const r = svgRef.current.getBoundingClientRect();
-    const scale = r.width / (width + 16);
-    pointer.current = { inside: event.type !== 'pointerleave', x: (event.clientX - r.left) / scale - 8 - logoX, y: (event.clientY - r.top) / scale - 8 - logoY };
+    const scale = r.width / (WORDMARK_WIDTH + PADDING * 2);
+    pointer.current = {
+      inside: event.type !== 'pointerleave',
+      x: ((event.clientX - r.left) / scale - PADDING - LOGO_X) / LOGO_SCALE,
+      y: ((event.clientY - r.top) / scale - PADDING - LOGO_Y) / LOGO_SCALE,
+    };
     wakeRef.current?.();
   };
   const flip = event => {
@@ -145,8 +126,8 @@ export default function ShutterWordmark() {
 
   return (
     <div ref={rootRef} className={`shutter-wordmark${seen ? ' is-seen' : ''}`} onPointerMove={onPointer} onPointerLeave={onPointer}>
-      <svg ref={svgRef} viewBox={`-8 -8 ${width + 16} ${height + 16}`} role="group" aria-label={t("01 AI CLUB 互动字标")}>
-        <title>01 AI CLUB</title>
+      <svg ref={svgRef} viewBox={`${-PADDING} ${-PADDING} ${WORDMARK_WIDTH + PADDING * 2} ${CAP + PADDING * 2}`} role="group" aria-label={t("01PLAYER 互动字标")}>
+        <title>01PLAYER</title>
         <defs>
           <clipPath id={`${uid}-up`}><rect x="-40" y="-200" width="400" height="252.6" /></clipPath>
           <clipPath id={`${uid}-down`}><rect x="-40" y="51.4" width="400" height="250" /></clipPath>
@@ -157,23 +138,10 @@ export default function ShutterWordmark() {
           <clipPath id={`${uid}-logo-part-1`}><polygon points="0,0 50,50 50,100 0,100" /></clipPath>
           <clipPath id={`${uid}-logo-part-2`}><polygon points="100,0 100,100 50,100 50,50" /></clipPath>
         </defs>
-        {items.filter(item => item.ch !== ' ').map((item, index) => (
-          <g key={index} transform={`translate(${item.x} ${item.y})`}>
-            <g className="shutter-wordmark__rise" style={{ '--glyph-delay': `${index * 55}ms` }}>
-              <g className="shutter-wordmark__glyph" role="button" tabIndex={reduced ? -1 : 0} aria-disabled={reduced || undefined} aria-label={t("翻转字形 {0}", [item.ch])} onClick={flip} onKeyDown={keyboard(flip)}>
-                <rect className="shutter-wordmark__hit" width={item.w} height={CAP} />
-                <g className="shutter-wordmark__flip" onAnimationEnd={event => event.currentTarget.classList.remove('is-flipping')} aria-hidden="true">
-                  <g clipPath={`url(#${uid}-up)`}><g className="shutter-wordmark__half shutter-wordmark__up">{item.d.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}</g></g>
-                  <g clipPath={`url(#${uid}-down)`}><g className="shutter-wordmark__half shutter-wordmark__down">{item.d.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}</g></g>
-                </g>
-              </g>
-            </g>
-          </g>
-        ))}
-        <g transform={`translate(${logoX} ${logoY})`}>
-          <g className="shutter-wordmark__rise" style={{ '--glyph-delay': '440ms' }}>
-            <g className="shutter-wordmark__club-logo" role="button" tabIndex={reduced ? -1 : 0} aria-disabled={reduced || undefined} aria-pressed={expanded} aria-label={t(expanded ? '聚合社团 Logo' : '展开社团 Logo')} onClick={toggleLogo} onKeyDown={keyboard(toggleLogo)}>
-              <rect className="shutter-wordmark__hit" width="100" height="100" />
+        <g transform={`translate(${LOGO_X} ${LOGO_Y}) scale(${LOGO_SCALE})`}>
+          <g className="shutter-wordmark__rise">
+            <g className="shutter-wordmark__club-logo" role="button" tabIndex={reduced ? -1 : 0} aria-disabled={reduced || undefined} aria-pressed={expanded} aria-label={t(expanded ? '聚合社区 Logo' : '展开社区 Logo')} onClick={toggleLogo} onKeyDown={keyboard(toggleLogo)}>
+              <rect className="shutter-wordmark__hit" x={LOGO_INK.x} y={LOGO_INK.y} width={LOGO_INK.width} height={LOGO_INK.height} />
               <g ref={logoTiltRef} aria-hidden="true">
                 <use ref={logoBaseRef} href={`#${uid}-club-logo`} />
                 <g ref={logoPartsRef} className="shutter-wordmark__logo-parts">{[0, 1, 2].map(i => <g key={i} ref={el => { fragmentRefs.current[i] = el; }}><g clipPath={`url(#${uid}-logo-part-${i})`}><use href={`#${uid}-club-logo`} /></g></g>)}</g>
@@ -181,6 +149,19 @@ export default function ShutterWordmark() {
             </g>
           </g>
         </g>
+        {GLYPHS.map((item, index) => (
+          <g key={index} transform={`translate(${GLYPH_START + item.x} 0)`}>
+            <g className="shutter-wordmark__rise" style={{ '--glyph-delay': `${(index + 1) * 55}ms` }}>
+              <g className="shutter-wordmark__glyph" role="button" tabIndex={reduced ? -1 : 0} aria-disabled={reduced || undefined} aria-label={t("翻转字形 {0}", [item.ch])} onClick={flip} onKeyDown={keyboard(flip)}>
+                <rect className="shutter-wordmark__hit" width={item.w} height={CAP} />
+                <g className="shutter-wordmark__flip" onAnimationEnd={event => event.currentTarget.classList.remove('is-flipping')} aria-hidden="true">
+                  <g clipPath={`url(#${uid}-up)`}><g className="shutter-wordmark__half shutter-wordmark__up"><path d={item.d} fillRule="evenodd" transform={`scale(${item.scaleX} ${CAP / 162})`} /></g></g>
+                  <g clipPath={`url(#${uid}-down)`}><g className="shutter-wordmark__half shutter-wordmark__down"><path d={item.d} fillRule="evenodd" transform={`scale(${item.scaleX} ${CAP / 162})`} /></g></g>
+                </g>
+              </g>
+            </g>
+          </g>
+        ))}
       </svg>
     </div>
   );

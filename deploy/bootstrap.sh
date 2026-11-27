@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# 仅初始化日新社官网专属资源；日常流水线不得以 root 执行本脚本。
+# 仅初始化零一玩家官网专属资源；日常流水线不得以 root 执行本脚本。
 set -euo pipefail
 umask 022
 
-readonly ROOT=/var/www/01aiclub
-readonly CONTROL=/etc/01aiclub
+readonly CONTROL=/etc/01PLAYER
 readonly CONFIG=/etc/nginx/conf.d/020-01aiclub.conf
 readonly LIB=/usr/local/lib/01aiclub
+readonly BACKUPS=/var/backups/01PLAYER
 readonly SOURCE=$(cd "$(dirname "$0")" && pwd)
 mode=${1:-init}
 
@@ -23,9 +23,25 @@ assert_plain_path() {
     [[ ! -L "$current" ]] || { printf '受管路径存在符号链接：%s\n' "$current" >&2; exit 1; }
   done
 }
+assert_plain_path "$CONTROL/static-root"
+assert_plain_path "$CONFIG"
+plan=$(python3 "$SOURCE/static-site.py" "$CONTROL/static-root" "$CONFIG")
+read -r ROOT protocol <<< "$plan"
+readonly ROOT
+render_template() { sed "s|/var/www/01PLAYER/current;|$ROOT/current;|g" "$1"; }
+if [[ "$protocol" != tls && -e "$CONTROL/tls-ready" ]]; then
+  printf '现有站点与 tls-ready 状态不符，请先人工核对 nginx -T。\n' >&2; exit 1
+fi
+if [[ "$protocol" == new && "$mode" == tls ]]; then
+  printf '首次签发前请先运行 init 安装 HTTP 验证入口。\n' >&2; exit 1
+fi
+if [[ "$protocol" == http ]] && ! cmp -s "$CONFIG" <(render_template "$SOURCE/nginx-http.conf"); then
+  printf '已有自定义 HTTP 配置。请人工合并 TLS，保留业务与 /player 路由，再运行 init 同步状态。\n' >&2
+  [[ "$mode" == init ]] || exit 1
+fi
 for path in "$ROOT" "$ROOT/releases" "$ROOT/shared" "$ROOT/shared/successful" "$ROOT/shared/incoming" "$ROOT/shared/archives" \
-  "$CONTROL" "$CONTROL/nginx-tls.conf" "$CONTROL/tls-ready" "$CONFIG" "$LIB" "$LIB/release.sh" \
-  "$LIB/verify-archive.py" "$LIB/receive-release.sh" /var/backups/01aiclub /var/lib/01aiclub/acme \
+  "$CONTROL" "$CONTROL/tls-ready" "$LIB" "$LIB/release.sh" \
+  "$LIB/verify-archive.py" "$LIB/receive-release.sh" "$LIB/static-site.py" "$BACKUPS" /var/lib/01aiclub/acme \
   /var/lib/01aiclub/deploy-home /etc/letsencrypt-01aiclub /var/lib/letsencrypt-01aiclub \
   /var/log/letsencrypt-01aiclub /etc/systemd/system/01aiclub-certbot.service \
   /etc/systemd/system/01aiclub-certbot.timer; do
@@ -39,26 +55,38 @@ if id 01aiclub-deploy > /dev/null 2>&1; then
 fi
 
 nginx -t
-protected_files=(/etc/nginx/conf.d/000-25thgame.conf /etc/nginx/conf.d/010-01yang-company-website.conf /etc/nginx/sites-enabled/beian)
-protected_before=$(sha256sum "${protected_files[@]}")
-game_target=$(readlink -f /var/www/25thgame/current)
-company_target=$(readlink -f /var/www/01yang-company-website/current)
+protected_state() {
+  local path
+  for path in /etc/nginx/conf.d/000-25thgame.conf /etc/nginx/conf.d/010-01yang-company-website.conf /etc/nginx/sites-enabled/beian; do
+    if [[ -e "$path" || -L "$path" ]]; then sha256sum "$path" || return 1; fi
+  done
+  for path in /var/www/25thgame/current /var/www/01yang-company-website/current; do
+    if [[ -e "$path" || -L "$path" ]]; then readlink -f "$path" || return 1; fi
+  done
+}
+protected_before=$(protected_state)
 
-install -d -m 700 /var/backups/01aiclub
-backup=$(mktemp -d /var/backups/01aiclub/change.XXXXXXXX)
+install -d -m 700 "$BACKUPS"
+backup=$(mktemp -d "$BACKUPS/change.XXXXXXXX")
 had_config=0
 config_changed=0
+candidate=''
+staged=''
 if [[ -f "$CONFIG" ]]; then
-  grep -q 'server_name club.01aiedu.com' "$CONFIG" || { printf '目标配置并非日新社官网。\n' >&2; exit 1; }
   cp -a "$CONFIG" "$backup/nginx.conf"
   had_config=1
 fi
 cleanup() {
   result=$?
+  if [[ -n "$staged" ]]; then rm -f -- "$staged"; fi
   if (( result != 0 && config_changed == 1 )); then
-    if (( had_config == 1 )); then cp -a "$backup/nginx.conf" "$CONFIG"; else rm -f -- "$CONFIG"; fi
-    if nginx -t; then systemctl reload nginx; fi
-    printf '初始化失败，已恢复入口配置；备份：%s\n' "$backup" >&2
+    if [[ ! -L "$CONFIG" ]] && cmp -s "$candidate" "$CONFIG"; then
+      if (( had_config == 1 )); then cp -a "$backup/nginx.conf" "$CONFIG"; else rm -f -- "$CONFIG"; fi
+      if nginx -t; then systemctl reload nginx; fi
+      printf '初始化失败，已恢复入口配置；备份：%s\n' "$backup" >&2
+    else
+      printf '入口已被其他进程修改，请人工核对；原配置备份：%s\n' "$backup" >&2
+    fi
   fi
   exit "$result"
 }
@@ -67,7 +95,7 @@ trap 'exit 143' TERM
 trap 'exit 129' HUP
 trap 'exit 130' INT
 
-install -d -m 755 "$CONTROL" "$LIB" /var/lib/01aiclub /var/lib/01aiclub/acme
+install -d -m 755 -o root -g root "$CONTROL" "$LIB" /var/lib/01aiclub/acme
 if ! id 01aiclub-deploy > /dev/null 2>&1; then
   useradd --system --user-group --create-home --home-dir /var/lib/01aiclub/deploy-home --shell /bin/bash 01aiclub-deploy
 fi
@@ -77,10 +105,13 @@ done
 for directory in "$ROOT/shared/successful" "$ROOT/shared/incoming" "$ROOT/shared/archives"; do
   install -d -m 700 -o 01aiclub-deploy -g 01aiclub-deploy "$directory"
 done
+printf '%s\n' "$ROOT" > "$backup/static-root"
+install -m 644 "$backup/static-root" "$CONTROL/static-root"
+install -m 644 "$SOURCE/static-site.py" "$LIB/static-site.py"
 install -m 755 "$SOURCE/release.sh" "$LIB/release.sh"
 install -m 755 "$SOURCE/verify-archive.py" "$LIB/verify-archive.py"
 install -m 755 "$SOURCE/receive-release.sh" "$LIB/receive-release.sh"
-install -m 644 "$SOURCE/nginx.conf" "$CONTROL/nginx-tls.conf"
+render_template "$SOURCE/nginx.conf" > "$backup/nginx-tls.candidate"
 
 key_dir=/var/lib/01aiclub/deploy-home/.ssh
 [[ $(wc -l < "$SOURCE/ci-deploy-key.pub") -eq 1 ]] || { printf 'CI 公钥文件必须只有一行。\n' >&2; exit 1; }
@@ -89,39 +120,46 @@ ssh-keygen -lf "$SOURCE/ci-deploy-key.pub" > /dev/null
 install -d -m 700 -o 01aiclub-deploy -g 01aiclub-deploy "$key_dir"
 if [[ -f "$key_dir/authorized_keys" ]]; then
   grep -Fxq -f "$SOURCE/ci-deploy-key.pub" "$key_dir/authorized_keys" || {
-    printf '日新社部署用户已有不同授权，停止覆盖。\n' >&2; exit 1;
+    printf '零一玩家官网部署用户已有不同授权，停止覆盖。\n' >&2; exit 1;
   }
 else
   install -m 600 -o 01aiclub-deploy -g 01aiclub-deploy "$SOURCE/ci-deploy-key.pub" "$key_dir/authorized_keys"
 fi
 
-if [[ "$mode" == init ]]; then
-  if [[ -f "$CONTROL/tls-ready" ]]; then
-    printf 'TLS 已启用，仅更新部署工具。\n'
-  else
-    config_changed=1
-    install -m 644 "$SOURCE/nginx-http.conf" "$CONFIG"
-  fi
-else
+if [[ "$protocol" == new ]]; then
+  candidate="$backup/nginx-http.candidate"
+  render_template "$SOURCE/nginx-http.conf" > "$candidate"
+elif [[ "$mode" == tls && "$protocol" == http ]]; then
   command -v certbot > /dev/null
   certbot certonly --non-interactive --agree-tos --email 1241798750@qq.com \
     --webroot -w /var/lib/01aiclub/acme --cert-name 01aiclub -d club.01aiedu.com \
     --config-dir /etc/letsencrypt-01aiclub --work-dir /var/lib/letsencrypt-01aiclub \
     --logs-dir /var/log/letsencrypt-01aiclub --keep-until-expiring
+  candidate="$backup/nginx-tls.candidate"
+fi
+if [[ -n "$candidate" ]]; then
+  staged=$(mktemp "${CONFIG%/*}/.01player-config.XXXXXXXX")
+  install -m 644 "$candidate" "$staged"
+  if [[ "$protocol" == new ]]; then
+    ln "$staged" "$CONFIG" || { printf '站点配置已变更，请重新核对。\n' >&2; exit 1; }
+  else
+    [[ ! -L "$CONFIG" ]] && cmp -s "$CONFIG" <(render_template "$SOURCE/nginx-http.conf") || {
+      printf '签发期间 HTTP 配置已变更，请人工合并 TLS。\n' >&2; exit 1;
+    }
+    mv -f -- "$staged" "$CONFIG"
+  fi
   config_changed=1
-  install -m 644 "$CONTROL/nginx-tls.conf" "$CONFIG"
 fi
 
 nginx -t
-systemctl reload nginx
-test "$(sha256sum "${protected_files[@]}")" = "$protected_before"
-test "$(readlink -f /var/www/25thgame/current)" = "$game_target"
-test "$(readlink -f /var/www/01yang-company-website/current)" = "$company_target"
-if [[ "$mode" == tls ]]; then
+if (( config_changed )); then systemctl reload nginx; fi
+protected_after=$(protected_state)
+[[ "$protected_after" == "$protected_before" ]]
+if [[ "$mode" == tls && "$protocol" == http ]]; then
   install -m 644 "$SOURCE/01aiclub-certbot.service" /etc/systemd/system/01aiclub-certbot.service
   install -m 644 "$SOURCE/01aiclub-certbot.timer" /etc/systemd/system/01aiclub-certbot.timer
   systemctl daemon-reload
   systemctl enable --now 01aiclub-certbot.timer
-  touch "$CONTROL/tls-ready"
 fi
-printf '日新社官网独立入口初始化完成；其它站点配置与发布指针未改变。备份：%s\n' "$backup"
+if [[ "$protocol" == tls || "$mode" == tls ]]; then touch "$CONTROL/tls-ready"; fi
+printf '站点入口已核对，静态发布根为 %s，配置备份在 %s。\n' "$ROOT" "$backup"

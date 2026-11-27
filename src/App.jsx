@@ -1,10 +1,11 @@
+import { siteDestination } from './data/destinations';
+import HomeRegions from './editorial/regions';
+import { siteAsset } from './editorial/content';
 import { useLanguage } from './Language';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiBarChart2, FiBriefcase, FiLayers } from 'react-icons/fi';
-import { RiCodeSSlashLine } from 'react-icons/ri';
 import { SiGithub, SiX } from 'react-icons/si';
 import SiteBackground from './components/SiteBackground';
 import ViewportMount from './components/ViewportMount';
@@ -14,77 +15,88 @@ import renderDisplayedQr from './components/renderDisplayedQr';
 import { imageSource } from './components/imageSource';
 import { LoadingSlot } from './components/UniqueLoading';
 import EchoText from './EchoText';
-import { BRAND_ECHO_PROPS as ECHO_TEXT_PROPS } from './components/EchoText/brandEchoProps';
+import { BRAND_ECHO_PROPS } from './components/EchoText/brandEchoProps';
 import SpecularButton from './SpecularButton';
 import SiteNavigation from './components/SiteNavigation';
-import BorderGlow from './BorderGlow';
+import ClubLogo from './components/ClubLogo';
+import BorderGlow, { SITE_BORDER_GLOW } from './BorderGlow';
 import LogoLoop from './LogoLoop';
 import ExploreSection from './components/ExploreSection';
+import ExploreEntry from './components/ExploreEntry';
+import WorkShowcase from './components/WorkShowcase';
+import ExploreModuleIcon from './components/ExploreModuleIcon';
 import LogoMarquee from './components/LogoMarquee';
 import BranchAtlas from './components/BranchAtlas';
 import ResearchSection from './components/ResearchSection';
 import ShutterWordmark from './components/ShutterWordmark';
 import PerspectiveTunnelHero from './components/ui/perspective-tunnel-hero';
 import SocialIcon from './components/SocialIcon';
-import { socialChannels, telegramChannel } from './data/social';
+import { socialChannels, extraFooterLinks } from './data/social';
 import { businesses } from './data/business';
-import { wechatChannel } from './data/community';
+import { contactQr, wechatChannel } from './data/community';
+import { homeSectionFromPath, homeSectionPaths, pagePaths } from './data/page-paths';
+import { COMMUNITY_SLOGAN, COMMUNITY_SLOGAN_EN, CORE_ENTRIES } from './data/positioning';
+import { memberPageLink } from './data/people-navigation';
 import { pioneers } from './data/pioneers';
+import { leadership } from './data/leadership';
 import joinQr from './assets/join-qq-qr.webp';
-import clubWordmark from './assets/club-wordmark.svg';
 
 gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
 const FlexCarousel = lazy(() => import('./FlexCarousel'));
+const HERO_ECHO_PROPS = { ...BRAND_ECHO_PROPS, mode: 'pointer' };
+const [shadowEntry, playersEntry, plazaEntry] = CORE_ENTRIES;
+const HERO_ENTRIES = [playersEntry, shadowEntry, plazaEntry];
 
-const PRODUCT_NAME = '零一 AI 日新社';
-const PRESIDENT = pioneers.find(member => member.name === '零一扬');
-const SLOGAN = '从零到一，让技术进步成为每个人的机会';
-const SLOGAN_EN = 'From zero to one, turning technology into opportunity for everyone';
-const LEARNING_WIKI_URL = 'https://scn96l2kzmbn.feishu.cn/wiki/DDaiw0qKoifo7jkd2H2c9mxhnYe';
+const PRESIDENT = leadership.find(member => member.id === 'XiaoSiKe') || pioneers.find(member => member.id === 'XiaoSiKe');
+const ABOUT_PEOPLE_ENTRIES = [
+  { id: 'mentor', title: '启航导师', href: pagePaths.mentors, label: '认识启航导师' },
+  { id: 'leadership', title: '头号玩家', href: pagePaths.leadership, label: '认识头号玩家' },
+  { id: 'pioneers', title: '先锋玩家', href: pagePaths.pioneers, label: '认识先锋玩家' },
+  { id: 'join', title: '加入零一', href: pagePaths.join, label: '加入零一' },
+];
 const RECRUITMENT_DEPARTMENTS = [
-  { name: '零一技术部', icon: RiCodeSSlashLine },
-  { name: '零一运营部', icon: FiBarChart2 },
-  { name: '零一商务部', icon: FiBriefcase },
-  { name: '零一组织部', icon: FiLayers },
+  { name: '技术开发部', mark: 'terminal' },
+  { name: '商务拓展部', mark: 'business' },
+  { name: '人力组织部', mark: 'people' },
+  { name: '运营公关部', mark: 'operations' },
 ];
 const JOIN_QR_ITEMS = {
-  qq: { image: joinQr, title: '零一 QQ 社团群', downloadName: '零一AI日新社-QQ社团群.png' },
-  official: { image: wechatChannel.qr, title: '零一 AI 日新社微信公众号', downloadName: '零一AI日新社-微信公众号.png' },
-  contact: { image: '/images/join-lingyiyang-wechat.jpg', title: '商务合作联系：零一扬', downloadName: '零一AI日新社-商务合作微信.png' },
+  qq: { image: siteAsset('join-qq', joinQr), title: '零一玩家 QQ 社区群', downloadName: '零一玩家-QQ社区群.png' },
+  official: { image: siteAsset('join-wechat', wechatChannel.qr), title: '零一玩家微信公众号', downloadName: '零一玩家-微信公众号.png' },
+  contact: { image: siteAsset(contactQr.assetKey, contactQr.image), title: '官方合作联系：零小一', downloadName: '零一玩家-官方合作微信.png' },
 };
-const BORDER_GLOW_PROPS = {
-  edgeSensitivity: 30,
-  backgroundColor: 'var(--site-surface)',
-  borderRadius: 28,
-  glowRadius: 40,
-  glowIntensity: 2.1,
-  coneSpread: 25,
-  animated: false,
+const footerMarks = {
+  telegram: <SocialIcon platform="telegram" />,
+  club: <span className="home-footer-brand-mark home-footer-club-mark"><ResponsiveImage eager src="/images/club-logo-white.svg" alt="" width={48} height={48} /></span>,
+  github: <SiGithub style={{ color: 'var(--site-ink)' }} />,
+  x: <SiX style={{ color: 'var(--site-ink)' }} />,
+  feishu: <span className="home-footer-brand-mark"><ResponsiveImage eager src="/images/feishu-logo.png" alt="" width={48} height={48} /></span>,
+  founder: <span className="home-footer-brand-mark home-footer-lingyiyang-mark" style={{ '--brand-mask': `url("${imageSource('/images/lingyiyang-logo.jpg', 77, 77)}")` }} />,
+  qq: <span className="home-footer-brand-mark"><ResponsiveImage eager src="/images/qq-logo.png" alt="" width={48} height={48} /></span>,
 };
 const FOOTER_LOGOS = [
   ...socialChannels.map(channel => ({ ...channel, node: <SocialIcon platform={channel.id} /> })),
-  { ...telegramChannel, node: <SocialIcon platform={telegramChannel.id} /> },
-  { node: <span className="home-footer-brand-mark home-footer-club-mark"><ResponsiveImage eager src="/images/club-logo-white.svg" alt="" width={48} height={48} /></span>, title: '零一', href: 'https://club.01aiedu.com/' },
-  { node: <SiGithub style={{ color: 'var(--site-ink)' }} />, title: 'GitHub' },
-  { node: <SiX style={{ color: 'var(--site-ink)' }} />, title: 'X', href: 'https://x.com/01yang2026?s=11' },
-  { node: <span className="home-footer-brand-mark"><ResponsiveImage eager src="/images/feishu-logo.png" alt="" width={48} height={48} /></span>, title: '飞书', href: LEARNING_WIKI_URL },
-  { node: <span className="home-footer-brand-mark home-footer-lingyiyang-mark" style={{ '--brand-mask': `url("${imageSource('/images/lingyiyang-logo.jpg', 77, 77)}")` }} />, title: '零一扬', href: 'https://www.01yang.space' },
-  { node: <span className="home-footer-brand-mark"><ResponsiveImage eager src="/images/qq-logo.png" alt="" width={48} height={48} /></span>, title: 'QQ', href: 'https://qun.qq.com/universal-share/share?ac=1&authKey=Y6PHDoQm%2BSNy%2Bdr0SJTyHZ7Vt2jQfwQCR6sidHUatABcMNltCtupL24cigSRxTYc&busi_data=eyJncm91cENvZGUiOiI5NjY2NTQ2MzMiLCJ0b2tlbiI6IllLUmVXNXM4WS8zMG1MRHlGeFFkUUd4M0R1ZG8wekpXMVB1a0N2dkhubVp6KzF5b2xOVjRKakxFZHQ4Q3dCRFQiLCJ1aW4iOiIxNzg1ODY3NzkyIn0%3D&data=-Yz2JZMQgTAM5BkEf9Vrw9lDLH6BkX2nFl4-tH8ska8WC6OQPqpmTcvM5f24z7x5jSg--p3b18JBNtQeMn3Tzg&svctype=4&tempid=h5_group_info' },
+  ...extraFooterLinks.map(row => ({
+    ...row, node: row.image ? <ResponsiveImage eager src={row.image} alt="" width={48} height={48} /> : footerMarks[row.id] || <span>{row.title}</span>,
+  })),
 ];
 export default function App() {
   const { t, locale } = useLanguage();
-  useEffect(() => { document.title = t('零一 AI 日新社｜01AIClub'); }, [t]);
+  useEffect(() => { document.title = t('零一玩家｜01PLAYER'); }, [t]);
   useLayoutEffect(() => {
     const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => cancelAnimationFrame(frame);
   }, [locale]);
-  const borderGlowProps = BORDER_GLOW_PROPS;
+  const borderGlowProps = SITE_BORDER_GLOW;
   const pageRef = useRef(null);
   const scrollTweenRef = useRef(null);
   const [selectedQr, setSelectedQr] = useState(null);
   const [qrError, setQrError] = useState('');
   const qrRequestRef = useRef(0);
-  useEffect(() => () => { if (selectedQr) URL.revokeObjectURL(selectedQr.item.image); }, [selectedQr]);
+  useEffect(() => () => {
+    const image = selectedQr?.item.image;
+    if (image?.startsWith('blob:')) URL.revokeObjectURL(image);
+  }, [selectedQr]);
   useEffect(() => () => { qrRequestRef.current += 1; }, []);
   const openQr = async (event, item) => {
     const opener = event.currentTarget, request = ++qrRequestRef.current;
@@ -110,7 +122,15 @@ export default function App() {
     const finishNavigation = () => {
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       target.focus({ preventScroll: true });
-      window.history.replaceState(null, '', `#${id}`);
+      const address = new URL(window.location.href);
+      if (Object.hasOwn(homeSectionPaths, id)) {
+        address.pathname = homeSectionPaths[id];
+        address.hash = '';
+      } else {
+        if (homeSectionFromPath(address.pathname)) address.pathname = '/';
+        address.hash = id;
+      }
+      window.history.replaceState(window.history.state, '', address);
     };
 
     scrollTweenRef.current?.kill();
@@ -133,7 +153,7 @@ export default function App() {
   }, []);
 
   const handleInternalLinkClick = useCallback((event) => {
-    const link = event.target.closest?.('a[href^="#"]');
+    const link = event.target.closest?.('a[href]');
     if (
       !link ||
       event.button !== 0 ||
@@ -144,9 +164,11 @@ export default function App() {
     ) return;
 
     const href = link.getAttribute('href');
-    if (!href || href === '#' || !document.getElementById(decodeURIComponent(href.slice(1)))) return;
+    if (!href || href === '#') return;
+    const id = href.startsWith('#') ? decodeURIComponent(href.slice(1)) : homeSectionFromPath(href);
+    if (!id || !document.getElementById(id)) return;
     event.preventDefault();
-    scrollToSection(decodeURIComponent(href.slice(1)));
+    scrollToSection(id);
   }, [scrollToSection]);
 
   useLayoutEffect(() => {
@@ -170,37 +192,6 @@ export default function App() {
           });
         });
 
-        gsap.timeline({ defaults: { ease: 'power4.out' } })
-          .fromTo(
-            '.staggered-menu-header',
-            { autoAlpha: 0, y: -18 },
-            { autoAlpha: 1, y: 0, duration: 0.85, clearProps: 'opacity,visibility,transform' }
-          )
-          .fromTo(
-            '.release-pill',
-            { autoAlpha: 0, y: 20, scale: 0.96, filter: 'blur(8px)' },
-            { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.8, clearProps: 'opacity,visibility,transform,filter' },
-            0.12
-          )
-          .fromTo(
-            '.title-echo',
-            { autoAlpha: 0, y: 34, scale: 0.975, filter: 'blur(10px)' },
-            { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 1.05, clearProps: 'opacity,visibility,transform,filter' },
-            0.2
-          )
-          .fromTo(
-            '.slogan-echo',
-            { autoAlpha: 0, y: 24, filter: 'blur(8px)' },
-            { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.9, clearProps: 'opacity,visibility,transform,filter' },
-            0.38
-          )
-          .fromTo(
-            ['.hero-meta-row', '.hero-proof', '.hero-actions'],
-            { autoAlpha: 0, y: 22 },
-            { autoAlpha: 1, y: 0, duration: 0.78, stagger: 0.1, clearProps: 'opacity,visibility,transform' },
-            0.52
-          );
-
         gsap.timeline({
           scrollTrigger: { trigger: '.home-trust-section', start: 'top 80%', once: true }
         })
@@ -210,7 +201,7 @@ export default function App() {
             { opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)', duration: 0.58, ease: 'power4.out', clearProps: 'opacity,transform,clip-path' }
           )
           .fromTo(
-            '.home-trust-glow',
+            '.home-about-layout',
             { opacity: 0.4, y: 28 },
             { opacity: 1, y: 0, duration: 0.58, ease: 'power4.out', clearProps: 'opacity,transform' },
             '-=0.36'
@@ -241,7 +232,7 @@ export default function App() {
           scrollTrigger: { trigger: '.home-note', start: 'top 84%', once: true }
         })
           .fromTo(
-            '.home-note .home-flow-title',
+            '.home-note > .home-flow-title',
             { opacity: 0.42, y: 22, clipPath: 'inset(0 0 100% 0)' },
             { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.58, ease: 'power4.out', clearProps: 'opacity,transform,clip-path' }
           )
@@ -284,7 +275,8 @@ export default function App() {
     ScrollTrigger.refresh();
     // Restore fragment targets after React mounts their corresponding sections.
     const restoreFragment = () => {
-      const id = window.location.hash.slice(1);
+      const section = window.location.hash.slice(1) || homeSectionFromPath(window.location.pathname);
+      const id = section === 'strategy' ? 'directions' : section;
       if (!id) return;
       const target = document.getElementById(id);
       if (!target) return;
@@ -317,29 +309,6 @@ export default function App() {
     };
   }, []);
 
-  useLayoutEffect(() => {
-    const root = pageRef.current;
-    const english = root?.querySelector('.slogan-english');
-    const text = english?.querySelector('.echo-text');
-    if (!english || !text) return undefined;
-
-    // Preserve the smaller English type size and echo effect, fitting the
-    // sentence onto one line when space is limited.
-    const fitEnglish = () => {
-      const baseSize = parseFloat(getComputedStyle(text).fontSize) || 1;
-      const maximum = parseFloat(getComputedStyle(english).fontSize) / baseSize;
-      const scale = Math.min(maximum, english.clientWidth * 0.97 / Math.max(text.offsetWidth, 1));
-      english.style.setProperty('--echo-scale', String(scale));
-      const height = `${Math.ceil(text.offsetHeight * scale) + 8}px`;
-      if (english.style.height !== height) english.style.height = height;
-    };
-    const observer = new ResizeObserver(fitEnglish);
-    observer.observe(root.querySelector('.hero-stage'));
-    observer.observe(text);
-    fitEnglish();
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div ref={pageRef} className="homepage" id="top" onClickCapture={handleInternalLinkClick}>
       <a className="skip-link" href="#introduction">{t("跳到主要内容")}</a>
@@ -349,97 +318,99 @@ export default function App() {
       <SiteNavigation />
 
       <main className="hero" aria-labelledby="hero-title">
-        <div id="introduction" className="hero-stage" style={{ width: '100%', height: '100dvh', position: 'relative' }}>
-          <PerspectiveTunnelHero>
-            <div className="hero-content">
-              <p className="release-pill">
-                <b>01</b>
-                <span>AI CLUB</span>
+        <PerspectiveTunnelHero>
+          <div className="hero-content">
+            <h1 id="hero-title" className="hero-title" tabIndex="-1">
+              <EchoText {...HERO_ECHO_PROPS} tint={null}>
+                <ClubLogo horizontal className="hero-brand-logo" label={t('零一玩家｜01PLAYER')} />
+              </EchoText>
+            </h1>
+
+            <div className="hero-lower">
+              <p className="slogan-echo">
+                <EchoText {...HERO_ECHO_PROPS} fontSize={locale === 'en' ? 'clamp(20px, 3.8vw, 36px)' : 'clamp(22px, 4.3vw, 43px)'} text={t(COMMUNITY_SLOGAN)} />
+              </p>
+              <p className="slogan-echo slogan-english" lang="en" hidden={locale === 'en'}>
+                <EchoText {...HERO_ECHO_PROPS} fontSize="calc(clamp(13px, 2.1vw, 20px) * var(--slogan-english-scale, 1))" text={COMMUNITY_SLOGAN_EN} />
               </p>
 
-              <h1 id="hero-title" className="echo-viewport title-echo" aria-label={t(PRODUCT_NAME)} tabIndex="-1">
-                <span className="echo-scale">
-                  <EchoText {...ECHO_TEXT_PROPS} className="hero-wordmark" color="var(--site-wordmark)" tint={null} style={{ '--wordmark-image': `url("${clubWordmark}")` }}>
-                    <span className="hero-wordmark__shape" aria-hidden="true" />
-                  </EchoText>
-                </span>
-              </h1>
+              <div className="hero-meta-row">
+                <a className="hero-license-link" href="#about">{t("成立于 · 2026.09.01")}</a>
+              </div>
 
-              <p className="echo-viewport slogan-echo">
-                <span className="echo-scale">
-                  <EchoText {...ECHO_TEXT_PROPS} text={t(SLOGAN)} />
-                </span>
-              </p>
-              <p className="echo-viewport slogan-echo slogan-english" lang="en" hidden={locale === 'en'}>
-                <span className="echo-scale">
-                  <EchoText {...ECHO_TEXT_PROPS} text={t(SLOGAN_EN)} />
-                </span>
-              </p>
+              <div className="hero-proof">
+                <p className="hero-proof-meta"><strong>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」")}</strong></p>
+              </div>
 
-              <div className="hero-lower">
-                <div className="hero-meta-row">
-                  <a className="hero-license-link" href="#about">{t("成立于 · 2026.09.01")}</a>
-                </div>
-
-                <div className="hero-proof">
-                  <p className="hero-proof-meta">{t("学习新范式 · 开源共建 · 公益教学 · 实践探索")}</p>
-                </div>
-
-                <div className="hero-actions">
-                  <SpecularButton
-                    className="hero-button"
-                    onClick={() => scrollToSection('about')}
-                  >{t("关于我们")}</SpecularButton>
-                  <SpecularButton
-                    className="hero-button"
-                    onClick={() => scrollToSection('directions')}
-                  >{t("我们在做什么")}</SpecularButton>
-                  <SpecularButton
-                    className="hero-button"
-                    onClick={() => scrollToSection('join')}
-                  >{t("加入我们")}</SpecularButton>
-                </div>
+              <div className="hero-actions">
+                {HERO_ENTRIES.map(({ id, title, href }) => (
+                  <div className="hero-entry" key={id}>
+                    <SpecularButton className="hero-button" href={href}>{t(title)}</SpecularButton>
+                  </div>
+                ))}
               </div>
             </div>
-          </PerspectiveTunnelHero>
-        </div>
+          </div>
+        </PerspectiveTunnelHero>
 
-        <div className="home-sections">
+        <HomeRegions>
           <section className="home-section home-trust-section" id="about" aria-labelledby="about-title">
             <h2 className="home-flow-title" id="about-title" tabIndex="-1">{t("关于我们")}</h2>
 
-            <BorderGlow {...borderGlowProps} className="home-trust-glow">
-              <div className="home-trust-panel">
-                <div className="home-trust-intro">
-                  <h3 className="home-trust-subtitle">{t(SLOGAN)}</h3>
+            <div className="home-about-layout">
+              <BorderGlow {...borderGlowProps} className="home-trust-glow">
+                <div className="home-trust-panel">
+                  <ol className="home-trust-intro">
+                    <li className="home-about-block">
+                      <p className="home-about-lead"><strong>{t("这里是「零一玩家｜01PLAYER」！")}</strong></p>
+                      <blockquote className="home-about-quote">
+                        <p>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」！")}</p>
+                        <p>{t("我们把现实生活看作一个开放的世界游戏：「地球Online：零一玩家」，每个人都是自己故事的主角！")}</p>
+                        <p>{t("我们带着「玩家」的勇气与好奇心，在实践中不断探索与成长，完成自己的从零到一！")}</p>
+                      </blockquote>
+                    </li>
 
-                  <div className="home-about-block">
-                    <p className="home-about-lead"><strong>{t("这里是「零一 AI 日新社｜01 AI Club」！")}</strong></p>
-                    <blockquote className="home-about-quote">
-                      <p>{t("一个面向 AI 探索者、向全社会开放的共创社区。")}</p>
-                      <p>{t("「零一 AI 日新社」成立于 2026 年 9 月 1 日，我是社长，")}<span className="home-about-signature"><a className="home-about-president" href={`./?page=pioneers&member=${encodeURIComponent(PRESIDENT.id)}`} aria-label={t("查看社长零一扬的领航先锋介绍")}><ResponsiveImage src={PRESIDENT.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT.name)}</span></a>{locale === 'en' ? '.' : '！'}</span></p>
-                    </blockquote>
-                  </div>
+                    <li className="home-about-block">
+                      <p className="home-about-lead"><strong>{t("「零一玩家」主要在做什么？")}</strong></p>
+                      <blockquote className="home-about-quote">
+                        {CORE_ENTRIES.map(({ id, title, description, href }, index) => (
+                          <p key={id}>
+                            {locale === 'en' ? `${index + 1}. ` : `${index + 1}、`}
+                            <strong><a className="home-about-join-link" href={href}>{t('「{0}」', [title])}</a></strong>
+                            {locale === 'en' ? ': ' : '：'}{t(description)}
+                          </p>
+                        ))}
+                      </blockquote>
+                    </li>
 
-                  <div className="home-about-block">
-                    <p className="home-about-lead"><strong>{t("我们成立社区的初心，是探索一种能在真实世界中落地的“大学｜学习新范式”！")}</strong></p>
-                    <blockquote className="home-about-quote">
-                      <p>{t("我们不把绩点和考试视为大学成长的全部，而是选择在实践中不断成长，不断进步。")}{locale === 'en' ? ' ' : <br />}{t("我们以 公益教学 为核心，希望帮助每一位真正想学习 AI 的同学找到起点，")}{locale === 'en' ? ' ' : <br />}{t("在交流与实践中迈出第一步，完成属于自己的从零到一！")}</p>
-                    </blockquote>
-                  </div>
-
+                    <li className="home-about-block">
+                      <p className="home-about-lead"><strong>{t("「零一玩家」成立于 2026.9.1，我是社长，")}<span className="home-about-signature"><a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看社长零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>{locale === 'en' ? '.' : '！'}</span></strong></p>
+                      <blockquote className="home-about-quote">
+                        <p><strong>{t("不当牢玩家！不做NPC！")}<wbr />{t(COMMUNITY_SLOGAN)}</strong></p>
+                      </blockquote>
+                    </li>
+                  </ol>
                 </div>
-              </div>
-            </BorderGlow>
+              </BorderGlow>
+              <nav className="home-about-people" aria-label={t("认识零一玩家")}>
+                {ABOUT_PEOPLE_ENTRIES.map(entry => <ExploreEntry key={entry.id} entry={entry} borderGlowProps={borderGlowProps} />)}
+              </nav>
+            </div>
+            <section className="home-core-section" id="work" aria-labelledby="work-title" tabIndex={-1}>
+              <header className="home-section-heading">
+                <h2 className="home-flow-title" id="work-title">{t("我们在做什么")}</h2>
+                <p>{t("那些疯狂到相信自己能够改变世界的人，正是改变世界的人！")}</p>
+              </header>
+              <WorkShowcase borderGlowProps={borderGlowProps} />
+            </section>
           </section>
 
-          <ExploreSection borderGlowProps={borderGlowProps} knowledgeUrl={LEARNING_WIKI_URL} />
+          <ExploreSection id="directions" borderGlowProps={borderGlowProps} />
 
           <section className="home-section home-business-section" id="business" aria-labelledby="business-title" tabIndex="-1">
             <h2 className="home-flow-title" id="business-title">{t("零一商业")}</h2>
             <div className="home-business-intro">
-              <h3 className="home-business-lead">{t("用 AI 解决真实问题，让技术创造社会价值。")}</h3>
-              <p>{t("我们是福州零一先锋智能科技有限公司！")}</p>
+              <p>{t("我们是「福州零一玩家智能科技有限公司」！")}</p>
             </div>
             <ViewportMount className="home-business-carousel" minHeight="var(--business-placeholder-height, 640px)">
               <Suspense fallback={<LoadingSlot />}>
@@ -453,14 +424,14 @@ export default function App() {
                 squeeze={0.2}
                 focusOnClick
                 captions
-                captionCredit={t("零一 AI 日新社")}
+                captionCredit={t("零一玩家")}
                 captureWheel
               />
               </Suspense>
             </ViewportMount>
           </section>
 
-          <ResearchSection />
+          <ResearchSection id="research" />
 
           <section className="home-section home-cooperation-section home-partners-section" id="partners" aria-labelledby="partners-title" tabIndex="-1">
             <div className="home-partners-heading">
@@ -470,7 +441,7 @@ export default function App() {
             <div className="home-partners-row">
               <ViewportMount className="home-partners-marquee"><LogoMarquee /></ViewportMount>
               <div className="home-cooperation-actions">
-                <SpecularButton href="https://scn96l2kzmbn.feishu.cn/wiki/X7h6wI8SCiAuZAkpYF2caNv7nTG" target="_blank" rel="noopener noreferrer" className="home-cooperation-link">{t("关于零一合作生态 ")}<span aria-hidden="true">↗</span>
+                <SpecularButton href={siteDestination('partners')} target="_blank" rel="noopener noreferrer" className="home-cooperation-link">{t("关于零一合作生态 ")}<span aria-hidden="true">↗</span>
                 </SpecularButton>
               </div>
             </div>
@@ -482,36 +453,21 @@ export default function App() {
             <BranchAtlas borderGlowProps={borderGlowProps} />
           </section>
 
-          <section className="home-section" id="recruitment" aria-labelledby="recruitment-title" tabIndex="-1">
-            <h2 className="home-flow-title" id="recruitment-title">{t("零一团队招募")}</h2>
-            <p className="home-recruitment-intro">{t("充满热情的人，能够让世界变得更好。")}</p>
-            <ul className="home-recruitment-departments" role="list">
-              {RECRUITMENT_DEPARTMENTS.map(({ name, icon: Icon }) => (
-                <BorderGlow key={name} as="li" {...borderGlowProps} borderRadius={16} className="home-recruitment-department">
-                  <Icon aria-hidden="true" focusable="false" />
-                  <span>{t(name)}</span>
-                </BorderGlow>
-              ))}
-            </ul>
-            <SpecularButton href="https://scn96l2kzmbn.feishu.cn/wiki/C06Pw29bDiA6I2kZy7ecsbcZnag" target="_blank" rel="noopener noreferrer" className="home-recruitment-plan">
-              {t("零一团队招募计划")}<span aria-hidden="true">↗</span>
-            </SpecularButton>
-          </section>
-
           <section className="home-note" id="join" aria-labelledby="join-title" tabIndex="-1">
-            <h2 className="home-flow-title" id="join-title">{t("欢迎加入零一 AI 日新社")}</h2>
-            <p className="home-join-slogan"><strong>{t("从零到一，让技术进步成为每个人的机会！")}</strong></p>
-            <p className="home-join-slogan home-join-slogan-en" lang="en" hidden={locale === 'en'}><strong>{t(SLOGAN_EN)}</strong></p>
+            <h2 className="home-flow-title" id="join-title">{t("欢迎加入「零一玩家」")}</h2>
+            <p className="home-join-slogan">
+              {t("不当牢玩家！不做NPC！")}<wbr />{t(COMMUNITY_SLOGAN)}
+            </p>
             <div className="home-join-channels">
               <figure className="home-join-channel">
-                <button type="button" className="home-join-qr-button" aria-label={t("放大零一 QQ 社团群二维码")} aria-haspopup="dialog"
+                <button type="button" className="home-join-qr-button" aria-label={t("放大零一玩家 QQ 社区群二维码")} aria-haspopup="dialog"
                   onClick={event => openQr(event, JOIN_QR_ITEMS.qq)}>
-                <BorderGlow {...borderGlowProps} className="home-join-qr-glow">
+                <BorderGlow {...borderGlowProps} borderRadius={16} className="home-join-qr-glow">
                   <div className="home-join-qr-media">
                     <ResponsiveImage
-                      className="home-join-qr"
-                      src={joinQr}
-                      alt={t("零一 AI 日新社 QQ 群二维码")}
+                      className={JOIN_QR_ITEMS.qq.image === joinQr ? "home-join-qr home-join-qr--inverse" : "home-join-qr"}
+                      original src={JOIN_QR_ITEMS.qq.image}
+                      alt={t("零一玩家 QQ 群二维码")}
                       width="640"
                       height="640"
                       loading="lazy"
@@ -520,71 +476,78 @@ export default function App() {
                   </div>
                 </BorderGlow>
                 </button>
-                <figcaption>{t("零一 QQ 社团群")}</figcaption>
+                <figcaption>{t("零一玩家 QQ 社区群")}</figcaption>
               </figure>
               <figure className="home-join-channel">
-                <button type="button" className="home-join-qr-button" aria-label={t("放大零一微信公众号二维码")} aria-haspopup="dialog"
+                <button type="button" className="home-join-qr-button" aria-label={t("放大零一玩家微信公众号二维码")} aria-haspopup="dialog"
                   onClick={event => openQr(event, JOIN_QR_ITEMS.official)}>
-                <BorderGlow {...borderGlowProps} className="home-join-qr-glow">
-                  <div className="home-join-qr-media home-join-official-qr">
+                <BorderGlow {...borderGlowProps} borderRadius={16} className="home-join-qr-glow">
+                  <div className="home-join-qr-media">
                     <ResponsiveImage
-                      className="home-join-qr home-join-qr--wechat"
-                      src={wechatChannel.qr}
-                      alt={t("零一 AI 日新社微信公众号二维码")}
-                      width="430"
-                      height="430"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <ResponsiveImage
-                      className="home-join-qr home-join-official-logo"
-                      src={wechatChannel.qr}
-                      alt=""
-                      aria-hidden="true"
-                      width="430"
-                      height="430"
+                      className="home-join-qr"
+                      original src={JOIN_QR_ITEMS.official.image}
+                      alt={t("零一玩家微信公众号二维码")}
+                      width="1280"
+                      height="1280"
                       loading="lazy"
                       decoding="async"
                     />
                   </div>
                 </BorderGlow>
                 </button>
-                <figcaption>{t("「零一 AI 日新社」公众号")}</figcaption>
+                <figcaption>{t("「零一玩家」公众号")}</figcaption>
               </figure>
               <figure className="home-join-channel" id="join-contact">
-                <button type="button" className="home-join-qr-button" aria-label={t("放大商务合作微信二维码")} aria-haspopup="dialog"
+                <button type="button" className="home-join-qr-button" aria-label={t("放大官方合作微信二维码")} aria-haspopup="dialog"
                   onClick={event => openQr(event, JOIN_QR_ITEMS.contact)}>
-                <BorderGlow {...borderGlowProps} className="home-join-qr-glow">
-                  <div className="home-join-qr-media home-join-personal-qr">
+                <BorderGlow {...borderGlowProps} borderRadius={16} className="home-join-qr-glow">
+                  <div className="home-join-qr-media">
                     <ResponsiveImage
-                      className="home-join-qr home-join-qr--wechat"
-                      src="/images/join-lingyiyang-wechat.jpg"
-                      alt={t("商务合作联系零一扬的微信二维码")}
-                      width="888"
-                      height="1131"
+                      className="home-join-qr"
+                      original src={JOIN_QR_ITEMS.contact.image}
+                      alt={t("官方合作联系零小一的微信二维码")}
+                      width="1140"
+                      height="1140"
                       loading="lazy"
                       decoding="async"
                     />
                   </div>
                 </BorderGlow>
                 </button>
-                <figcaption>{t("商务合作联系：零一扬")}</figcaption>
+                <figcaption>{t("官方合作联系：零小一")}</figcaption>
               </figure>
             </div>
             {qrError && <p role="alert">{t(qrError)}</p>}
+
+            <section className="home-recruitment" id="recruitment" aria-labelledby="recruitment-title" tabIndex="-1">
+              <h3 className="home-recruitment-title" id="recruitment-title">
+                {t("零一团队招募：")}<strong>{t("充满热情的人，能够让世界变得更好。")}</strong>
+              </h3>
+              <ul className="home-recruitment-departments" role="list">
+                {RECRUITMENT_DEPARTMENTS.map(({ name, mark }) => (
+                  <BorderGlow key={name} as="li" {...borderGlowProps} borderRadius={16} className="home-recruitment-department">
+                    <span className="home-recruitment-icon" aria-hidden="true">
+                      <ExploreModuleIcon kind={mark} />
+                    </span>
+                    <span>{t(name)}</span>
+                  </BorderGlow>
+                ))}
+              </ul>
+              <SpecularButton href={siteDestination('recruitment')} target="_blank" rel="noopener noreferrer" className="home-recruitment-plan">
+                {t("零一团队招募计划")}<span aria-hidden="true">↗</span>
+              </SpecularButton>
+            </section>
           </section>
-        </div>
+        </HomeRegions>
       </main>
       {selectedQr && <ImageLightbox item={selectedQr.item} opener={selectedQr.opener} onClose={() => setSelectedQr(null)} />}
 
       <footer className="home-footer">
         <div className="home-footer-inner">
           <div className="home-footer-brand">
-            <strong>{t("零一 AI 日新社｜01 AI Club")}</strong>
-            <p>
-              {t(SLOGAN)}<br />
-              <span className="home-footer-english" lang="en" hidden={locale === 'en'}>{t(SLOGAN_EN)}</span>
-            </p>
+            <a href={siteDestination('wordmark')}>
+              <ResponsiveImage className="home-footer-brand-logo" src="/images/club-logo-horizontal-white.svg" alt={t("零一玩家｜01PLAYER")} width={1602} height={560} />
+            </a>
           </div>
           <ViewportMount className="home-footer-logo-loop" minHeight={64}>
           <LogoLoop
@@ -596,19 +559,22 @@ export default function App() {
             hoverSpeed={0}
             scaleOnHover
             fadeOut
-            ariaLabel={t("社团与社交平台")}
+            ariaLabel={t("社区与社交平台")}
           />
           </ViewportMount>
         </div>
 
         <ShutterWordmark />
         <div className="home-footer-copyright">
-          <span>{t("版权所有 © 2026 零一 AI 日新社")}</span>
-          <span className="home-footer-credit">{t("官网设计与制作：")}<a className="home-about-president" href={`./?page=pioneers&member=${encodeURIComponent(PRESIDENT.id)}`} aria-label={t("查看官网设计与制作者零一扬的领航先锋介绍")}><ResponsiveImage src={PRESIDENT.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT.name)}</span></a>
+          <span>{t("版权所有 © 2026 零一玩家")}</span>
+          <span className="home-footer-credit">{t("官网设计与制作：")}<a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看官网设计与制作者零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>
           </span>
-          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">{t("地图数据 © OpenStreetMap 贡献者")}</a>
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{t("ICP备案号：闽ICP备2026024313号-3")}</a>
-          <a href="https://beian.mps.gov.cn/#/query/webSearch?code=35011102351280" target="_blank" rel="noopener noreferrer">{t("闽公网安备35011102351280号")}</a>
+          <span>
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">{t("地图数据 © OpenStreetMap 贡献者")}</a>
+            {' · '}<a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a>
+          </span>
+          <a href={siteDestination('icp')} target="_blank" rel="noopener noreferrer">{t("ICP备案号：闽ICP备2026024313号-3")}</a>
+          <a href={siteDestination('police')} target="_blank" rel="noopener noreferrer">{t("闽公网安备35011102351280号")}</a>
         </div>
       </footer>
     </div>

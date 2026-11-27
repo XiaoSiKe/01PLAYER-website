@@ -6,11 +6,11 @@ import { useTheme } from '../Theme';
 import useMediaQuery from './useMediaQuery';
 import './ResearchSection.css';
 
-export default function ResearchSection() {
+export default function ResearchSection({ id }) {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const mobile = useMediaQuery('(max-width: 760px)');
-  return <section className="home-section research-section" id="research" aria-labelledby="research-title" tabIndex={-1}>
+  return <section className="home-section research-section" id={id} aria-labelledby="research-title" tabIndex={-1}>
     <div className="research-section__heading">
       <h2 className="home-flow-title research-section__title" id="research-title">{t("零一科研与竞赛")}</h2>
       <p className="research-section__intro">{t("99%的人在这里被打败，但100%的人会收获成长！")}</p>

@@ -427,7 +427,10 @@ export default function DuotoneTeamRoster({ members = EMPTY_MEMBERS, openRoles =
 			});
 			const widestAt100 = widest / cur * 100;
 			const cs = getComputedStyle(copy);
-			const avail = copy.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+			const label = head.querySelector(".dtr-eyebrow");
+			const verticalLabel = label && getComputedStyle(label).writingMode === "vertical-rl";
+			const labelWidth = verticalLabel ? label.offsetWidth + (parseFloat(getComputedStyle(head).columnGap) || 0) : 0;
+			const avail = copy.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - labelWidth;
 			const h = root.getBoundingClientRect().height;
 			if (next > 0 && mobileColumns > 0 && w < 700 && mobileWallScale !== 1) {
 				// Scale the original wall area, excluding the newly added controls.

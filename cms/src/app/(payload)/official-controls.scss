@@ -1,0 +1,20 @@
+// Extend the same authored selectors that Vite uses for the public site.
+@use '../../../../src/site-font.css';
+@use '../../../../src/theme.css';
+@use '../../../../src/community/community.css';
+@use '../../../../src/community/discovery.css';
+@use '../../../../src/SpecularButton.css';
+
+.field-type:is(.email, .text, .number, .password, .textarea) {
+  @extend .community-field;
+}
+
+.btn--style-primary:not(.btn--icon-only),
+.btn--style-secondary:not(.btn--icon-only) {
+  @extend .specular-button;
+  --sb-text-color: var(--site-ink);
+  --sb-tint: var(--site-ink);
+  min-height: 44px;
+  padding-inline: 18px;
+  box-shadow: inset 0 0 0 1px var(--op-rim);
+}

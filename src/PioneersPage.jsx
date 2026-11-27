@@ -7,7 +7,7 @@ import BrandTitle from './components/BrandTitle';
 import SiteBackground from './components/SiteBackground';
 import useMediaQuery from './components/useMediaQuery';
 import PioneerSearch from './components/PioneerSearch';
-import { pioneers } from './data/pioneers';
+import { isLeadershipMember, pioneerRoster, memberPageLink } from './data/people-navigation';
 import './PioneersPage.css';
 
 const DARK_PALETTE = {
@@ -43,7 +43,7 @@ export function PeopleRosterPage({ members, heading, pageTitle, skipLabel, roste
           members={members}
           titleAs="h1"
           title={t(heading)}
-          eyebrow={<BrandTitle text={t("零一 AI 日新社｜01 AI CLUB")} />}
+          eyebrow={<BrandTitle text={t("零一玩家｜01PLAYER")} />}
           renderTitleLine={line => <BrandTitle text={t(line)} />}
           titleControls={<PioneerSearch members={members} labels={searchLabels} onSelect={id => setSearchTarget(previous => ({ id, request: (previous?.request || 0) + 1 }))} />}
           preset="mono"
@@ -73,6 +73,10 @@ export function PeopleRosterPage({ members, heading, pageTitle, skipLabel, roste
 }
 
 export default function PioneersPage() {
-  return <PeopleRosterPage members={pioneers} heading={'领航\n先锋'} pageTitle="领航先锋 · 零一 AI 日新社"
-    skipLabel="跳到领航先锋" rosterLabel="领航先锋成员肖像墙" />;
+  const memberId = new URLSearchParams(window.location.search).get('member');
+  const redirect = isLeadershipMember(memberId) ? memberPageLink(memberId) : null;
+  useEffect(() => { if (redirect) window.location.replace(redirect); }, [redirect]);
+  if (redirect) return null;
+  return <PeopleRosterPage members={pioneerRoster} heading={'先锋\n玩家'} pageTitle="先锋玩家 · 零一玩家"
+    skipLabel="跳到先锋玩家" rosterLabel="先锋玩家成员肖像墙" />;
 }

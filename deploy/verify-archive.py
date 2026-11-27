@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""在空目录中安全解包并验证日新社静态制品。"""
+"""在空目录中安全解包并验证零一玩家官网静态制品。"""
 import datetime
 import hashlib
 import json
@@ -78,6 +78,8 @@ def verify(archive, destination):
     if (destination / "CNAME").read_text().strip() != "club.01aiedu.com":
         raise ValueError("CNAME 与正式域名不一致")
     version = json.loads((destination / "version.json").read_text())
+    if version.get("source") == "working-tree-snapshot":
+        raise ValueError("工作区快照不能作为正式发布制品")
     if not re.fullmatch(r"[a-f0-9]{40}", version.get("commit", "")):
         raise ValueError("制品提交 SHA 无效")
     built_at = datetime.datetime.fromisoformat(version["builtAt"].replace("Z", "+00:00"))
