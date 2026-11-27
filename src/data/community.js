@@ -42,7 +42,7 @@ export const wechatChannel = {
 export const contactQr = {
   // Keep the existing editorial slot while updating its default QR asset.
   assetKey: '/images/join-lingyiyang-wechat.jpg',
-  image: '/images/join-xiaoyi-wechat-qr.svg',
+  image: '/images/join-xiaoyi-wechat-qr-20261127.svg',
 };
 
 // Local, complete example articles. A real published article can use its own url.
