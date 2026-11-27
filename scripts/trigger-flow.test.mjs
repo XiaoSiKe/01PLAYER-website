@@ -74,5 +74,5 @@ test('an accepted trigger cannot pass while production remains on an older commi
   await assert.rejects(waitForProduction({ commit, wait: immediate, fetchImpl: async () => {
     calls++; return response({ commit: 'b'.repeat(40) });
   } }), /等待发布超时/);
-  assert.equal(calls, 30);
+  assert.equal(calls, 120);
 });
