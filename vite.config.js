@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createCommunityApi } from './server/community-api.mjs';
 import { serveEditorial } from './server/editorial-snapshot.mjs';
+import { serveEarthGuide } from './server/earth-guide.mjs';
 import { previewBridgeKey } from './server/local-bridge.mjs';
 const playerOrigin = process.env.PLAYER_ORIGIN;
 const adminTarget = process.env.CMS_INTERNAL_ORIGIN || 'http://127.0.0.1:4317';
@@ -12,6 +13,7 @@ const proxy = {
     : {}),
 };
 function attach(server) {
+  server.middlewares.use(serveEarthGuide);
   server.middlewares.use(serveEditorial);
   if (!playerOrigin) {
     const community = createCommunityApi({ demo: true, staffSecret: previewBridgeKey() });

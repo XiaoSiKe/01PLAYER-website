@@ -1,4 +1,5 @@
 import { serveEditorial } from './editorial-snapshot.mjs';
+import { serveEarthGuide } from './earth-guide.mjs';
 import { createServer } from 'node:http';
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
@@ -16,15 +17,29 @@ const server = createServer({
   connectionsCheckingInterval: 5000,
   keepAliveTimeout: 5000,
   maxHeaderSize: 16384,
-}, (req,res)=>serveEditorial(req,res,()=>api(req,res,()=>{
+}, (req,res)=>serveEarthGuide(req,res,()=>serveEditorial(req,res,()=>api(req,res,()=>{
   let pathname; try { pathname = decodeURIComponent(new URL(req.url,'http://localhost').pathname); } catch { res.writeHead(400); return res.end(); }
   const pagePath = pathname === '/' || pageFromPath(pathname) ? '/index.html' : pathname;
   const file = resolve(root, `.${pagePath}`);
   if (!file.startsWith(root+sep) || !existsSync(file) || !statSync(file).isFile() || !['GET','HEAD'].includes(req.method)) { res.writeHead(404); return res.end('Not found'); }
   res.setHeader('Content-Type',types[extname(file)]||'application/octet-stream'); res.setHeader('X-Content-Type-Options','nosniff');
+  let selected = file;
+  if (extname(file) === '.bin' && existsSync(file + '.gz')) {
+    res.setHeader('Vary', 'Accept-Encoding');
+    const acceptsGzip = (req.headers['accept-encoding'] || '').split(',').some(value => {
+      const [encoding, ...parameters] = value.trim().toLowerCase().split(';');
+      const quality = parameters.find(parameter => parameter.trim().startsWith('q='))?.trim().slice(2);
+      return encoding === 'gzip' && (quality === undefined || Number(quality) > 0);
+    });
+    if (acceptsGzip) {
+      selected += '.gz';
+      res.setHeader('Content-Encoding', 'gzip');
+    }
+  }
+  res.setHeader('Content-Length', statSync(selected).size);
   if (req.method==='HEAD') return res.end();
-  createReadStream(file).pipe(res);
-})));
+  createReadStream(selected).pipe(res);
+}))));
 server.maxConnections = 1024;
 server.maxRequestsPerSocket = 1000;
 function shutdown() {

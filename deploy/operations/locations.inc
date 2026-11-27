@@ -20,6 +20,10 @@ location = /site-content/manifest.json {
     include /etc/01player-runtime/common-proxy.inc;
     proxy_pass http://127.0.0.1:4173;
 }
+location = /site-content/earth-guide.json {
+    include /etc/01player-runtime/common-proxy.inc;
+    proxy_pass http://127.0.0.1:4173;
+}
 location ^~ /site-content/ { return 404; }
 
 location @club_runtime_busy {

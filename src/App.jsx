@@ -318,42 +318,40 @@ export default function App() {
       <SiteNavigation />
 
       <main className="hero" aria-labelledby="hero-title">
-        <div id="introduction" className="hero-stage" style={{ width: '100%', height: '100dvh', position: 'relative' }}>
-          <PerspectiveTunnelHero>
-            <div className="hero-content">
-              <h1 id="hero-title" className="hero-title" tabIndex="-1">
-                <EchoText {...HERO_ECHO_PROPS} tint={null}>
-                  <ClubLogo horizontal className="hero-brand-logo" label={t('零一玩家｜01PLAYER')} />
-                </EchoText>
-              </h1>
+        <PerspectiveTunnelHero>
+          <div className="hero-content">
+            <h1 id="hero-title" className="hero-title" tabIndex="-1">
+              <EchoText {...HERO_ECHO_PROPS} tint={null}>
+                <ClubLogo horizontal className="hero-brand-logo" label={t('零一玩家｜01PLAYER')} />
+              </EchoText>
+            </h1>
 
-              <div className="hero-lower">
-                <p className="slogan-echo">
-                  <EchoText {...HERO_ECHO_PROPS} fontSize={locale === 'en' ? 'clamp(20px, 3.8vw, 36px)' : 'clamp(22px, 4.3vw, 43px)'} text={t(COMMUNITY_SLOGAN)} />
-                </p>
-                <p className="slogan-echo slogan-english" lang="en" hidden={locale === 'en'}>
-                  <EchoText {...HERO_ECHO_PROPS} fontSize="calc(clamp(13px, 2.1vw, 20px) * var(--slogan-english-scale, 1))" text={COMMUNITY_SLOGAN_EN} />
-                </p>
+            <div className="hero-lower">
+              <p className="slogan-echo">
+                <EchoText {...HERO_ECHO_PROPS} fontSize={locale === 'en' ? 'clamp(20px, 3.8vw, 36px)' : 'clamp(22px, 4.3vw, 43px)'} text={t(COMMUNITY_SLOGAN)} />
+              </p>
+              <p className="slogan-echo slogan-english" lang="en" hidden={locale === 'en'}>
+                <EchoText {...HERO_ECHO_PROPS} fontSize="calc(clamp(13px, 2.1vw, 20px) * var(--slogan-english-scale, 1))" text={COMMUNITY_SLOGAN_EN} />
+              </p>
 
-                <div className="hero-meta-row">
-                  <a className="hero-license-link" href="#about">{t("成立于 · 2026.09.01")}</a>
-                </div>
+              <div className="hero-meta-row">
+                <a className="hero-license-link" href="#about">{t("成立于 · 2026.09.01")}</a>
+              </div>
 
-                <div className="hero-proof">
-                  <p className="hero-proof-meta"><strong>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」")}</strong></p>
-                </div>
+              <div className="hero-proof">
+                <p className="hero-proof-meta"><strong>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」")}</strong></p>
+              </div>
 
-                <div className="hero-actions">
-                  {HERO_ENTRIES.map(({ id, title, href }) => (
-                    <div className="hero-entry" key={id}>
-                      <SpecularButton className="hero-button" href={href}>{t(title)}</SpecularButton>
-                    </div>
-                  ))}
-                </div>
+              <div className="hero-actions">
+                {HERO_ENTRIES.map(({ id, title, href }) => (
+                  <div className="hero-entry" key={id}>
+                    <SpecularButton className="hero-button" href={href}>{t(title)}</SpecularButton>
+                  </div>
+                ))}
               </div>
             </div>
-          </PerspectiveTunnelHero>
-        </div>
+          </div>
+        </PerspectiveTunnelHero>
 
         <HomeRegions>
           <section className="home-section home-trust-section" id="about" aria-labelledby="about-title">

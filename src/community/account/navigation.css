@@ -26,10 +26,9 @@
     padding-inline: 0;
   }
 
-  .sm-header-actions .language-switcher .choice-menu__label,
+  .sm-header-actions .language-switcher:not(.language-switcher--short) .choice-menu__label,
   .sm-header-actions .language-switcher .language-switcher__chevron { display: none; }
 
-  .sm-header-actions .language-switcher__globe { display: block; }
 }
 
 @media (max-width: 380px) {

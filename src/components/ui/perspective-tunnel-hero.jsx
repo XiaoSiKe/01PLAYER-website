@@ -19,6 +19,7 @@ const TUNNEL_CARDS = tunnelPhotos.map((item, index) => {
   };
 });
 const SPRING_CONFIG = { stiffness: 60, damping: 25, mass: 0.5 };
+const SCROLL_SPRING_CONFIG = { stiffness: 260, damping: 23, mass: 0.5, restDelta: 0.0001 };
 
 function useCameraParallax(enabled) {
   const rawX = useMotionValue(0), rawY = useMotionValue(0);
@@ -26,7 +27,7 @@ function useCameraParallax(enabled) {
   useEffect(() => {
     if (!enabled) return undefined;
     const onMove = event => {
-      if (window.scrollY > window.innerHeight) return;
+      if (event.pointerType === 'touch' || window.scrollY > window.innerHeight) return;
       // Keep a photo still while the pointer is targeting its click area.
       if (event.target.closest?.('.tunnel-hero__card')) return;
       rawX.set((event.clientX / window.innerWidth - 0.5) * 2);
@@ -76,13 +77,15 @@ function TunnelCard({ card, progress, pointer, total, stage, reduce, onOpen }) {
     onClick={event => onOpen(card.item, event.currentTarget)}
     style={{ width: cardWidth, aspectRatio: `${card.item.width} / ${card.item.height}`, transform, opacity, visibility, zIndex: card.index + 1 }}>
     <div className="tunnel-hero__card-inner">
-      <ResponsiveImage active={loadImage} src={card.item.src} alt="" width={card.item.width} height={card.item.height} fetchPriority="low" draggable={false} />
+      <ResponsiveImage active={loadImage} eager src={card.item.src} alt="" width={card.item.width} height={card.item.height} fetchPriority="low" draggable={false} />
     </div>
     <BorderGlow as="span" className="media-edge-glow tunnel-hero__photo-glow" backgroundColor="transparent" borderRadius={16} glowRadius={24} glowIntensity={2.1} />
   </motion.button>;
 }
 
 export default function PerspectiveTunnelHero({ children }) {
+  const trackRef = useRef(null);
+  const stageRef = useRef(null);
   const containerRef = useRef(null);
   const glowPointerRef = useRef(null);
   const requestGlowRef = useRef(null);
@@ -98,48 +101,26 @@ export default function PerspectiveTunnelHero({ children }) {
   }, []);
 
   const rawProgress = useMotionValue(0);
-  const smoothProgress = useSpring(rawProgress, { stiffness: 80, damping: 30, restDelta: 0.0001 });
+  const smoothProgress = useSpring(rawProgress, SCROLL_SPRING_CONFIG);
   useEffect(() => {
     if (selectedPhoto) return undefined;
-    const stageElement = containerRef.current.parentElement;
-    let touchY = null, previousScrollY = window.scrollY;
-    const advance = (delta, event) => {
-      if (window.scrollY > 1 || delta === 0) return;
-      const current = rawProgress.get();
-      // Release native page scrolling at either end of the reference corridor.
-      if ((delta > 0 && current >= 1) || (delta < 0 && current <= 0)) return;
-      if (event.cancelable) event.preventDefault();
-      rawProgress.set(Math.min(1, Math.max(0, current + delta * 0.0008)));
+    const track = trackRef.current, stageElement = stageRef.current;
+    let start, distance;
+    const sync = () => rawProgress.set(Math.min(1, Math.max(0, (window.scrollY - start) / distance)));
+    const measure = () => {
+      start = track.getBoundingClientRect().top + window.scrollY;
+      distance = Math.max(1, track.offsetHeight - stageElement.offsetHeight);
+      sync();
     };
-    const wheel = event => {
-      if (event.ctrlKey) return;
-      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
-      advance(event.deltaY * unit, event);
-    };
-    const touchStart = event => { touchY = event.touches.length === 1 ? event.touches[0].clientY : null; };
-    const touchMove = event => {
-      if (touchY === null || event.touches.length !== 1) return;
-      const nextY = event.touches[0].clientY;
-      advance(touchY - nextY, event); touchY = nextY;
-    };
-    const touchEnd = () => { touchY = null; };
-    const scroll = () => {
-      if (window.scrollY <= 1 && previousScrollY > 1) rawProgress.set(0);
-      previousScrollY = window.scrollY;
-    };
-    stageElement.addEventListener('wheel', wheel, { passive: false });
-    stageElement.addEventListener('touchstart', touchStart, { passive: true });
-    stageElement.addEventListener('touchmove', touchMove, { passive: false });
-    stageElement.addEventListener('touchend', touchEnd, { passive: true });
-    stageElement.addEventListener('touchcancel', touchEnd, { passive: true });
-    window.addEventListener('scroll', scroll, { passive: true });
+    // The sticky stage follows native scrolling so a swipe can carry on into the page.
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(track);
+    resize.observe(stageElement);
+    window.addEventListener('scroll', sync, { passive: true });
     return () => {
-      stageElement.removeEventListener('wheel', wheel);
-      stageElement.removeEventListener('touchstart', touchStart);
-      stageElement.removeEventListener('touchmove', touchMove);
-      stageElement.removeEventListener('touchend', touchEnd);
-      stageElement.removeEventListener('touchcancel', touchEnd);
-      window.removeEventListener('scroll', scroll);
+      resize.disconnect();
+      window.removeEventListener('scroll', sync);
     };
   }, [rawProgress, selectedPhoto]);
 
@@ -186,21 +167,25 @@ export default function PerspectiveTunnelHero({ children }) {
     };
   }, [progress, pointer.x, pointer.y]);
 
-  return <div ref={containerRef} className="tunnel-hero" style={{ perspective: stage.isMobile ? '900px' : '1200px', transformStyle: 'preserve-3d' }}
-    onPointerMove={event => {
-      if (selectedPhoto || event.pointerType === 'touch') return;
-      glowPointerRef.current = { x: event.clientX, y: event.clientY };
-      requestGlowRef.current?.();
-    }}
-    onPointerLeave={() => {
-      glowPointerRef.current = null;
-      containerRef.current?.querySelectorAll('.tunnel-hero__photo-glow').forEach(clearBorderGlow);
-    }}>
-    <motion.div className="tunnel-hero__anchor" style={{ scale: reduce ? 1 : titleScale, opacity: reduce ? 1 : titleOpacity }}>
-      {children}
-    </motion.div>
-    <div className="tunnel-hero__photos" role="group" aria-label="零一玩家活动照片">
-      {TUNNEL_CARDS.map(card => <TunnelCard key={card.item.id} card={card} progress={progress} pointer={pointer} total={TUNNEL_CARDS.length} stage={stage} reduce={reduce} onOpen={openPhoto} />)}
+  return <div ref={trackRef} id="introduction" className="tunnel-hero__track">
+    <div ref={stageRef} className="hero-stage">
+      <div ref={containerRef} className="tunnel-hero" style={{ perspective: stage.isMobile ? '900px' : '1200px', transformStyle: 'preserve-3d' }}
+        onPointerMove={event => {
+          if (selectedPhoto || event.pointerType === 'touch') return;
+          glowPointerRef.current = { x: event.clientX, y: event.clientY };
+          requestGlowRef.current?.();
+        }}
+        onPointerLeave={() => {
+          glowPointerRef.current = null;
+          containerRef.current?.querySelectorAll('.tunnel-hero__photo-glow').forEach(clearBorderGlow);
+        }}>
+        <motion.div className="tunnel-hero__anchor" style={{ scale: reduce ? 1 : titleScale, opacity: reduce ? 1 : titleOpacity }}>
+          {children}
+        </motion.div>
+        <div className="tunnel-hero__photos" role="group" aria-label="零一玩家活动照片">
+          {TUNNEL_CARDS.map(card => <TunnelCard key={card.item.id} card={card} progress={progress} pointer={pointer} total={TUNNEL_CARDS.length} stage={stage} reduce={reduce} onOpen={openPhoto} />)}
+        </div>
+      </div>
     </div>
     {selectedPhoto && <ImageLightbox item={selectedPhoto} opener={openerRef.current} onClose={() => setSelectedPhoto(null)} />}
   </div>;

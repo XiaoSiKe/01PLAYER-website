@@ -3,7 +3,6 @@
 .nav-control > .specular-button__label { display: inline-flex; align-items: center; gap: 9px; }
 .nav-control::after { position: absolute; inset: 0; z-index: 0; border-radius: inherit; background: currentColor; opacity: 0; content: ''; pointer-events: none; transition: opacity 160ms ease; }
 .language-switcher__trigger[aria-expanded='true']::after { opacity: .055; }
-.language-switcher__globe { opacity: .76; }
 .language-switcher__chevron { margin-left: 2px; opacity: .65; transition: transform 180ms cubic-bezier(.23, 1, .32, 1); }
 .language-switcher__trigger[aria-expanded='true'] .language-switcher__chevron { transform: rotate(180deg); }
 .language-switcher__trigger[data-keyboard] .language-switcher__chevron { transition: none; }
@@ -20,7 +19,7 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   transform-origin: top right;
-  animation: language-menu-in 180ms cubic-bezier(.23, 1, .32, 1) both;
+  animation: language-menu-in 120ms cubic-bezier(.23, 1, .32, 1) both;
 }
 .language-menu__heading { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 12px; color: color-mix(in srgb, var(--site-ink) 64%, transparent); font-size: 11px; font-weight: 500; letter-spacing: .06em; }
 .language-menu__option { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 10px 12px; border: 0; border-radius: 14px; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; transition: background-color 140ms ease, box-shadow 140ms ease; }
@@ -84,7 +83,6 @@ html[lang='en'] .project-feature-grid p { max-width: 65ch; text-wrap: pretty; }
   .staggered-menu-header .sm-header-actions { gap: 12px; }
   :is(.language-switcher, .sm-header-actions) .nav-control { min-height: 44px; padding-inline: 12px; font-size: 12px; }
   .nav-control > .specular-button__label { gap: 6px; }
-  .language-switcher__globe { width: 14px; height: 14px; }
   html[lang='en'] .home-how-section .home-explore-link h3 { font-size: 14px; }
   html[lang='en'] .research-page__directions section { grid-template-columns: 48px minmax(0, 1fr); gap: 16px; }
   html[lang='en'] .home-explore-card-heading { width: 92px; }
@@ -95,7 +93,6 @@ html[lang='en'] .project-feature-grid p { max-width: 65ch; text-wrap: pretty; }
 @media (max-width: 359px) {
   .staggered-menu-header .sm-header-actions { gap: 7px; }
   .staggered-menu-header .sm-toggle { padding-inline: 2px; font-size: 1rem; }
-  .language-switcher__globe { display: none; }
   .language-switcher .language-switcher__trigger { padding-inline: 10px; }
 }
 

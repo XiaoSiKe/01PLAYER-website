@@ -31,6 +31,7 @@ const pages = {
   'time-machine': () => import('./time-machine/TimeMachinePage'),
   players: () => import('./community/players/PlayersPage'),
   plaza: () => import('./community/plaza/PlazaPage'),
+  earth: () => import('./earth-guide/EarthGuidePage'),
   research: () => import('./ResearchPage'),
   mentors: () => import('./MentorsPage'),
   leadership: () => import('./LeadershipPage'),
@@ -61,7 +62,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LanguageProvider>
       <ThemeProvider>
-        <StartupGate loadPage={loadPage} homepage={homepage} projectId={projectId} skipIntro={pageId === 'time-machine'} />
+        <StartupGate loadPage={loadPage} homepage={homepage} projectId={projectId} skipIntro={pageId === 'time-machine' || pageId === 'earth'} />
       </ThemeProvider>
     </LanguageProvider>
   </StrictMode>,

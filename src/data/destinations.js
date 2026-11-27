@@ -32,11 +32,6 @@ const defaultDestinations = [
     "href": "https://beian.mps.gov.cn/#/query/webSearch?code=35011102351280"
   },
   {
-    "id": "earth",
-    "title": "「零一玩家」地球生存攻略",
-    "href": "https://earth.01aiedu.com/"
-  },
-  {
     "id": "strategy",
     "title": "战略、架构与发展",
     "href": "https://scn96l2kzmbn.feishu.cn/wiki/Pw4FwagW6iPaVqkzyeNc7rRSnub"

@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "verify:dist": "node scripts/verify-dist.mjs",
     "verify:atlas": "node scripts/verify-branch-atlas.mjs",
-    "test:runtime": "node --test scripts/viewport-readiness.test.mjs scripts/pioneers-search.test.mjs scripts/image-visibility.test.mjs scripts/logo-loop-motion.test.mjs scripts/language.test.mjs scripts/operations-smoke.test.mjs scripts/operations-route.test.mjs",
+    "test:runtime": "node --test scripts/viewport-readiness.test.mjs scripts/pioneers-search.test.mjs scripts/image-visibility.test.mjs scripts/logo-loop-motion.test.mjs scripts/language.test.mjs scripts/operations-smoke.test.mjs scripts/operations-route.test.mjs scripts/earth-guide-sync.test.mjs",
     "release:package": "bash deploy/package-release.sh",
     "ops:check": "node scripts/ops.mjs check",
     "ops:status": "node scripts/ops.mjs status",
@@ -43,6 +43,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "rehype-slug": "^6.0.0",
     "three": "^0.180.0"
   },
   "devDependencies": {

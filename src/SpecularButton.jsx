@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTheme } from './ThemeControl';
 import './SpecularButton.css';
 
@@ -88,6 +88,7 @@ const SpecularButton = (buttonProps) => {
     target,
     rel,
     ariaLabel,
+    ref,
     className = '',
     type = 'button',
     ...elementProps
@@ -98,6 +99,7 @@ const SpecularButton = (buttonProps) => {
   const requestRenderRef = useRef(null);
   const entryPointerRef = useRef(null);
   const [rendererApi, setRendererApi] = useState(null);
+  const deferMenuShine = elementProps['aria-haspopup'] === 'menu';
   propsRef.current = {
     radius,
     lineColor,
@@ -121,17 +123,25 @@ const SpecularButton = (buttonProps) => {
     let hovered = false;
     let focused = btn.contains(document.activeElement);
     let releaseTimer;
+    let activationTimer;
     const canRender = () => active && nearby && !document.hidden && rendererPreference.matches;
     const interacting = () => !shineOnInteraction || hovered || focused;
-    const update = () => {
+    const canActivate = () => interacting() && !(deferMenuShine && btn.getAttribute('aria-expanded') === 'true');
+    const activate = () => {
       if (!canRender()) {
         setRendererApi(null);
         return;
       }
-      if (!interacting()) return;
+      if (!canActivate()) return;
       import('./specular-renderer.js').then(api => {
-        if (canRender() && interacting()) setRendererApi(api);
+        if (canRender() && canActivate()) setRendererApi(api);
       }).catch(() => { /* The static rim and the button already work. */ });
+    };
+    const update = () => {
+      window.clearTimeout(activationTimer);
+      // An immediate click should open the menu before creating a WebGL context for its rim.
+      if (deferMenuShine && canRender() && canActivate()) activationTimer = window.setTimeout(activate, 150);
+      else activate();
     };
     const renew = () => {
       window.clearTimeout(releaseTimer);
@@ -177,6 +187,7 @@ const SpecularButton = (buttonProps) => {
     return () => {
       active = false;
       window.clearTimeout(releaseTimer);
+      window.clearTimeout(activationTimer);
       entryPointerRef.current = null;
       btn.removeEventListener('pointerenter', enter);
       btn.removeEventListener('pointerleave', leave);
@@ -186,7 +197,7 @@ const SpecularButton = (buttonProps) => {
       document.removeEventListener('visibilitychange', update);
       rendererPreference.removeEventListener('change', update);
     };
-  }, [staticShine, shineOnInteraction]);
+  }, [staticShine, shineOnInteraction, deferMenuShine]);
 
   useEffect(() => {
     const btn = btnRef.current;
@@ -421,13 +432,14 @@ const SpecularButton = (buttonProps) => {
   // An unavailable link must not navigate through pointer, keyboard or a context menu.
   const link = Boolean(href) && !disabled;
   const Element = as || (link ? 'a' : 'button');
+  useImperativeHandle(ref, () => btnRef.current, [Element]);
 
   return (
     <Element
       {...elementProps}
       ref={btnRef}
       {...(link ? { href, target, rel } : Element === 'button' ? { type: href ? 'button' : type, disabled } : {})}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? elementProps['aria-label']}
       data-static-shine={staticShine || !rendererApi || undefined}
       onClick={onClick}
       className={`specular-button specular-button--${size}${className ? ` ${className}` : ''}`}

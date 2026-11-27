@@ -41,12 +41,12 @@ html[data-theme='light'] .account-title-logo {
 .account-title-outline,
 .account-logo-outline {
   fill: none;
-  stroke: var(--community-muted);
+  stroke: color-mix(in srgb, var(--site-ink) 80%, var(--site-background));
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .account-title-outline {
-  stroke-width: 1.6;
+  stroke-width: 2.4;
 }
 .account-logo-outline {
   stroke-width: .9px;

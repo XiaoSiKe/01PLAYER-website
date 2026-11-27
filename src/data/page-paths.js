@@ -7,6 +7,7 @@ export const homeSectionPaths = {
 export const pagePaths = {
   players: '/players',
   plaza: '/plaza',
+  earth: '/earth',
   mentors: '/mentors',
   leadership: '/leadership',
   pioneers: '/pioneers',

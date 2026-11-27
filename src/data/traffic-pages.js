@@ -2,6 +2,7 @@ export const trafficPages = {
   home: '官网首页',
   players: '玩家计划',
   plaza: '共创广场',
+  earth: '地球生存攻略',
   'time-machine': '零一时光机',
   leadership: '领军团队',
   mentors: '启航导师',
