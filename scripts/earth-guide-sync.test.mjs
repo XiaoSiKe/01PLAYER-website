@@ -33,7 +33,8 @@ test('discovers Markdown from one GitHub commit and keeps the last complete vers
           tree: Object.keys(versions[sha]).map(file => ({ type: 'blob', path: 'articles/' + file, mode: '100644' })),
         });
       }
-      const [, sha, file] = path.match(/\/([a-f0-9]{40})\/articles\/(.+)$/);
+      const sha = new URL(url).searchParams.get('ref');
+      const file = path.split('/contents/articles/')[1];
       if (file === 'chapters.json') return Response.json(manifest);
       const entry = versions[sha]?.[file];
       return entry ? new Response(entry) : new Response(null, { status: 404 });

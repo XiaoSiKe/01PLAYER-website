@@ -97,9 +97,11 @@ export function createEarthGuideHandler({ sourceDirectory, fetchResource = fetch
     if (typeof object?.sha !== 'string' || !/^[a-f0-9]{40}$/.test(object.sha)) throw new Error('Invalid guide revision');
     if (cached?.revision === object.sha) return cached;
 
-    const base = `https://raw.githubusercontent.com/${repository}/${object.sha}/articles/`;
+    const base = api + '/contents/articles/';
     const read = async file => {
-      const response = await fetchResource(base + file, { signal, redirect: 'error' });
+      const response = await fetchResource(base + file + '?ref=' + object.sha, {
+        signal, redirect: 'error', headers: { ...headers, Accept: 'application/vnd.github.raw+json' },
+      });
       return readLimited(response, articleBytes);
     };
     const list = async () => {
