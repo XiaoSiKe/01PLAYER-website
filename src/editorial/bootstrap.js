@@ -1,4 +1,5 @@
-async function loadContent(preview) {
+async function start() {
+  const preview = new URLSearchParams(location.search).get('editPreview');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), preview ? 12000 : 1100);
   const target = preview ? '/cms-api/site-preview?key=' + encodeURIComponent(preview) : '/site-content/manifest.json';
@@ -12,18 +13,9 @@ async function loadContent(preview) {
   } catch (error) {
     if (preview) {
       document.getElementById('root').textContent = error.name==='AbortError' ? '预览连接超时，请刷新重试。' : error.message;
-      return false;
+      return;
     }
   } finally { clearTimeout(timeout); }
-  return true;
-}
-
-async function start() {
-  const preview = new URLSearchParams(location.search).get('editPreview');
-  if (preview && !(await loadContent(preview))) return;
-  // Download the application shell while the live snapshot is in flight.
-  // Mounting waits for content so published images and route data stay in sync.
-  const [, site] = await Promise.all([preview ? null : loadContent(), import('../main.jsx')]);
-  site.mountSite();
+  await import('../main.jsx');
 }
 start();

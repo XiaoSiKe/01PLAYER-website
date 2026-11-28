@@ -11,6 +11,14 @@
         document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
         document.querySelector('meta[name="theme-color"]').content = theme === 'light' ? '#f4f4f2' : '#090909';
+        if (!new URLSearchParams(location.search).get('editPreview')) {
+          const preload = document.createElement('link');
+          preload.rel = 'preload';
+          preload.as = 'fetch';
+          preload.crossOrigin = 'anonymous';
+          preload.href = '/site-content/manifest.json';
+          document.head.appendChild(preload);
+        }
       })();
     </script>
     <link rel="canonical" href="https://club.01aiedu.com/" />

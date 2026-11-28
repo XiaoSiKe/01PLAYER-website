@@ -1,7 +1,7 @@
-import { getActivityPhotos } from '../data/activity-photos.js';
+import { activityPhotos } from '../data/activity-photos.js';
 import { competitionItems } from '../data/competition.js';
 // Reuse verified local assets and captions; do not invent event dates.
-const siteActivityPhotos = getActivityPhotos().map(item => ({ ...item, category: 'activity', image: item.src, fullImage: item.src, aspectRatio: item.width / item.height }));
+const siteActivityPhotos = activityPhotos.map(item => ({ ...item, category: 'activity', image: item.src, fullImage: item.src, aspectRatio: item.width / item.height }));
 
 export const historicalTimeMachineAlbums = [
   { eventId: 'history:kaiwu', category: 'competition', name: '开物·福州高校黑客松',
