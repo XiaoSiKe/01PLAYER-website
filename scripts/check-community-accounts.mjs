@@ -169,10 +169,12 @@ try {
   await counters.getByRole('button',{name:'收藏 0',exact:true}).waitFor();
   await counters.getByRole('button',{name:'收藏 0',exact:true}).click();
   await counters.getByRole('button',{name:'已收藏 1',exact:true}).waitFor();
+  await counters.locator('.community-reactions').getByRole('button',{name:/^点赞 /}).click();
+  await counters.locator('.community-reactions').getByRole('button',{name:/^已点赞 /}).waitFor();
   await counters.close();
   assert.ok(await heading('玩家空间').locator('.account-title-logo').isVisible());
   const sidebar = page.getByRole('complementary', { name: '玩家信息' });
-  await sidebar.getByRole('heading', { name: '我的收藏', exact: true }).waitFor();
+  await sidebar.getByRole('button', { name: '我的收藏', exact: true }).waitFor();
   assert.equal(await sidebar.getByText(email, { exact: true }).count(), 0);
   assert.equal(await sidebar.getByText('零一玩家', { exact: true }).count(), 1);
   assert.equal(await page.getByRole('heading', { name: '我的招募', exact: true }).count(), 0);
@@ -189,12 +191,17 @@ try {
   }));
   console.log('通过：注册同页进入玩家空间，收藏意图完成，导航加号居中');
   assert.ok(await nav.getByRole('heading', { name: '玩家空间', exact: true }).isVisible());
+  for (const name of ['我的收藏','我的喜欢']) {
+    await sidebar.getByRole('button', {name,exact:true}).click();
+    await page.getByRole('heading',{name,exact:true,level:2}).waitFor();
+    await page.getByRole('heading',{name:collected.name,exact:true,level:4}).waitFor();
+    await button('返回').click();
+  }
   await sidebar.getByRole('button', { name: '玩家资料', exact: true }).click();
   await page.getByRole('heading', { name: '玩家资料', exact: true, level: 2 }).waitFor();
-  assert.ok(await button('退出登录').isVisible());
-  assert.ok(await button('退出登录').locator('svg[aria-hidden="true"]').isVisible());
+  assert.equal(await button('退出登录').count(),0);
   assert.equal(await button('参与记录').count(), 0);
-  await page.locator('[name=currentPassword]').waitFor();
+  assert.equal(await page.locator('[name=currentPassword]').count(),0);
   assert.equal(await sidebar.count(), 0);
   assert.equal(await button('玩家资料').count(), 0);
   assert.equal(new URL(page.url()).searchParams.get('tab'), 'profile');
@@ -238,7 +245,7 @@ try {
   await page.reload();
   await heading('玩家空间').waitFor();
   await page.getByText('报名成功', { exact: true }).waitFor();
-  await page.getByText('报名编号：' + registration.id, { exact: true }).waitFor();
+  assert.equal(await page.getByText('报名编号：' + registration.id, { exact: true }).isVisible(),false);
   const archive = await fetch(base + '/api/community/staff/events/' + eventId + '/archive', {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-01-Staff-Secret': testBridge }, body: '{}',
   });
@@ -250,14 +257,14 @@ try {
   assert.equal(await archivedReceipt.count(),1);
   assert.equal(new URL(await archivedReceipt.getAttribute('href'),base).searchParams.get('receipt'),registration.id);
   await page.evaluate(() => { window.accountTestDocument = 'same-page'; });
-  await button('玩家资料').click();
+  await button('账号设置').click();
   await page.locator('[name=currentPassword]').waitFor();
-  assert.equal(new URL(page.url()).searchParams.get('tab'), 'profile');
+  assert.equal(new URL(page.url()).searchParams.get('tab'), 'settings');
   assert.equal(await page.evaluate(() => window.accountTestDocument), 'same-page');
   assert.equal(await page.getByText(/新密码至少 10 位|所有设备都需要使用新密码/).count(), 0);
   await button('返回').click();
   await page.getByRole('heading', { name: '我的报名', exact: true }).waitFor();
-  await button('玩家资料').click();
+  await button('账号设置').click();
   await page.locator('[name=currentPassword]').waitFor();
   const other = await browser.newContext({ baseURL: base });
   const second = await other.request.post('/api/community/login', {
@@ -290,7 +297,7 @@ try {
   assert.equal(await page.locator('.site-account-link').isVisible(), false);
   await via('/players?view=account&from=' + encodeURIComponent('/players?filter=open'));
   await heading('玩家空间').waitFor();
-  await button('玩家资料').click();
+  await button('账号设置').click();
   await button('退出登录').click();
   await heading('玩家计划').waitFor();
   assert.equal(new URL(page.url()).searchParams.get('filter'), 'open');
@@ -306,7 +313,7 @@ try {
   await button('欢迎加入地球Online：零一玩家').click();
   await heading('玩家空间').waitFor();
   assert.equal(new URL(page.url()).searchParams.get('from'), '/players');
-  await button('玩家资料').click();
+  await button('账号设置').click();
   await button('退出登录').click();
   await heading('玩家计划').waitFor();
   await via('/plaza?view=publish&from=' + encodeURIComponent('/plaza?q=AI'));
@@ -360,10 +367,10 @@ try {
     assert.equal((await post(ctx.request, 'login', { email: address, password: secret })).status(), 200);
   await loginAs(email, replacement);
   await via('/plaza?view=password');
-  await page.getByRole('heading', { name: '玩家资料', exact: true, level: 2 }).waitFor();
+  await page.getByRole('heading', { name: '账号设置', exact: true, level: 2 }).waitFor();
   await page.locator('[name=currentPassword]').waitFor();
   assert.equal(new URL(page.url()).searchParams.get('view'), 'account');
-  assert.equal(new URL(page.url()).searchParams.get('tab'), 'profile');
+  assert.equal(new URL(page.url()).searchParams.get('tab'), 'settings');
   await page.locator('[name=currentPassword]').fill(replacement);
   await page.locator('[name=newPassword]').fill(replacement + '1');
   await page.locator('[name=confirmPassword]').fill(replacement + '1');
@@ -430,7 +437,8 @@ try {
   await page.locator('[name=summary]').fill('从详情页修改后的简介');
   await button('提交审核').click();
   await ownCard.waitFor();
-  assert.match(await ownCard.innerText(), /从详情页修改后的简介/);
+  assert.doesNotMatch(await ownCard.innerText(), /从详情页修改后的简介/);
+  assert.equal((await ctx.request.get('/api/community/projects/'+ownProject.id).then(r=>r.json())).summary,'从详情页修改后的简介');
   assert.equal((await post(other.request, 'login', { email: 'admin@example.test', password: 'Admin-2026!' })).status(), 200);
   assert.equal((await post(other.request, 'review/' + ownProject.id, { status: 'approved' })).status(), 200);
   const viewer = await other.newPage();

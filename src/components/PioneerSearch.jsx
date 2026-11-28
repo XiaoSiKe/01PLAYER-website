@@ -1,5 +1,6 @@
 import { useLanguage } from '../Language';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import useMediaQuery from './useMediaQuery';
 import { searchRosterMembers } from '../data/pioneers';
 
 const PIONEER_LABELS = {
@@ -13,6 +14,8 @@ const PIONEER_LABELS = {
 export default function PioneerSearch({ members, onSelect, labels = PIONEER_LABELS }) {
   const { t } = useLanguage();
   const id = useId();
+  const mobile = useMediaQuery('(max-width: 760px)');
+  const form = useRef(null);
   const inputRef = useRef(null);
   const [query, setQuery] = useState('');
   const results = searchRosterMembers(members, query, t);
@@ -22,9 +25,17 @@ export default function PioneerSearch({ members, onSelect, labels = PIONEER_LABE
     onSelect(member.id);
   };
   const clear = () => { setQuery(''); inputRef.current?.focus(); };
+  useEffect(() => {
+    if (!mobile || !query) return;
+    const outside = event => { if (!form.current?.contains(event.target)) setQuery(''); };
+    document.addEventListener('pointerdown', outside);
+    return () => document.removeEventListener('pointerdown', outside);
+  }, [mobile, query]);
 
-  return <form className="pioneers-search" role="search" aria-label={t(labels.search)}
+  return <form ref={form} className="pioneers-search" role="search" aria-label={t(labels.search)}
+    onBlur={event => { if (mobile && !event.currentTarget.contains(event.relatedTarget)) setQuery(''); }}
     onKeyDown={event => {
+      if (event.nativeEvent.isComposing) { event.stopPropagation(); return; }
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); clear(); }
     }}
     onSubmit={event => { event.preventDefault(); if (results[0]) select(results[0]); }}>
@@ -34,6 +45,7 @@ export default function PioneerSearch({ members, onSelect, labels = PIONEER_LABE
         aria-controls={searching ? id : undefined} autoComplete="off" spellCheck={false}
         onChange={event => setQuery(event.target.value)}
         onKeyDown={event => {
+          if (event.nativeEvent.isComposing) { if (event.key === 'Enter') event.preventDefault(); return; }
           if (event.key === 'ArrowDown' && results.length) {
             event.preventDefault();
             event.currentTarget.form.querySelector('.pioneers-search__result')?.focus();

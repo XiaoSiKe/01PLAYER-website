@@ -200,10 +200,10 @@
   .flex-carousel__subtitle { max-width: 290px; }
 }
 
-@media (max-width: 760px) { .home-business-carousel .flex-carousel__title { font-size: 17px; line-height: 1.3; } }
+@media (max-width: 760px) { .home-business-carousel .flex-carousel__title { font-size: 16px; line-height: 1.3; } }
 
 @media(max-width:760px) {
-  .home-business-carousel .flex-carousel__header { gap: 3px; }
+  .home-business-carousel .flex-carousel__header { gap: 3px; top: 8px; }
   .home-business-carousel .flex-carousel__subtitle { font-size: 13px; line-height: 1.4; }
   .home-business-carousel .flex-carousel__credit { margin: 0; font-size: 11px; line-height: 1.3; }
   .home-business-carousel .flex-carousel__footer { gap: 7px; margin-top: 12px; padding-bottom: 6px; }

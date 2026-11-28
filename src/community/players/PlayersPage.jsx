@@ -1,4 +1,5 @@
 import FilterSearch from '../FilterSearch';
+import useMediaQuery from '../../components/useMediaQuery';
 import { useEffect, useState } from 'react';
 import { FiArrowRight, FiArrowUpRight, FiCalendar, FiMapPin } from 'react-icons/fi';
 import CommunityPage from '../CommunityPage';
@@ -59,17 +60,9 @@ function EventLabels({ event, now, showHomePin = false }) {
 }
 
 function FeaturedEvent({ event, filters, now }) {
-  return <Frame as="a" className="calendar-lead" radius={12} flush href={linkWithSource(link('players', { event: event.id, ...filters }),link('players',filters))}>
-    <div className="calendar-card-text">
-      <EventLabels event={event} now={now} showHomePin />
-      <div className="calendar-lead-details">
-        <h2 className="calendar-event-title">{event.name}</h2>
-        {event.subtitle && <p>{event.subtitle}</p>}
-        <EventFacts event={event} />
-      </div>
-    </div>
-    <EventPoster event={event} eager />
-  </Frame>;
+  return <ListingCard source={link('players',filters)} className="calendar-lead" href={link('players', {event:event.id,...filters})} heading="h2"
+    title={event.name} cover={<EventPoster event={event} eager />} labels={<EventLabels event={event} now={now} showHomePin />}
+    summary={event.subtitle || event.description} footer={<EventFacts event={event} />} />;
 }
 
 function EventCard({ event, filters, now }) {
@@ -79,6 +72,7 @@ function EventCard({ event, filters, now }) {
 }
 
 function PlayersListing({ data }) {
+  const mobile = useMediaQuery('(max-width: 760px)');
   const initial = new URLSearchParams(window.location.search);
   const [status, setStatus] = useState(selectedOption(statusOptions, initial.get('filter')));
   const [category, setCategory] = useState(selectedOption(categoryOptions, initial.get('category')));
@@ -90,19 +84,22 @@ function PlayersListing({ data }) {
   const events = sortCalendarEvents(data.events, now);
   const featured = featuredInSlots(events, 2);
   const featuredIds = new Set(featured.map(event => event.id));
-  const matches = events.filter(event => (filtering || !featuredIds.has(event.id))
+  const findEvents = (query, includeFeatured = false) => events.filter(event => (includeFeatured || filtering || !featuredIds.has(event.id))
     && (status === 'all' || eventStatus(event, now) === status)
     && (category === 'all' || eventCategory(event) === category)
     && matchesSearch([event.name, event.subtitle, event.type, eventCategories[eventCategory(event)],
-      event.location, eventLocationLabel(event.location), event.description], search));
+      event.location, eventLocationLabel(event.location), event.description], query));
+  const matches = findEvents(search);
+  const resultHref = event => linkWithSource(link('players', { event: event.id, ...filters }), link('players', filters));
   return <>
     <section className="calendar-highlights" aria-label="优先展示与报名">
       {featured.length > 0 && <div className="calendar-featured">
         {featured.map(event => <FeaturedEvent key={event.id} event={event} filters={filters} now={now} />)}
       </div>}
-      <SignupGuide />
+      {!mobile && <SignupGuide />}
     </section>
     <section id="calendar-heading" aria-labelledby="calendar-title" className="calendar-program">
+      {mobile && <Button shineOnInteraction className="calendar-tickets-link" href={linkWithSource(link('players',{view:'tickets'}),link('players',filters))}>我的报名</Button>}
       <header className="calendar-tools">
         <h2 id="calendar-title" className="calendar-head">{featured.length ? '更多活动' : '活动日程'}</h2>
         <div className="calendar-filter-row"><div className="calendar-categories" role="group" aria-label="活动分类">
@@ -111,8 +108,22 @@ function PlayersListing({ data }) {
           ))}
         </div>
         <div className="calendar-controls">
-          <ChoiceMenu compact shineOnInteraction label="活动状态" value={status} onChange={setStatus} options={statusOptions} />
-          <FilterSearch specular label="搜索玩家计划" value={search} onChange={setSearch} />
+          <ChoiceMenu compact shineOnInteraction label="活动状态" value={status} onChange={setStatus} options={mobile ? statusOptions.map(option => option.id === 'all' ? {...option,label:'全部'} : option) : statusOptions} />
+          <FilterSearch specular label="搜索玩家计划" value={search} onChange={setSearch}
+            onSearch={mobile ? query => {
+              const first = findEvents(query, true)[0];
+              if (!query.trim() || !first) return false;
+              window.location.assign(resultHref(first));
+              return true;
+            } : undefined}
+            renderResults={mobile ? (close, query) => { const results = findEvents(query, true); return query.trim() ? <div className="community-search-results">
+              <p className="community-search-summary" role="status">共 {results.length} 场活动</p>
+              {results.length ? results.map(event => <a key={event.id} className="community-search-result" href={resultHref(event)} aria-label={event.name} onClick={close}>
+                <EventPoster event={event} />
+                <div className="community-search-copy"><EventLabels event={event} now={now} /><strong>{event.name}</strong><EventFacts event={event} /></div>
+                <FiArrowRight aria-hidden="true" />
+              </a>) : <Empty>没有找到符合条件的活动。</Empty>}
+            </div> : null; } : undefined} />
         </div></div>
       </header>
       <span className="discovery-sr-only" role="status" aria-atomic="true">共 {matches.length} 场活动</span>
@@ -152,6 +163,7 @@ function RecruitmentDetail({ event, team, back }) {
 }
 
 function EventDetail({ data, event, query, user, load }) {
+  const mobile = useMediaQuery('(max-width: 760px)');
   const filters = listFilters('players', query);
   const back = returnDestination(query.get('from'),link('players', filters),pageLocation());
   if (!event) return <div className="event-detail-meta"><p>没有找到这场活动。</p><DetailBack href={back} inline shineOnInteraction>返回</DetailBack></div>;
@@ -165,6 +177,8 @@ function EventDetail({ data, event, query, user, load }) {
   const hasWorks = ended || works.length > 0;
   const hasRules = event.rules?.length > 0;
   const participationLabel = eventParticipationLabels[eventCategory(event)];
+  const submissionAction = acceptsProjectSubmissions(event) ? <Button size="sm" className="discovery-action"
+    href={accountLink('publish', pageLocation(), 'players', {event:event.id})}>提交作品 <FiArrowRight aria-hidden="true" /></Button> : null;
   const receipt = localReceipts().find(row => row.eventId === event.id) || data.mine?.registrations.find(row => row.eventId === event.id);
   const registrationLink = receipt ? linkWithSource(link('players', {view:'receipt',event:event.id,receipt:receipt.id})) : usesExternalRegistration(event) ? event.registrationUrl : linkWithSource(link('players', { view: 'register', event: event.id }));
   const date = eventDate(event);
@@ -193,15 +207,15 @@ function EventDetail({ data, event, query, user, load }) {
             {date && <div><dt>活动时间</dt><dd>{date}</dd></div>}
             {deadline && <div><dt>报名截止时间</dt><dd>{deadline}</dd></div>}
             {event.location && <div><dt>活动地点</dt><dd>{event.location}</dd></div>}
-            <div className="event-entry-participation"><dt>参与方式</dt><dd>
+            <div className="event-entry-participation"><dt>参与方式</dt><dd className="event-participation-actions">
               {acceptsSignup(event) ? <Button size="sm" href={registrationLink}>{receipt ? '查看报名' : participationLabel} <FiArrowRight aria-hidden="true" /></Button>
                 : <span className="event-registration-closed">报名已截止</span>}
+              {mobile && submissionAction}
             </dd></div>
           </dl>
-          {acceptsProjectSubmissions(event) && <Button size="sm" className="discovery-action"
-            href={accountLink('publish', pageLocation(), 'players', { event: event.id })}>提交作品 <FiArrowRight aria-hidden="true" /></Button>}
+          {!mobile && submissionAction}
           {ended && <Button size="sm" className="discovery-action" href="#event-works">查看本场作品 <FiArrowRight aria-hidden="true" /></Button>}
-          {ended && event.hasAlbum && <Button size="sm" className="discovery-action" href={`./?page=time-machine&event=${encodeURIComponent(event.id)}`}>查看本场影像 <FiArrowUpRight aria-hidden="true" /></Button>}
+          {ended && event.hasAlbum && <Button size="sm" className="discovery-action" href={linkWithSource(`/?page=time-machine&event=${encodeURIComponent(event.id)}`)}>查看本场影像 <FiArrowUpRight aria-hidden="true" /></Button>}
           {user?.role === 'admin' && <EventStatusForm event={event} user={user} onSaved={load} />}
         </aside>
         <div className="event-intro">

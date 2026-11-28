@@ -220,7 +220,7 @@ a.branch-atlas__leader-profile:is(:hover, :focus-visible) strong { text-decorati
   .branch-atlas__toolbar li button, .branch-atlas__back { min-height: 36px; }
   .branch-atlas__school-row { min-height: 60px; padding-block: 6px; gap: 8px; }
   .branch-atlas__school-row > img { width: 36px; height: 36px; }
-  .branch-atlas__school-list { max-height: 180px; overflow-y: auto; overscroll-behavior: contain; }
+  .branch-atlas__school-list { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; }
   .branch-atlas__search-results { max-height: 204px; overscroll-behavior: contain; }
   .branch-atlas__panel-actions { margin-top: 12px; }
   .homepage #cooperation .home-cooperation-intro { margin-bottom: 14px; }
@@ -238,6 +238,10 @@ a.branch-atlas__leader-profile:is(:hover, :focus-visible) strong { text-decorati
 }
 
 .branch-atlas__toolbar { flex-wrap: nowrap; }
+.community-filter-search-dialog .branch-atlas__search-results { max-height: none; overflow: visible; }
+.community-filter-search-results .branch-atlas__school-row { margin-top: 8px; padding: 10px; border: 1px solid var(--atlas-border); background: color-mix(in srgb,var(--atlas-ink) 4%,transparent); }
+.community-filter-search-results .branch-atlas__school-row:is(:hover,:focus-visible) { background: color-mix(in srgb,var(--atlas-ink) 8%,transparent); }
+.community-filter-search-results .branch-atlas__school-name strong { white-space: normal; overflow-wrap: anywhere; }
 .branch-atlas__toolbar nav { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .branch-atlas__toolbar nav::-webkit-scrollbar { display: none; }
 .branch-atlas__toolbar .community-search-toggle { width: 36px; min-width: 36px; min-height: 36px; margin-left: auto; padding: 0; }

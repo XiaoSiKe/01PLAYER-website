@@ -3,12 +3,13 @@ import { pageFromPath } from '../../data/page-paths.js';
 
 const accountViews = new Set(['account', 'mine', 'profile', 'password', 'publish', 'team', 'review', 'register', 'receipt', 'tickets', 'player']);
 const origin = 'https://site.invalid';
-const oldSpaceViews = new Map([['mine', 'records'], ['profile', 'profile'], ['password', 'profile']]);
+const oldSpaceViews = new Map([['mine', 'records'], ['profile', 'profile'], ['password', 'settings']]);
+const spaceTabs = new Set(['records', 'profile', 'settings', 'saved', 'liked']);
 
 export const isPlayerSpaceView = view => view === 'account' || oldSpaceViews.has(view);
 
 export function playerSpaceTab(view, tab) {
-  return oldSpaceViews.get(view) || (tab === 'profile' || tab === 'password' ? 'profile' : 'records');
+  return oldSpaceViews.get(view) || (tab === 'password' ? 'settings' : spaceTabs.has(tab) ? tab : 'records');
 }
 
 export function safeSitePath(value, fallback = '/') {

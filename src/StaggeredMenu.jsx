@@ -28,6 +28,7 @@ export const StaggeredMenu = ({
   textOnly = false,
   headerBrand,
   headerActions,
+  headerReturn,
   onMenuOpen,
   onMenuClose
 }) => {
@@ -523,12 +524,13 @@ export const StaggeredMenu = ({
         })()}
       </div>
       <div className="sm-header-glass" aria-hidden="true" />
-      <header className={`staggered-menu-header${textOnly ? ' staggered-menu-header--text-only' : ''}${headerBrand ? ' staggered-menu-header--branded' : ''}`} aria-label={t("零一玩家导航")}>
+      <header className={`staggered-menu-header${textOnly ? ' staggered-menu-header--text-only' : ''}${headerBrand ? ' staggered-menu-header--branded' : ''}${headerReturn ? ' staggered-menu-header--with-return' : ''}`} aria-label={t("零一玩家导航")}>
         <a className={headerBrand ? 'sm-branded-entry' : 'sm-logo'} href={logoHref} aria-label={t("返回零一玩家首页顶部")}>
           {headerBrand || <ClubLogo className="sm-logo-img" />}
         </a>
         <div className="sm-header-actions">
           {!textOnly && (headerBrand ? <div className="sm-brand-controls">{headerActions}</div> : headerActions)}
+          {headerReturn && <div className="sm-header-return">{headerReturn}</div>}
           <button
             ref={toggleBtnRef}
             className="sm-toggle"

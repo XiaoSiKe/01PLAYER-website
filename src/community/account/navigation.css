@@ -21,13 +21,12 @@
 @media (max-width: 520px) {
   .staggered-menu-header:has(.site-account-link) { padding-inline: 12px; }
 
-  .sm-header-actions .language-switcher .language-switcher__trigger {
+  .sm-header-actions .language-switcher--short .language-switcher__trigger {
     width: 44px;
     padding-inline: 0;
   }
 
-  .sm-header-actions .language-switcher:not(.language-switcher--short) .choice-menu__label,
-  .sm-header-actions .language-switcher .language-switcher__chevron { display: none; }
+  .sm-header-actions .language-switcher--short .language-switcher__chevron { display: none; }
 
 }
 

@@ -136,11 +136,7 @@ export function RegistrationList({ user, events = [] }) {
     return () => { active = false; window.removeEventListener('storage', sync); window.removeEventListener('01player-receipts', sync); };
   }, [user?.id, events]);
   const pending = events.filter(event => pendingRegistration(event.id));
-  const back = returnDestination(new URLSearchParams(location.search).get('from'),link('players'),pageLocation());
   return <div className="web-registration">
-    <header className="registration-list-heading"><h1>我的报名</h1>
-      <DetailBack href={back} inline shineOnInteraction>返回</DetailBack>
-    </header>
     {error && <p role="alert">{error}</p>}
     {!receipts.length && !pending.length && <Empty>暂无报名回执。</Empty>}
     <div className="registration-records">

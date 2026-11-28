@@ -213,7 +213,8 @@
 }
 .community-card-reaction svg { width: 16px; height: 16px; }
 .community-card-reaction:is(:hover, [aria-pressed="true"]) { color: var(--site-ink); background: color-mix(in srgb, var(--site-ink) 9%, transparent); }
-.community-card-reaction[aria-pressed="true"] svg { fill: currentColor; }
+.community-page [data-reaction="like"][aria-pressed="true"] svg { color: #ef4444; fill: currentColor; }
+.community-page [data-reaction="save"][aria-pressed="true"] svg { color: #eab308; fill: currentColor; }
 .community-card-reaction:disabled { opacity: .65; cursor: wait; }
 .community-page .community-card-reaction:focus-visible { outline-offset: -2px; }
 .community-badge { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--community-border); border-radius: 6px; padding: 3px 7px; font-size: 12px; line-height: 1.25; white-space: nowrap; }

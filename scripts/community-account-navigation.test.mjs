@@ -1,7 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { accountContinuation, accountLink, reactionIntent, safeSitePath, linkWithSource, returnDestination } from '../src/community/account/navigation.js';
+import { accountContinuation, accountLink, reactionIntent, safeSitePath, linkWithSource, returnDestination, playerSpaceTab } from '../src/community/account/navigation.js';
 import { pagePaths } from '../src/data/page-paths.js';
+
+test('player space keeps records, collections, likes, profile and security as independent routes', () => {
+  for (const tab of ['records','saved','liked','profile','settings']) assert.equal(playerSpaceTab('account',tab),tab);
+  assert.equal(playerSpaceTab('account','unknown'),'records');
+  assert.equal(playerSpaceTab('profile'),'profile');
+  assert.equal(playerSpaceTab('password'),'settings');
+  assert.equal(playerSpaceTab('account','password'),'settings');
+});
 
 test('account navigation allows only trusted site pages and strips nested authentication state', () => {
   const safe = '/players?category=competition&q=AI#calendar-heading';

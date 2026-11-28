@@ -3,10 +3,19 @@ import StaggeredMenu from '../StaggeredMenu';
 import { ThemeToggle } from '../Theme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { menu } from '../data/menu';
+import { useLanguage } from '../Language';
+import SpecularButton from '../SpecularButton';
+import { pageLocation, returnDestination } from '../community/account/navigation';
 
 const MENU_COLORS = ['var(--menu-layer-one)', 'var(--menu-layer-two)', 'var(--menu-layer-three)'];
 
-export default function SiteNavigation({ standalone = false, textOnly = false, accountUser, accountSection, accountSource, headerBrand, headerTools, mobileDetail = standalone }) {
+export function SiteReturn({ fallback = '/', className = '' }) {
+  const { t } = useLanguage();
+  const href = returnDestination(new URLSearchParams(location.search).get('from'), fallback, pageLocation());
+  return <SpecularButton size="sm" shineOnInteraction className={`nav-control site-nav-return ${className}`} href={href}>{t('返回')}</SpecularButton>;
+}
+
+export default function SiteNavigation({ standalone = false, textOnly = false, accountUser, accountSection, accountSource, headerBrand, headerTools, backHref, mobileDetail = standalone }) {
   const items = menu.map(item => standalone && item.link.startsWith('#') ? { ...item, link: `/${item.link}` } : item);
   return (
     <StaggeredMenu
@@ -14,6 +23,7 @@ export default function SiteNavigation({ standalone = false, textOnly = false, a
       position="right"
       textOnly={textOnly}
       headerBrand={headerBrand}
+      headerReturn={backHref ? <SiteReturn fallback={backHref} /> : undefined}
       items={items}
       displaySocials={false}
       displayItemNumbering={false}

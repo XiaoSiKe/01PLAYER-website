@@ -1,17 +1,15 @@
-import useMediaQuery from '../../components/useMediaQuery';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
 
 const desktopLines = [
   ['欢迎大家', '01PLAYER'],
   ['报名活动', '零一玩家'],
+  ['不当牢玩家', '让一切'],
+  ['不做 NPC', '从此刻发生'],
 ];
 
-const mobileLines = [['零一玩家','01PLAYER']];
-
 export default function SignupGuide() {
-  const mobile = useMediaQuery('(max-width: 760px)');
-  const lines = mobile ? mobileLines : desktopLines;
+  const lines = desktopLines;
   const title = useRef(null);
   const visible = useInView(title);
   const reduceMotion = useReducedMotion();
@@ -27,7 +25,7 @@ export default function SignupGuide() {
       frame = 0;
       const width = container.getBoundingClientRect().width;
       const height = featured?.getBoundingClientRect().height || 192;
-      const maximum = Math.min(96, (height - 4) / (mobile ? 1.05 : 2.1));
+      const maximum = Math.min(96, (height - (lines.length - 1) * 2) / (lines.length * 1.05));
       if (!width) return;
       const sizes = Object.fromEntries(samples.map(sample => {
         const size = Number.parseFloat(getComputedStyle(sample).fontSize);
@@ -48,7 +46,7 @@ export default function SignupGuide() {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, [mobile]);
+  }, []);
 
   useEffect(() => {
     if (!visible || reduceMotion) return;
@@ -57,7 +55,7 @@ export default function SignupGuide() {
   }, [visible, reduceMotion]);
 
   return <aside className="calendar-signup" aria-labelledby="calendar-signup-title">
-    <h2 ref={title} id="calendar-signup-title" aria-label={mobile ? '零一玩家 · 01PLAYER' : '欢迎大家报名活动'}>
+    <h2 ref={title} id="calendar-signup-title" aria-label="欢迎大家报名活动；不当牢玩家，不做 NPC，让一切，从此刻发生">
       {lines.map(([first, next]) => {
         const word = phrase ? next : first;
         const lineSize = Math.max(fontSizes[first] ?? 0, fontSizes[next] ?? 0);

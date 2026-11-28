@@ -20,20 +20,21 @@ async function checkListingAlignment() {
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.goto(origin+'/players');
     await page.locator('.calendar-lead').first().waitFor();
-    await page.waitForFunction(()=>Boolean(document.querySelector('.calendar-signup-word')?.style.fontSize));
-    const top=await page.locator('.calendar-lead').first().evaluate(el=>el.getBoundingClientRect().top);
+    if(width>760)await page.waitForFunction(()=>Boolean(document.querySelector('.calendar-signup-word')?.style.fontSize));
+    const top=await page.locator(width>760?'.calendar-lead':'.calendar-highlights').first().evaluate(el=>el.getBoundingClientRect().top);
+    if(width<=760)assert.equal(await page.locator('.calendar-signup').count(),0);
     assert.equal(await page.getByText('选择活动，在官网报名',{exact:false}).count(),0);
     const tickets=await page.locator('.site-tickets-link').boundingBox();
     if(width>760){const account=await page.locator('.site-account-link').boundingBox();assert.ok(tickets.x+tickets.width<=account.x);}
     else assert.equal(await page.locator('.site-account-link').isVisible(),false);
     const words=await page.locator('.calendar-signup-word').evaluateAll(els=>els.map(el=>({font:parseFloat(getComputedStyle(el).fontSize),width:el.getBoundingClientRect().width,available:el.closest('.calendar-signup').clientWidth})));
-    assert.ok(words.every(word=>word.font>60 && word.width<=word.available+1));
+    assert.ok(words.every(word=>word.font>28 && word.width<=word.available+1));
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.goto(origin+'/plaza');await page.locator('.plaza-popular').waitFor();
     assert.ok(Math.abs(top-await page.locator('.plaza-popular').evaluate(el=>el.getBoundingClientRect().top))<1);
     await page.close();
   }
-  console.log('通过 玩家计划与共创广场顶部对齐、放大动字、顶部报名入口及手机布局');
+  console.log('通过 玩家计划与广场顶部对齐、桌面动字保留、手机动字移除与顶部报名入口');
 }
 
 async function checkPublishedContent() {
@@ -92,7 +93,7 @@ async function checkSearch(route, width, touch) {
   await search.scrollIntoViewIfNeeded();
   const {y} = await search.boundingBox();
   await search.fill('不存在的演示结果32763');
-  await page.locator('.community-empty').waitFor();
+  await (width<=760 ? page.getByRole('dialog',{name:route==='players'?'搜索玩家计划':'搜索项目或作者'}).locator('.community-empty') : page.locator('.community-empty')).waitFor();
   assert.ok(Math.abs((await search.boundingBox()).y-y)<3, '输入时搜索框应保持原位');
   assert.equal(await page.getByRole('button',{name:'清除筛选'}).count(),0);
   if (route==='players') assert.equal(await page.getByRole('heading',{name:'筛选结果'}).count(),0);
@@ -110,7 +111,7 @@ async function checkSearch(route, width, touch) {
   await page.locator('.detail-share-return').getByRole('link',{name:'返回',exact:true}).click();
   await card.first().waitFor();
   if(width<=760) await page.getByRole('button',{name:route==='players'?'搜索玩家计划':'搜索项目或作者',exact:true}).click();
-  assert.equal(await search.inputValue(),query);
+  assert.equal(await search.inputValue(),width<=760?'':query);
   if(width<=760) await page.getByRole('button',{name:'关闭搜索',exact:true}).click();
   assert.equal(await card.count(),count);
   if (route==='plaza') {

@@ -175,16 +175,16 @@ export function HomePinBadge({ position }) {
   </span>;
 }
 
-function ProjectCard({ project, events, listContext, busy, onReaction, showHomePins }) {
+function ProjectCard({ project, events, listContext, isReactionPending, onReaction, showHomePins }) {
   const likes = project.likes || 0;
   const saves = project.saves || 0;
   const actions = onReaction && <div className="community-card-actions">
-    <button type="button" className="community-card-reaction" disabled={busy} aria-pressed={Boolean(project.liked)}
+    <button type="button" className="community-card-reaction" data-reaction="like" aria-busy={isReactionPending?.(project.id, 'like') || undefined} aria-disabled={isReactionPending?.(project.id, 'like') || undefined} aria-pressed={Boolean(project.liked)}
       aria-label={project.liked ? '取消点赞' : '点赞'} title={project.liked ? '取消点赞' : '点赞'}
       onClick={() => onReaction(project, 'like')}>
       <FiHeart aria-hidden="true" /><span aria-hidden="true">{likes}</span>
     </button>
-    <button type="button" className="community-card-reaction" disabled={busy} aria-pressed={Boolean(project.saved)}
+    <button type="button" className="community-card-reaction" data-reaction="save" aria-busy={isReactionPending?.(project.id, 'save') || undefined} aria-disabled={isReactionPending?.(project.id, 'save') || undefined} aria-pressed={Boolean(project.saved)}
       aria-label={project.saved ? '取消收藏' : '收藏'} title={project.saved ? '取消收藏' : '收藏'}
       onClick={() => onReaction(project, 'save')}>
       <FiBookmark aria-hidden="true" /><span aria-hidden="true">{saves}</span>
@@ -201,14 +201,16 @@ function ProjectCard({ project, events, listContext, busy, onReaction, showHomeP
     <div className="community-card-meta">
       {showHomePins && <HomePinBadge position={project.homePinPosition} />}
       {project.author && (actions ? <a className="community-card-author" href={link('plaza',{view:'player',user:publicAuthorId(project),from:link('plaza',listContext)})}>{project.author}</a> : <span className="community-card-author">{project.author}</span>)}
-      {project.recruitment && (actions ? <a className="community-badge" href={linkWithSource(link('plaza',{project:project.id,...listContext})+'#project-recruitment',link('plaza',listContext))}><FiUsers aria-hidden="true" />招募中</a> : <span className="community-badge"><FiUsers aria-hidden="true" />招募中</span>)}
-      {project.example && (actions ? <a className="community-badge" href={link('plaza',{q:'示例'})}>示例</a> : <span className="community-badge">示例</span>)}
+      <span className="community-card-tags">
+        {project.recruitment && (actions ? <a className="community-badge" href={linkWithSource(link('plaza',{project:project.id,...listContext})+'#project-recruitment',link('plaza',listContext))}><FiUsers aria-hidden="true" />招募中</a> : <span className="community-badge"><FiUsers aria-hidden="true" />招募中</span>)}
+        {project.example && (actions ? <a className="community-badge" href={link('plaza',{q:'示例'})}>示例</a> : <span className="community-badge">示例</span>)}
+      </span>
     </div>
   </ListingCard>;
 }
-export function ProjectGrid({ projects, events, listContext, busy, onReaction, showHomePins = false, empty = "这里还没有公开作品。" }) {
+export function ProjectGrid({ projects, events, listContext, isReactionPending, onReaction, showHomePins = false, empty = "这里还没有公开作品。" }) {
   return projects.length ? <div className="community-grid">
     {projects.map(project => <ProjectCard key={project.id} project={project} events={events}
-      listContext={listContext} busy={busy} onReaction={onReaction} showHomePins={showHomePins} />)}
+      listContext={listContext} isReactionPending={isReactionPending} onReaction={onReaction} showHomePins={showHomePins} />)}
   </div> : <Empty>{empty}</Empty>;
 }

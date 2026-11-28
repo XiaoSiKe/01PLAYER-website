@@ -39,6 +39,7 @@ import { contactQr, wechatChannel } from './data/community';
 import { homeSectionFromPath, homeSectionPaths, pagePaths } from './data/page-paths';
 import { COMMUNITY_SLOGAN, COMMUNITY_SLOGAN_EN, CORE_ENTRIES } from './data/positioning';
 import { memberPageLink } from './data/people-navigation';
+import { linkWithSource } from './community/account/navigation';
 import { pioneers } from './data/pioneers';
 import { leadership } from './data/leadership';
 import joinQr from './assets/join-qq-qr.webp';
@@ -337,7 +338,7 @@ export default function App() {
               </p>
 
               <div className="hero-meta-row">
-                <a className="hero-license-link" href="#about">{t("成立于 · 2026.09.01")}</a>
+                <SpecularButton className="hero-button hero-founded-button" href="#about">{t("成立于 · 2026.09.01")}</SpecularButton>
               </div>
 
               <div className="hero-proof">
@@ -386,7 +387,7 @@ export default function App() {
                     </li>
 
                     <li className="home-about-block">
-                      <p className="home-about-lead"><strong><MobileLineBreak after={/2026\.9\.1/}>{t("「零一玩家」成立于 2026.9.1，我是社长，")}</MobileLineBreak><span className="home-about-signature"><a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看社长零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>{locale === 'en' ? '.' : '！'}</span></strong></p>
+                      <p className="home-about-lead"><strong><MobileLineBreak after={/2026\.9\.1/}>{t("「零一玩家」成立于 2026.9.1，我是社长，")}</MobileLineBreak><span className="home-about-signature"><a className="home-about-president" href={PRESIDENT ? linkWithSource(memberPageLink(PRESIDENT.id)) : undefined} aria-label={t("查看社长零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>{locale === 'en' ? '.' : '！'}</span></strong></p>
                       <blockquote className="home-about-quote">
                         <p><strong>{t("不当牢玩家！不做NPC！")}<wbr />{t(COMMUNITY_SLOGAN)}</strong></p>
                       </blockquote>
@@ -569,7 +570,7 @@ export default function App() {
         <ShutterWordmark />
         <div className="home-footer-copyright">
           <span>{t("版权所有 © 2026 零一玩家")}</span>
-          <span className="home-footer-credit">{t("官网设计与制作：")}<a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看官网设计与制作者零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>
+          <span className="home-footer-credit">{t("官网设计与制作：")}<a className="home-about-president" href={PRESIDENT ? linkWithSource(memberPageLink(PRESIDENT.id)) : undefined} aria-label={t("查看官网设计与制作者零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>
           </span>
           <a href={siteDestination('icp')} target="_blank" rel="noopener noreferrer">{t("ICP备案号：闽ICP备2026024313号-3")}</a>
           <a href={siteDestination('police')} target="_blank" rel="noopener noreferrer">{t("闽公网安备35011102351280号")}</a>

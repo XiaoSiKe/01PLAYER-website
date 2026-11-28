@@ -60,8 +60,6 @@ html[data-theme='light'] .homepage-background > .gridscan canvas { filter: grays
 html[data-theme='light'] .hero-stage { background: #ffffff18; }
 html[data-theme='light'] .hero-vignette { background: radial-gradient(ellipse at center, #ffffff35, transparent 70%); }
 html[data-theme='light'] .hero-content .echo-text { text-shadow: none; }
-html[data-theme='light'] .hero-license-link { color: var(--site-muted); background: #ffffff80; border-color: var(--site-border); }
-html[data-theme='light'] .hero-license-link:hover { color: var(--site-ink); background: #fff; }
 html[data-theme='light'] .hero-proof-meta { color: var(--site-muted); }
 html[data-theme='light'] .hero-proof-meta strong,
 html[data-theme='light'] .home-sections { color: var(--site-ink); }
@@ -77,8 +75,8 @@ html[data-theme='light'] .sm-panel-item::after { text-shadow: 0 2px 12px #ffffff
 html[data-theme='light'] .sm-socials-title,
 html[data-theme='light'] .sm-socials-link { color: var(--site-muted); text-shadow: 0 2px 14px #ffffffdb; }
 
-html[data-theme='light'] .border-glow { --border-glow-rgb: 32 32 36; --border-glow-alpha-scale: .6; border-color: var(--site-border); }
-html[data-theme='light'] .border-glow::before { z-index: 5; background: conic-gradient(from var(--cursor-angle) at center,#202024 calc(var(--border-glow-cone) * 1%),transparent calc((var(--border-glow-cone) + 15) * 1%),transparent calc((100 - var(--border-glow-cone) - 15) * 1%),#202024 calc((100 - var(--border-glow-cone)) * 1%)); }
+html[data-theme='light'] .border-glow { --border-glow-rgb: 0 0 0; --border-glow-alpha-scale: 1; border-color: var(--site-border); }
+html[data-theme='light'] .border-glow::before { z-index: 5; background: conic-gradient(from var(--cursor-angle) at center,#000 calc(var(--border-glow-cone) * 1%),transparent calc((var(--border-glow-cone) + 15) * 1%),transparent calc((100 - var(--border-glow-cone) - 15) * 1%),#000 calc((100 - var(--border-glow-cone)) * 1%)); }
 html[data-theme='light'] .border-glow > .border-glow-edge { mix-blend-mode: normal; }
 /* Brand artwork stays black in either theme, with the same white edge light. */
 html[data-theme='light'] .flex-carousel__fallback-image .border-glow {
@@ -207,7 +205,7 @@ html[data-theme='light'] .demo-tasks label,
 html[data-theme='light'] .demo-output { border-color: var(--site-border); }
 html[data-theme='light'] .demo-tasks input { accent-color: #45454f; }
 
-html[data-theme='light'] :is(.hero-license-link,.hero-button,.project-card,.round-control,.project-rail,.sm-toggle,.sm-panel-item,.logo-loop-item):focus-visible,
+html[data-theme='light'] :is(.hero-founded-button,.hero-button,.project-card,.round-control,.project-rail,.sm-toggle,.sm-panel-item,.logo-loop-item):focus-visible,
 html[data-theme='light'] .community-section :is(a,button):focus-visible,
 html[data-theme='light'] .project-page :is(a,button,input,select,textarea):focus-visible { outline-color: var(--site-ink); }
 

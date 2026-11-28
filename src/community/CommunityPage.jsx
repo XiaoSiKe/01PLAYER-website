@@ -4,6 +4,7 @@ import { FiArrowUpRight, FiCheck } from 'react-icons/fi';
 import PublicPlayer from './account/PublicPlayer';
 import SiteBackground from '../components/SiteBackground';
 import SiteNavigation from '../components/SiteNavigation';
+import useMediaQuery from '../components/useMediaQuery';
 import { communityApi as api, communityLink as link } from './api';
 import { Button, DetailBack, Empty, Field, Form, Frame, Heading, RecruitmentInfo, Source } from './CommunityUi';
 import RegistrationForm, { RegistrationList, RegistrationReceipt } from './players/Registration';
@@ -30,9 +31,9 @@ async function loadEvent(id) {
   }
 }
 
-function RecordGroup({ title, empty, children }) {
-  return <Frame as="section" className="player-space-card player-record-group" radius={16} flush>
-    <h3>{title}</h3>
+function RecordGroup({ title, empty, children, showTitle = true }) {
+  return <Frame as="section" className={`player-space-card player-record-group${showTitle ? '' : ' player-record-group--plain'}`} aria-label={title} radius={16} flush>
+    {showTitle && <h3>{title}</h3>}
     {children.length ? <ul>{children}</ul> : <p className="player-record-empty">{empty}</p>}
   </Frame>;
 }
@@ -43,44 +44,40 @@ function RecordItem({ as, href, children }) {
 }
 function PlayerAccount({ section, submitted, revision, user, back, tab, notice, onTabChange, onSaved, onLogout, ...spaceProps }) {
   const recordsOpen = tab === 'records';
+  const collectionTab = tab === 'saved' || tab === 'liked';
   const spaceUrl = safeSitePath(pageLocation());
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
   useEffect(() => {
-    if (!recordsOpen) return;
+    if (!recordsOpen && !collectionTab) return;
     const controller = new AbortController();
     const read = path => api(path, undefined, undefined, controller.signal);
     setError('');
-    Promise.all([read('mine'), read('events'), read('projects')])
-      .then(([mine, events, projects]) => {
-        if (!controller.signal.aborted) setResult({ mine, events, projects });
+    setResult(null);
+    const loading = recordsOpen ? Promise.all([read('mine'), read('events')]).then(([mine, events]) => ({mine,events}))
+      : read('projects').then(projects => ({projects}));
+    loading.then(result => {
+        if (!controller.signal.aborted) setResult({ tab, ...result });
       })
       .catch(err => { if (!controller.signal.aborted) setError(err.message); });
     return () => controller.abort();
-  }, [recordsOpen, retry, revision]);
-  const saved = recordsOpen && <RecordGroup title="我的收藏"
-    empty={error ? '暂时无法读取收藏。' : result ? '还没有收藏项目。' : '正在加载收藏…'}>
-    {error || !result ? [] : result.projects.filter(project => project.saved).map(project => <li key={project.id}>
-      <RecordItem as="a" href={link('plaza', { project: project.id, from: spaceUrl })}>
-        <div>
-          <h4>{project.name}</h4>
-          <p>{project.author}</p>
-        </div>
-        <FiArrowUpRight aria-hidden="true" />
-      </RecordItem>
-    </li>)}
-  </RecordGroup>;
+  }, [tab, retry, revision]);
   let content;
-  if (!recordsOpen) content = <PlayerProfileSettings user={user} back={back} section={section} notice={notice}
-    onSaved={onSaved} onLogout={onLogout} />;
+  if (!recordsOpen && !collectionTab) content = returnAction => <PlayerProfileSettings user={user} back={back} section={section} mode={tab} notice={notice}
+    onSaved={onSaved} onLogout={onLogout} returnAction={returnAction} />;
   else if (error) content = <Frame className="player-space-card" radius={16} flush>
     <p role="alert">{error}</p><Button onClick={() => setRetry(value => value + 1)}>重试</Button>
   </Frame>;
-  else if (!result) content = <Frame className="player-space-card" radius={16} role="status" flush>正在加载参与记录…</Frame>;
+  else if (!result || result.tab !== tab) content = <Frame className="player-space-card" radius={16} role="status" flush>{collectionTab ? '正在加载项目…' : '正在加载参与记录…'}</Frame>;
+  else if (collectionTab) content = <RecordGroup showTitle={false} title={tab === 'liked' ? '我的喜欢' : '我的收藏'} empty={tab === 'liked' ? '还没有喜欢的项目。' : '还没有收藏项目。'}>
+    {result.projects.filter(project => project[tab === 'liked' ? 'liked' : 'saved']).map(project => <li key={project.id}>
+      <RecordItem as="a" href={link('plaza', {project:project.id,from:spaceUrl})}><div><h4>{project.name}</h4><p>{project.author}</p></div><FiArrowUpRight aria-hidden="true" /></RecordItem>
+    </li>)}
+  </RecordGroup>;
   else content = <PlayerSpaceRecords submitted={submitted} result={result} spaceUrl={spaceUrl} />;
   return <PlayerSpace {...spaceProps} user={user} back={back} section={section} tab={tab}
-    notice={recordsOpen ? notice : ''} onTabChange={onTabChange} saved={saved}>{content}</PlayerSpace>;
+    notice={recordsOpen ? notice : ''} onTabChange={onTabChange}>{content}</PlayerSpace>;
 }
 
 function PlayerSpaceRecords({ submitted, result, spaceUrl }) {
@@ -95,10 +92,10 @@ function PlayerSpaceRecords({ submitted, result, spaceUrl }) {
             <div>
               <div className="player-record-title">
                 <h4>{project.name}</h4>
-                <span>{reviewStatuses[project.status]}</span>
+                <span className="player-record-project-status">{reviewStatuses[project.status]}</span>
               </div>
-              <p>{project.summary}</p>
-              {project.reviewNote && <p>修改建议：{project.reviewNote}</p>}
+              <p className="player-record-project-summary">{project.summary}</p>
+              {project.reviewNote && <p className="player-record-project-review">修改建议：{project.reviewNote}</p>}
             </div>
             <FiArrowUpRight aria-hidden="true" />
           </RecordItem>
@@ -114,7 +111,7 @@ function PlayerSpaceRecords({ submitted, result, spaceUrl }) {
                   <h4>{name || '历史活动'}</h4>
                   <span>{registrationStatuses[row.status] || '状态待确认'}</span>
                 </div>
-                <p>报名编号：{row.id}</p>
+                <p className="player-record-registration-id">报名编号：{row.id}</p>
               </div>
               {name && <FiArrowUpRight aria-hidden="true" />}
             </RecordItem>
@@ -180,6 +177,7 @@ function ProjectForm({ event, events, existing, user, onComplete, back }) {
 const withAccountSession = session => ({ ...session, events: [], projects: [], recruitments: [] });
 
 export default function CommunityPage({ section, Listing, Detail }) {
+  const mobile = useMediaQuery('(max-width: 760px)');
   const [search, setSearch] = useState(() => window.location.search);
   const query = new URLSearchParams(search);
   const requestedView = query.get('view');
@@ -189,7 +187,8 @@ export default function CommunityPage({ section, Listing, Detail }) {
   const view = spaceView ? 'account' : requestedView;
   const eventId = query.get('event'), projectId = query.get('project');
   const [data, setData] = useState(null), [error, setError] = useState(''), [notice, setNotice] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [pendingReactions, setPendingReactions] = useState(() => new Set());
+  const reactionRequests = useRef(new Set());
   const [recordsRevision, setRecordsRevision] = useState(0);
   const requestVersion = useRef(0);
   const accountView = spaceView || view === 'login';
@@ -334,21 +333,38 @@ export default function CommunityPage({ section, Listing, Detail }) {
     }
   };
   const reactToProject = async (project, kind) => {
-    if (busy) return;
     if (!user) { askReaction(project, kind); return; }
-    setBusy(true);
+    const key = `${user.id}:${project.id}:${kind}`;
+    if (reactionRequests.current.has(key)) return;
+    const flag = kind === 'like' ? 'liked' : 'saved';
+    const count = kind === 'like' ? 'likes' : 'saves';
+    const previous = { [flag]: Boolean(project[flag]), [count]: project[count] || 0 };
+    const active = !previous[flag];
+    const version = requestVersion.current;
+    const update = fields => setData(current => {
+      if (requestVersion.current !== version || current?.user?.id !== user.id) return current;
+      const patch = item => item?.id === project.id ? { ...item, ...fields } : item;
+      return { ...current, projects: current.projects.map(patch), project: patch(current.project) };
+    });
+    reactionRequests.current.add(key);
+    setPendingReactions(new Set(reactionRequests.current));
     setNotice('');
+    update({ [flag]: active, [count]: Math.max(0, previous[count] + (active ? 1 : -1)) });
     try {
-      const active = !(kind === 'like' ? project.liked : project.saved);
-      await api(`reaction/${encodeURIComponent(project.id)}`, { kind, active }, user.id);
-      await load();
+      const confirmed = await api(`reaction/${encodeURIComponent(project.id)}`, { kind, active }, user.id);
+      // Each response owns only its reaction, so overlapping like/save requests cannot undo each other.
+      update({ [flag]: confirmed[flag], [count]: confirmed[count] });
     } catch (error) {
+      update(previous);
+      if (requestVersion.current !== version) return;
       if (error.status === 401) askReaction(project, kind);
       else setNotice(error.message);
     } finally {
-      setBusy(false);
+      reactionRequests.current.delete(key);
+      setPendingReactions(new Set(reactionRequests.current));
     }
   };
+  const isReactionPending = (id, kind) => pendingReactions.has(`${user?.id}:${id}:${kind}`);
   const logout = async () => {
     await api('logout',{},user.id);
     announceSessionChange();
@@ -437,17 +453,18 @@ export default function CommunityPage({ section, Listing, Detail }) {
 
   } else if (event || projectId) {
     content = <Detail data={data} event={event} query={query} user={user}
-      busy={busy} load={load} reactToProject={reactToProject} />;
+      isReactionPending={isReactionPending} load={load} reactToProject={reactToProject} />;
   } else {
-    content = <Listing data={data} busy={busy} reactToProject={reactToProject} />;
+    content = <Listing data={data} isReactionPending={isReactionPending} reactToProject={reactToProject} />;
   }
   const galleryDetail = !view && Boolean(eventId || projectId);
-  return <div className={`community-page community-page--${section} ${showLogin ? 'community-page--account-access' : 'community-page--branded'}${isListing ? ' community-page--listing' : ''}${galleryDetail ? ' community-page--detail' : ''}`}>
+  return <div className={`community-page community-page--${section} ${showLogin ? 'community-page--account-access' : 'community-page--branded'}${isListing ? ' community-page--listing' : ''}${view === 'tickets' ? ' community-page--tickets' : ''}${view === 'receipt' ? ' community-page--receipt' : ''}${galleryDetail ? ' community-page--detail' : ''}`}>
     <a className="skip-link" href="#community-main">跳到主要内容</a>
     <SiteBackground />
     <SiteNavigation standalone mobileDetail textOnly={showLogin} accountUser={user || null} accountSection={section} accountSource={accountView ? backUrl : undefined}
-      headerTools={section === 'players' && !showLogin ? <Button size="sm" shineOnInteraction className="nav-control site-tickets-link" href={view === 'tickets' ? pageLocation() : linkWithSource(link('players', {view:'tickets'}))}>我的报名</Button> : undefined}
-      headerBrand={showLogin ? undefined : <AccountHeading title={headerTitle} as={isProtected || isListing ? 'h1' : 'span'} />} />
+      backHref={view === 'tickets' ? '/players' : mobile && view === 'player' ? backUrl : isListing ? '/' : undefined}
+      headerTools={section === 'players' && !showLogin && view !== 'tickets' && !(mobile && view === 'player') ? <Button size="sm" shineOnInteraction className={`nav-control site-tickets-link${isListing ? ' site-tickets-link--listing' : ''}`} href={linkWithSource(link('players', {view:'tickets'}))}>我的报名</Button> : undefined}
+      headerBrand={showLogin ? undefined : <AccountHeading title={headerTitle} as={isProtected || isListing || view === 'tickets' ? 'h1' : 'span'} />} />
     <div className="community-shell">
       <main id="community-main" tabIndex={-1}>
         {!accountView && (notice || user && query.get('authNotice')==='reaction-failed') && <p className="community-feedback" role="status">{notice || '已登录，刚才的操作未完成，请再试一次。'}</p>}

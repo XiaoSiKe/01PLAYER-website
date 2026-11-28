@@ -177,6 +177,8 @@ try {
   await second.close();
   await page.goto(origin + '/players?view=tickets');
   await page.getByRole('heading', { name: '我的报名', level: 1 }).last().waitFor();
+  assert.equal(await page.getByRole('heading',{name:'我的报名',exact:true,level:1}).count(),1);
+  assert.equal(await page.locator('.registration-list-heading,.site-tickets-link').count(),0);
   assert.equal(await page.getByText('本机保存的回执可直接查看。登录后也可查看账号下的报名。',{exact:true}).count(),0);
   assert.equal(await page.getByRole('link',{name:'查看全部活动',exact:true}).count(),0);
   assert.deepEqual(await page.locator('.registration-record-order').allTextContents(),['01','02','03','04','05']);

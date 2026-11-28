@@ -238,6 +238,12 @@
 .project-showcase-images { display: grid; gap: 20px; }
 .project-detail-media img { display: block; width: 100%; max-height: 600px; object-fit: contain; }
 @media(max-width:420px) { .public-player-avatar { width: 64px; height: 64px; } .public-player-heading { gap: 14px; } }
+@media(max-width:760px) {
+  .public-player-page > .community-page-return { display: none; }
+  .public-player-avatar { width: 96.8px; height: 96.8px; }
+  .public-player-heading > div:last-child { min-width: 0; }
+}
+@media(max-width:420px) { .public-player-avatar { width: 70.4px; height: 70.4px; } }
 
 .community-page .account-switch { display: flex; width: fit-content; max-width: 100%; margin-left: auto; }
 .community-page .community-page-return .account-switch { margin-top: 0; }
