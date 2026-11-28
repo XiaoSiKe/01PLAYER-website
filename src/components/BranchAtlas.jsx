@@ -1,4 +1,5 @@
 import FilterSearch from '../community/FilterSearch';
+import { linkWithSource } from '../community/account/navigation';
 import { siteDestination } from '../data/destinations';
 import { memberPageLink } from '../data/people-navigation';
 import { useLanguage } from '../Language';
@@ -52,7 +53,6 @@ export default function BranchAtlas({ borderGlowProps }) {
   const palette = atlasPalettes[theme];
   const markerRefs = useRef({});
   const titleRef = useRef(null);
-  const panelRef = useRef(null);
   const focusAfterNavigation = useRef(false);
   const [atlas, setAtlas] = useState(null);
   const [error, setError] = useState(false);
@@ -64,7 +64,6 @@ export default function BranchAtlas({ borderGlowProps }) {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [hovered, setHovered] = useState(null);
   const [query, setQuery] = useState('');
-  const matches = useMemo(() => searchBranches(query, t), [query, t]);
   const searching = query.trim().length > 0;
   const controlProps = { size: 'sm' };
   const selected = view.startsWith('school:') ? branchById[view.slice(7)] : null;
@@ -74,6 +73,9 @@ export default function BranchAtlas({ borderGlowProps }) {
   const local = Boolean(currentCity);
   const visibleBranches = currentCity ? branches.filter(branch => branch.city === currentCity) : branches;
   const selectedIndex = selected ? branches.findIndex(branch => branch.id === selected.id) : -1;
+  const memberSource = new URL(window.location.href);
+  if (selected) memberSource.searchParams.set('branch', selected.id);
+  memberSource.hash = 'cooperation';
   useAtlasEntrance(rootRef, Boolean(atlas), reduced, entranceRef, atlas?.china.length || 0);
 
   useEffect(() => {
@@ -107,11 +109,12 @@ export default function BranchAtlas({ borderGlowProps }) {
     focusAfterNavigation.current = keyboard;
     setHovered(null);
     setView(current => current === next ? current : next);
-  }, []);
+    if (keyboard && view === next) requestAnimationFrame(() => { titleRef.current?.focus({ preventScroll: true }); focusAfterNavigation.current = false; });
+  }, [view]);
   const follow = next => event => go(next, event.detail === 0);
   useLayoutEffect(() => {
-    if (focusAfterNavigation.current) { titleRef.current?.focus({ preventScroll: true }); focusAfterNavigation.current = false; }
-  }, [view]);
+    if (focusAfterNavigation.current && !searching) { titleRef.current?.focus({ preventScroll: true }); focusAfterNavigation.current = false; }
+  }, [view, searching]);
 
   const crumbs = [{ view: 'china', label: '全国' }];
   if (view !== 'china') crumbs.push({ view: 'fujian', label: '福建' });
@@ -119,23 +122,30 @@ export default function BranchAtlas({ borderGlowProps }) {
   if (selected) crumbs.push({ view, label: selected.shortName });
   const title = selected?.school || (view === 'china' ? '福建：梦开始的地方' : view === 'fujian' ? '福建' : cityById[view]?.name);
   const foundedLabel = date => !date ? '—' : locale === 'en' ? formatDate(date) : date.split('-').map(Number).join('.');
-  const schoolButton = branch => (
-    <button type="button" key={branch.id} className={`branch-atlas__school-row${selected?.id === branch.id ? ' is-selected' : ''}`} onClick={follow(`school:${branch.id}`)} onPointerEnter={() => setHovered(branch.id)} onPointerLeave={() => setHovered(null)} onFocus={() => setHovered(branch.id)} onBlur={() => setHovered(null)} aria-label={t("查看{0}{1}", [branch.school, branch.role])} aria-describedby={`${id}-founded-${branch.id}${branch.leader ? ` ${id}-leader-${branch.id}` : ''}`}>
+  const schoolButton = (branch, closeSearch) => {
+    const rowId = `${id}${closeSearch ? '-search' : ''}`;
+    return <button type="button" key={branch.id} className={`branch-atlas__school-row${selected?.id === branch.id ? ' is-selected' : ''}`} onClick={event => { closeSearch?.(); go(`school:${branch.id}`, event.detail === 0); }} onPointerEnter={() => setHovered(branch.id)} onPointerLeave={() => setHovered(null)} onFocus={() => setHovered(branch.id)} onBlur={() => setHovered(null)} aria-label={t("查看{0}{1}", [branch.school, branch.role])} aria-describedby={`${rowId}-founded-${branch.id}${branch.leader ? ` ${rowId}-leader-${branch.id}` : ''}`}>
       <ResponsiveImage src={branch.crest} alt="" className="branch-atlas__crest" style={{ backgroundColor: branch.crestBackground }} />
       <span>
         <span className="branch-atlas__school-name">
           <strong>{t(branch.school)}</strong>
-          {branch.leader?.name && <span className="branch-atlas__leader-summary" id={`${id}-leader-${branch.id}`}>
+          {branch.leader?.name && <span className="branch-atlas__leader-summary" id={`${rowId}-leader-${branch.id}`}>
             <span className="branch-atlas__sr-only">{t(branch.leader.title)} · </span>
             <ResponsiveImage src={branch.leader.avatar} alt="" width="20" height="20" fit="cover" />
             <span>{t(branch.leader.name)}</span>
           </span>}
         </span>
-        <span className="branch-atlas__founded" id={`${id}-founded-${branch.id}`}><span>{t('{0} 成立于', [branch.role])}</span><time dateTime={branch.founded}>{foundedLabel(branch.founded)}</time></span>
+        <span className="branch-atlas__founded" id={`${rowId}-founded-${branch.id}`}><span>{t('{0} 成立于', [branch.role])}</span><time dateTime={branch.founded}>{foundedLabel(branch.founded)}</time></span>
       </span>
       <span className="branch-atlas__row-end"><Chevron /></span>
-    </button>
-  );
+    </button>;
+  };
+  const searchResults = (closeSearch, searchQuery = query) => { const results = searchBranches(searchQuery, t); return (
+    <div className="branch-atlas__search-results">
+      <div className="branch-atlas__list-label" role="status">{t('找到 {0} 所高校', [results.length])}</div>
+      {results.length ? results.map(branch => schoolButton(branch, closeSearch)) : <div className="branch-atlas__empty"><strong>{t("暂时没有找到")}</strong><p>{t("试试学校名称、简称，或“福州”“总社”。")}</p></div>}
+    </div>
+  ); };
 
   return (
     <div ref={rootRef} className="branch-atlas" style={atlasStyles[theme]} data-view={selected ? 'school' : view} onKeyDown={event => {
@@ -174,7 +184,7 @@ export default function BranchAtlas({ borderGlowProps }) {
 
         <aside className="branch-atlas__panel" aria-label={t("分社信息")}>
 
-          <div ref={panelRef} className="branch-atlas__panel-content" id={`${id}-results`}>
+          <div className="branch-atlas__panel-content" id={`${id}-results`}>
             {!searching && !selected && <div className="branch-atlas__intro">
               <h3 ref={titleRef} tabIndex={-1}>{t(title)}</h3>
             </div>}
@@ -193,15 +203,12 @@ export default function BranchAtlas({ borderGlowProps }) {
               <button type="button" className="branch-atlas__back" aria-label={t("返回上一级地图")} disabled={view === 'china'} onClick={follow(parentAtlasView(view))}><Arrow back /></button>
               <nav aria-label={t("分社地图层级")}><ol>{crumbs.map((crumb, i) => <li key={crumb.view}>{i > 0 && <Chevron />}<button type="button" onClick={follow(crumb.view)} aria-current={view === crumb.view ? 'location' : undefined}>{t(crumb.label)}</button></li>)}</ol></nav>
               <FilterSearch iconOnly label={t('搜索分社或高校')} value={query} onChange={setQuery} resultsId={`${id}-results`}
-                onSearch={() => {if(searching&&matches[0])go(`school:${matches[0].id}`,true);}}
-                onResultFocus={searching&&matches.length ? () => panelRef.current?.querySelector('.branch-atlas__school-row')?.focus() : undefined} />
+                onSearch={query => {const first = searchBranches(query,t)[0];if(!query.trim()||!first)return false;go(`school:${first.id}`,true);return true;}}
+                renderResults={(close,query) => query.trim() ? searchResults(close,query) : null} />
             </div>
-            {searching ? <div className="branch-atlas__search-results">
-              <div className="branch-atlas__list-label" role="status">{t('找到 {0} 所高校', [matches.length])}</div>
-              {matches.length ? matches.map(schoolButton) : <div className="branch-atlas__empty"><strong>{t("暂时没有找到")}</strong><p>{t("试试学校名称、简称，或“福州”“总社”。")}</p></div>}
-            </div> : selected ? <div className="branch-atlas__detail">
+            {searching ? searchResults() : selected ? <div className="branch-atlas__detail">
               {selected.leader?.name && <LeaderProfile className="branch-atlas__leader-profile"
-                href={leaderMember ? memberPageLink(leaderMember.id) : undefined}
+                href={leaderMember ? linkWithSource(memberPageLink(leaderMember.id),memberSource.pathname+memberSource.search+memberSource.hash) : undefined}
                 role={leaderMember ? undefined : 'group'}
                 aria-label={leaderMember ? t("查看{0}{1}的成员介绍", [selected.leader.title, selected.leader.name]) : t("{0}{1}", [selected.school, selected.leader.title])}>
                 <ResponsiveImage src={selected.leader.avatar} alt="" width="56" height="56" fit="cover" />
@@ -210,7 +217,7 @@ export default function BranchAtlas({ borderGlowProps }) {
               </LeaderProfile>}
               <BranchFlag branch={selected} />
             </div> : <>
-              <div className="branch-atlas__list-label">{view === 'china' ? t('全国高校') : view === 'fujian' ? t('福建高校') : t("{0}高校", [cityById[view]?.name])}<span>{visibleBranches.length}</span></div><div className="branch-atlas__school-list">{visibleBranches.map(schoolButton)}</div>
+              <div className="branch-atlas__list-label">{view === 'china' ? t('全国高校') : view === 'fujian' ? t('福建高校') : t("{0}高校", [cityById[view]?.name])}<span>{visibleBranches.length}</span></div><div className="branch-atlas__school-list">{visibleBranches.map(branch => schoolButton(branch))}</div>
             </>}
           </div>
           <footer className="branch-atlas__panel-actions">

@@ -1,6 +1,6 @@
 .web-registration { width: min(100%, 720px); margin: 16px auto 0; }
 .web-registration--receipt { width: min(100%, 460px); }
-.web-registration > h1, .registration-list-heading h1, .registration-form-heading h1 { font-size: clamp(26px, 3vw, 38px); margin: 22px 0 10px; line-height: 1.3; }
+.web-registration > h1, .registration-form-heading h1 { font-size: clamp(26px, 3vw, 38px); margin: 22px 0 10px; line-height: 1.3; }
 .registration-form-fields { display: grid; gap: 20px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .registration-question { min-width: 0; margin: 0; padding: 0; border: 0; }
 .registration-question legend { margin-bottom: 8px; font-weight: 600; }
@@ -94,9 +94,6 @@ html[data-theme='light'] .registration-ticket { background: #fff; box-shadow: 0 
 
 .community-page .registration-receipt-status .specular-button { min-height: 48px; }
 
-.registration-list-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 22px 0 10px; }
-.registration-list-heading h1 { margin: 0; }
-.registration-list-heading > .discovery-detail-back { flex: none; }
 
 .registration-form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin: 22px 0 10px; }
 .registration-form-heading h1 { flex: 1; min-width: 0; margin: 0; overflow-wrap: anywhere; }

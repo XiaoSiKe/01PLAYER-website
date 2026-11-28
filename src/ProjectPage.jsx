@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { projects } from './data/projects';
 import ProjectArtwork from './components/ProjectArtwork';
 import ResponsiveImage from './components/ResponsiveImage';
+import useMediaQuery from './components/useMediaQuery';
+import FilterSearch from './community/FilterSearch';
 import './components/ProjectShowcase.css';
 import './ProjectPage.css';
 
@@ -16,9 +18,17 @@ const knowledgeEntries = [
 
 function KnowledgeDemo() {
   const { t } = useLanguage();
+  const mobile = useMediaQuery('(max-width: 760px)');
   const [query, setQuery] = useState('');
-  const entries = knowledgeEntries.filter(entry => `${entry.title}${entry.label}${entry.text} ${t(entry.title)} ${t(entry.label)} ${t(entry.text)}`.toLowerCase().includes(query.trim().toLowerCase()));
-  return <><label className="demo-label" htmlFor="knowledge-search">{t("从一个问题开始")}</label><input id="knowledge-search" className="demo-input" type="search" placeholder={t("搜索概念、提示词、网页……")} value={query} onChange={event => setQuery(event.target.value)} /><p className="demo-result-count" role="status">{t('找到 {0} 篇入门笔记', [entries.length])}</p><div className="demo-knowledge-list">{entries.map(entry => <article key={entry.title}><span>{t(entry.label)}</span><h3>{t(entry.title)}</h3><p>{t(entry.text)}</p></article>)}</div>{entries.length === 0 && <p className="demo-empty">{t("还没有这个主题的笔记。试试“提示词”或“网页”。")}</p>}</>;
+  const findEntries = query => knowledgeEntries.filter(entry => `${entry.title}${entry.label}${entry.text} ${t(entry.title)} ${t(entry.label)} ${t(entry.text)}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const entries = mobile ? knowledgeEntries : findEntries(query);
+  const entryHref = entry => '#knowledge-entry-' + knowledgeEntries.indexOf(entry);
+  return <><label className="demo-label" htmlFor={mobile ? undefined : 'knowledge-search'}>{t("从一个问题开始")}</label>
+    {mobile ? <FilterSearch label={t("搜索概念、提示词、网页……")} value={query} onChange={setQuery}
+      onSearch={query => { const first = query.trim() && findEntries(query)[0]; if (!first) return false; location.hash = entryHref(first); return true; }}
+      renderResults={(close, query) => { const results = findEntries(query); return query.trim() ? <div className="community-search-results">{results.length ? results.map(entry => <a className="community-search-result community-search-result--text" key={entry.title} href={entryHref(entry)} onClick={close}>{t(entry.title)}</a>) : <p role="status">{t("还没有这个主题的笔记。试试“提示词”或“网页”。")}</p>}</div> : null; }} />
+      : <input id="knowledge-search" className="demo-input" type="search" placeholder={t("搜索概念、提示词、网页……")} value={query} onChange={event => setQuery(event.target.value)} />}
+    <p className="demo-result-count" role="status">{t('找到 {0} 篇入门笔记', [entries.length])}</p><div className="demo-knowledge-list">{entries.map(entry => <article id={entryHref(entry).slice(1)} key={entry.title}><span>{t(entry.label)}</span><h3>{t(entry.title)}</h3><p>{t(entry.text)}</p></article>)}</div>{entries.length === 0 && <p className="demo-empty">{t("还没有这个主题的笔记。试试“提示词”或“网页”。")}</p>}</>;
 }
 
 function StudyDemo() {

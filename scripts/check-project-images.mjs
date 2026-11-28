@@ -76,8 +76,15 @@ try {
   await page.getByText('示例大学',{exact:true}).waitFor();
   await page.waitForFunction(()=>document.querySelector('.public-player-avatar img')?.naturalWidth===160);
   assert.equal(await page.getByText('暂无公开招募。',{exact:true}).count(),0);
-  const back=await page.locator('.public-player-page').getByRole('link',{name:'返回',exact:true}).boundingBox();
-  const section=await page.locator('.public-player-page').boundingBox();assert.ok(back.x>section.x+section.width/2);
+  if (width <= 760) {
+    const back = await page.locator('.site-nav-return').boundingBox();
+    const nav = await page.locator('.sm-toggle').boundingBox();
+    assert.ok(back.x + back.width <= nav.x && Math.abs(back.y + back.height / 2 - nav.y - nav.height / 2) < 2);
+  } else {
+    const back = await page.locator('.public-player-page').getByRole('link',{name:'返回',exact:true}).boundingBox();
+    const section = await page.locator('.public-player-page').boundingBox();
+    assert.ok(back.x > section.x + section.width / 2);
+  }
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  }
  await page.goto(origin+'/plaza?view=publish&edit='+id);

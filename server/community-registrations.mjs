@@ -23,6 +23,7 @@ function jsonRegistrations(current, persist) {
     hasContact: (event, contact) => rows().some(r => r.eventId === event && contactKey(r.contact) === contactKey(contact)),
     hasUser: (event, user) => rows().some(r => r.eventId === event && r.userId === user),
     forUser: user => rows().filter(r => r.userId === user),
+    receiptIdForEvent: (user, event) => rows().find(r => r.userId === user && r.eventId === event)?.id,
     pageForUser(user, requested) {
       const matches = rows().filter(row => row.userId === user).reverse();
       const bounds = pageBounds(matches.length, requested);
@@ -143,6 +144,7 @@ export function openRegistrations(identity, current, persist) {
     const byContact = db.prepare('SELECT 1 FROM registrations WHERE event=? AND contact=?');
     const byUser = db.prepare('SELECT 1 FROM registrations WHERE event=? AND user=?');
     const forUser = db.prepare('SELECT body FROM registrations WHERE user=? ORDER BY rowid');
+    const forUserEvent = db.prepare('SELECT id FROM registrations WHERE user=? AND event=? ORDER BY rowid LIMIT 1');
     const forUserPage = db.prepare('SELECT body FROM registrations WHERE user=? ORDER BY rowid DESC LIMIT ? OFFSET ?');
     const count = db.prepare('SELECT count(*) AS n FROM registrations WHERE user=?');
     const countStatus = db.prepare('SELECT count(*) AS n FROM registrations WHERE status=?');
@@ -174,6 +176,7 @@ export function openRegistrations(identity, current, persist) {
       hasContact: (event, contact) => Boolean(byContact.get(event, contactKey(contact))),
       hasUser: (event, user) => Boolean(byUser.get(event, user)),
       forUser: user => Array.from(forUser.iterate(user), unpack),
+      receiptIdForEvent: (user, event) => forUserEvent.get(user, event)?.id,
       pageForUser(user, requested) {
         return transaction('BEGIN', () => {
           const bounds = pageBounds(count.get(user).n, requested);

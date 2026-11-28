@@ -1,6 +1,7 @@
 import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import ChoiceMenu from '../components/ChoiceMenu';
-import SiteNavigation from '../components/SiteNavigation';
+import SiteNavigation, { SiteReturn } from '../components/SiteNavigation';
+import useMediaQuery from '../components/useMediaQuery';
 import SpecularButton from '../SpecularButton';
 import { imageDimensions, imageSource } from '../components/imageSource';
 import PhantomGallery from './PhantomGallery';
@@ -18,6 +19,7 @@ const archiveCategories = { ...categories, ...archiveModules };
 
 export default function TimeMachinePage() {
   const { t } = useLanguage();
+  const mobile = useMediaQuery('(max-width: 760px)');
   const title = t('零一时光机');
   const [albums, setAlbums] = useState([]);
   const [historicalEdits, setHistoricalEdits] = useState([]);
@@ -144,17 +146,18 @@ export default function TimeMachinePage() {
     });
   }, [items, historicalEdits]);
   return <div className="time-machine time-machine--immersive">
-    <SiteNavigation standalone mobileDetail headerBrand={<AccountHeading title={title} />}
-      headerTools={<div className="tm-catalog-controls" ref={archiveAnchor}>
+    <SiteNavigation standalone mobileDetail headerBrand={<AccountHeading title={title} />} backHref={mobile ? undefined : '/#directions'}
+      headerTools={<div className="tm-catalog-controls">
         {categoryLabel && <ChoiceMenu compact openBelow className="tm-session-select" label="选择场次" options={sessionOptions}
           value={categoryAlbums.some(album => album.eventId === eventId) ? eventId : ''}
           onChange={id => selectGallery(activeCategory, id)} />}
-        <SpecularButton size="sm" staticShine className="nav-control tm-catalog-toggle" aria-haspopup="dialog" title="影像目录"
+        <SpecularButton ref={archiveAnchor} size="sm" staticShine className="nav-control tm-catalog-toggle" aria-haspopup="dialog" title="影像目录"
           onClick={openArchive}>{categoryLabel || '影像目录'}</SpecularButton>
+        {mobile && <SiteReturn fallback="/#directions" className="tm-mobile-return" />}
       </div>} />
     <a className="skip-link" href="#time-machine-main">跳到照片墙</a>
     <main id="time-machine-main" tabIndex={-1}>
-      {galleryItems.length > 0 ? <PhantomGallery items={galleryItems} tileScale={activeAlbum ? 1.3 : 1} />
+      {galleryItems.length > 0 ? <PhantomGallery items={galleryItems} tileScale={activeAlbum ? 1.3 : mobile && activeCategory === 'all' ? .85 : 1} bright={mobile} />
         : <p className="tm-wall-status" role="status">{loading ? '正在加载影像…' : error || (activeAlbum ? '本场暂无影像。' : '没有找到公开的活动影像。')}</p>}
       {admin && publishedAlbum && <div className="tm-event-controls">
         <SpecularButton size="sm" aria-haspopup="dialog"

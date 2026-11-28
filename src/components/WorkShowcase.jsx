@@ -3,6 +3,7 @@ import { useLanguage } from '../Language';
 import BorderGlow from '../BorderGlow';
 import { CORE_ENTRIES } from '../data/positioning';
 import './WorkShowcase.css';
+import { linkWithSource } from '../community/account/navigation';
 
 const [shadow, players, plaza] = CORE_ENTRIES;
 const entries = [players, shadow, plaza];
@@ -39,7 +40,7 @@ export default function WorkShowcase({ borderGlowProps }) {
           <li key={entry.id} id={entry.id === 'shadow' ? 'shadow' : undefined}
             className="home-work-panel" data-entry={entry.id} data-active={active === entry.id}
             onPointerEnter={event => { if (event.pointerType === 'mouse') setActive(entry.id); }}>
-            <a className="home-work-panel-link" href={entry.href}
+            <a className="home-work-panel-link" href={entry.id === 'shadow' ? entry.href : linkWithSource(entry.href)}
               aria-label={t(entry.title)} aria-describedby={`work-${entry.id}-description`}
               onFocus={() => setActive(entry.id)}
               onPointerDown={event => { if (event.pointerType !== 'mouse') setActive(entry.id); }}>

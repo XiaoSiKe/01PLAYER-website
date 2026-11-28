@@ -2,7 +2,7 @@ import { siteRows } from '../editorial/content.js';
 // Newly featured photos come first, in the order supplied by the user.
 // User-supplied captions: title is displayed first; organization follows below
 // and may include a series suffix after ｜.
-export const activityPhotos = siteRows('activityPhotos', [
+export const activityPhotos = [
   { id: 'activity-13', src: '/images/activity-photos/activity-13-kaiwu-group.jpg', width: 540, height: 960, alt: '开物·福州高校黑客松「零一」合照',
     title: '开物·福州高校黑客松', organization: '零一黑客松｜「零一」合照' },
   { id: 'activity-14', src: '/images/activity-photos/activity-14-kaiwu-venue.jpg', width: 720, height: 960, alt: '开物·福州高校黑客松比赛现场',
@@ -35,4 +35,8 @@ export const activityPhotos = siteRows('activityPhotos', [
     organization: '零一沙龙｜福州大学社团巡礼', title: '记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？' },
   { id: 'activity-12', src: '/images/activity-photos/activity-12.jpg', width: 960, height: 960, alt: '活动展位的电脑演示与交流现场拼图',
     organization: '零一沙龙｜福州大学社团巡礼', title: '记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？' }
-]);
+];
+
+export function getActivityPhotos() {
+  return siteRows('activityPhotos', activityPhotos);
+}

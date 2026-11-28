@@ -17,7 +17,7 @@ export default function MentorsPage() {
 
   return <main className="mentors-page">
     <SiteBackground />
-    <SiteNavigation standalone />
+    <SiteNavigation standalone backHref="/#about" />
     <div className="mentors-page__content">
       <TeamShowcase members={mentors} headingAs="h1" headingContent={<>
         <span className="mentors-page__eyebrow"><BrandTitle text={t("零一玩家｜Mentor")} /></span>

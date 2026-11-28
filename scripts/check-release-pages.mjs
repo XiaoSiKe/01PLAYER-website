@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { pagePaths } from '../src/data/page-paths.js';
+import { activityPhotos } from '../src/data/activity-photos.js';
 
 const { chromium } = await import('playwright-core');
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -86,7 +87,28 @@ try {
       console.log(JSON.stringify({ performance: 'cold homepage, 1.6Mbps/150ms/4xCPU', width, result }));
     } finally { await context.close(); }
   }
-  console.log('通过：生产制品公共路由、资源、桌面与手机、冷启动性能采样。');
+  const page = await browser.newPage({ reducedMotion: 'reduce' });
+  const editedPhoto = { ...activityPhotos[0], title: '延迟发布快照的首屏照片' };
+  await page.route('**/site-content/manifest.json', async route => {
+    await delay(450);
+    await route.fulfill({ json: { sections: { activityPhotos: [editedPhoto] } } });
+  });
+  await page.goto(origin);
+  const tunnelPhoto = page.locator('.tunnel-hero__card');
+  await tunnelPhoto.waitFor({ state: 'attached' });
+  assert.ok((await tunnelPhoto.getAttribute('aria-label')).includes(editedPhoto.title));
+  const startup = await page.evaluate(() => {
+    const resources = performance.getEntriesByType('resource');
+    return {
+      scriptStart: resources.find(resource => /\/assets\/main-[^/]+\.js$/.test(resource.name))?.startTime,
+      contentEnd: resources.find(resource => resource.name.endsWith('/site-content/manifest.json'))?.responseEnd,
+      photos: performance.getEntriesByName('site:first-screen-ready').at(-1)?.detail.images,
+    };
+  });
+  assert.ok(startup.scriptStart < startup.contentEnd, JSON.stringify(startup));
+  assert.equal(startup.photos, 1);
+  await page.close();
+  console.log('通过：生产制品公共路由、资源、桌面与手机、冷启动以及发布快照与应用脚本并行下载。');
 } finally {
   await browser?.close();
   if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');

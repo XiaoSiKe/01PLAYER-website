@@ -8,6 +8,7 @@ import { AccountAccess } from './AccountAccess';
 import { AccountForm, PasswordField } from './AccountForm';
 import { accountLink, announceSessionChange, pageLocation } from './navigation';
 import { AVATAR_EDGE, prepareAvatar } from './profile';
+import useMediaQuery from '../../components/useMediaQuery';
 import { playerIdentityForRole, playerIdentityLabels } from './identity';
 export { AccountHeading } from './AccountAccess';
 
@@ -71,8 +72,10 @@ export function LoginForm({ title, register, onModeChange, onSuccess, purpose, n
   );
 }
 
-export function PlayerSpace({ user, section, back, continuation, action, onContinue, notice, tab, onTabChange, saved, children }) {
-  const profileEntry = useRef(null);
+export function PlayerSpace({ user, section, back, continuation, action, onContinue, notice, tab, onTabChange, children }) {
+  const desktop = useMediaQuery('(min-width: 761px)');
+  const returnInPanel = desktop && (tab === 'profile' || tab === 'settings');
+  const shortcuts = useRef(null);
   const heading = useRef(null);
   const focusAfterTabChange = useRef(false);
   const recordsOpen = tab === 'records';
@@ -86,13 +89,14 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
     if (!focusAfterTabChange.current) return;
     focusAfterTabChange.current = false;
     window.scrollTo({ top: 0, behavior: 'instant' });
-    const target = recordsOpen ? profileEntry.current?.querySelector('button') : heading.current;
+    const target = recordsOpen ? shortcuts.current?.querySelector('button') : heading.current;
     target?.focus({ preventScroll: true });
-  }, [recordsOpen]);
+  }, [tab]);
   return (
     <div className={`player-space${recordsOpen ? '' : ' player-space--settings'}`}>
       {recordsOpen && <aside className="player-space-sidebar" aria-label="玩家信息">
         <Frame className="player-space-card player-space-profile" radius={16} flush>
+          <div className="player-space-identity">
           <div className="account-identity">
             <AccountAvatar src={user.avatar} />
             <div>
@@ -104,11 +108,11 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
             </div>
           </div>
           {user.publicContact && <p className="player-space-contact">联系方式：{user.publicContact}</p>}
-          <div className="hero-entry player-space-profile-entry" ref={profileEntry}>
-            <SpecularButton className="hero-button" onClick={() => showTab('profile')}>
-              玩家资料
-            </SpecularButton>
           </div>
+          <nav className="player-space-shortcuts" aria-label="玩家空间入口" ref={shortcuts}>
+            {[['saved','我的收藏'],['liked','我的喜欢'],['profile','玩家资料'],['settings','账号设置']].map(([key,label]) =>
+              <SpecularButton key={key} onClick={() => showTab(key)}>{label}</SpecularButton>)}
+          </nav>
           {(continuation || action || showPlayerSystem || canReview) && (
             <div className="account-links">
               {continuation && <a href={continuation.href}>{continuation.label} <FiArrowRight aria-hidden="true" /></a>}
@@ -122,11 +126,10 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
             </div>
           )}
         </Frame>
-        {saved}
       </aside>}
       <div className="player-space-content">
         <div className="player-space-toolbar">
-          <h2 ref={heading} tabIndex={-1}>{recordsOpen ? '参与记录' : '玩家资料'}</h2>
+          <h2 ref={heading} tabIndex={-1}>{{records:'参与记录',profile:'玩家资料',settings:'账号设置',saved:'我的收藏',liked:'我的喜欢'}[tab]}</h2>
           {recordsOpen ? (
             <div className="player-space-actions">
               <div className="hero-entry">
@@ -135,8 +138,9 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
               <div className="hero-entry">
                 <SpecularButton className="hero-button" href={link('players')}>参与活动</SpecularButton>
               </div>
+              <Button className="player-settings-action" size="sm" shineOnInteraction href={back}>返回</Button>
             </div>
-          ) : (
+          ) : !returnInPanel && (
             <div className="player-space-actions">
               <Button className="player-settings-action" size="sm" shineOnInteraction onClick={() => showTab('records')}>
                 <FiArrowLeft aria-hidden="true" />返回
@@ -145,21 +149,25 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
           )}
         </div>
         {notice && <p className="community-feedback" role="status">{notice}</p>}
-        {children}
+        {typeof children === 'function' ? children(returnInPanel ? <Button className="player-settings-action" size="sm" shineOnInteraction onClick={() => showTab('records')}>
+          <FiArrowLeft aria-hidden="true" />返回
+        </Button> : null) : children}
       </div>
     </div>
   );
 }
 
-export function PlayerProfileSettings({ user, back, section, notice, onSaved, onLogout }) {
+export function PlayerProfileSettings({ user, back, section, mode = 'profile', notice, onSaved, onLogout, returnAction }) {
   const [loggingOut, setLoggingOut] = useState(false);
   const [error, setError] = useState('');
   return (
     <div className="player-space-settings">
-      <EditProfile user={user} onSaved={onSaved} notice={notice} />
-      <Frame as="section" className="player-space-card player-account-settings" radius={16} flush
+      {mode === 'profile' ? <EditProfile user={user} onSaved={onSaved} notice={notice} returnAction={returnAction} /> : <Frame as="section" className="player-space-card player-account-settings" radius={16} flush
         aria-labelledby="player-account-settings-heading">
-        <h3 id="player-account-settings-heading">账号设置</h3>
+        <div className="player-settings-heading">
+          <h3 id="player-account-settings-heading">账号设置</h3>
+          {returnAction}
+        </div>
         <h4 className="player-password-heading">修改密码</h4>
         <ChangePassword user={user} back={back} section={section} />
         <div className="player-account-actions">
@@ -177,7 +185,7 @@ export function PlayerProfileSettings({ user, back, section, notice, onSaved, on
           </Button>
         </div>
         {error && <p role="alert" className="community-feedback">{error}</p>}
-      </Frame>
+      </Frame>}
     </div>
   );
 }
@@ -221,7 +229,7 @@ function ChangePassword({ user, back, section }) {
   );
 }
 
-function EditProfile({ user, onSaved, notice }) {
+function EditProfile({ user, onSaved, notice, returnAction }) {
   const [avatar, setAvatar] = useState(undefined);
   const [preparing, setPreparing] = useState(false);
   const [error, setError] = useState('');
@@ -229,7 +237,10 @@ function EditProfile({ user, onSaved, notice }) {
   return (
     <Frame as="section" className="player-space-card player-profile-edit" radius={16} flush
       aria-labelledby="player-profile-edit-heading">
-      <h3 id="player-profile-edit-heading">头像与资料</h3>
+      <div className="player-settings-heading">
+        <h3 id="player-profile-edit-heading">头像与资料</h3>
+        {returnAction}
+      </div>
       <AccountForm shineOnInteraction submit="保存资料" pending="正在保存…" disabled={preparing}
         onSubmit={async ({ name, university, publicContact }) => {
           const result = await api('account/profile', { name, university, publicContact, avatar }, user.id);

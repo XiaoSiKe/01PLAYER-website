@@ -88,3 +88,13 @@
 @media (prefers-reduced-motion: reduce) {
   .home-work-panel, .home-work-panel-copy p { transition: none; }
 }
+
+@media (min-width: 761px) {
+  html[data-theme='light'] .home-work-showcase > .border-glow-content,
+  html[data-theme='light'] .home-work-panel { background: #fff; }
+  html[data-theme='light'] .home-work-panel { border-color: var(--site-border); }
+  html[data-theme='light'] .home-work-panel[data-active='true'] { border-color: #00000066; }
+  html[data-theme='light'] .home-work-panel-link { color: var(--site-ink); }
+  html[data-theme='light'] .home-work-panel-link:focus-visible { outline-color: var(--site-ink); }
+  html[data-theme='light'] .home-work-panel-copy p { color: var(--site-muted); }
+}

@@ -397,34 +397,8 @@ a {
   margin-top: 14px;
 }
 
-.hero-license-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 37.4px;
-  padding: 0 15.4px;
-  color: rgba(245, 245, 245, 0.68);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  font-size: 13.08736px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 180ms ease-out, background-color 180ms ease-out;
-}
-
-.hero-license-link {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.hero-license-link:hover {
-  color: #f5f5f5;
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.hero-license-link:focus-visible {
-  outline: 3px solid #ffffff;
-  outline-offset: 3px;
+.hero-meta-row .hero-founded-button {
+  width: auto;
 }
 
 .hero-proof {
@@ -1240,7 +1214,7 @@ html[data-theme='light'] .home-footer-club-mark img { filter: invert(1); }
 .home-footer-copyright { margin-top: 20px; padding-top: 12px; gap: 6px; }
 @media(max-width:760px) {
   .hero-actions { grid-template-columns: minmax(0,1fr); width: min(100%,360px); gap: 8px; margin-top: 16px; }
-  .hero-actions .hero-button { min-height: 48px; padding-block: 12px; font-size: 14px; }
+  .hero-actions .hero-button, .hero-meta-row .hero-founded-button { min-height: 48px; padding-block: 12px; font-size: 14px; }
   .home-business-carousel { --business-placeholder-height: 300px; }
   .home-sections { padding-bottom: 32px; }
   .home-recruitment { margin-top: 24px; }
@@ -1253,6 +1227,10 @@ html[data-theme='light'] .home-footer-club-mark img { filter: invert(1); }
   .home-partners-row { gap: 18px; }
 }
 
-.hero-actions .hero-shadow-mark { display: block; width: 144px; max-width: 100%; height: auto; }
+.hero-actions .hero-shadow-mark { display: block; width: 122.4px; max-width: 100%; height: auto; }
+@media (min-width: 761px) {
+  .hero-actions { width: min(100%, 672px); column-gap: 30px; }
+  .hero-entry[data-entry='shadow'] .hero-button { width: 126.5%; }
+}
 .home-about-quote { font-size: 14.4px; }
 @media(max-width:760px) { .home-about-quote { font-size: 11.7px; } }

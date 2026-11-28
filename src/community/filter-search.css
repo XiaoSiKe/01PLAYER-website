@@ -8,3 +8,13 @@
 .community-filter-search-dialog header .specular-button,
 .community-page .community-filter-search-dialog header .specular-button { width: 40px; min-height: 40px; padding: 0; }
 .community-filter-search-dialog > input { width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--community-border,color-mix(in srgb,var(--site-ink) 18%,transparent)); border-radius: 8px; color: inherit; background: transparent; font: inherit; font-size: 16px; }
+.community-filter-search-dialog--results { margin-block: min(96px,12dvh) auto; max-height: calc(100dvh - min(96px,12dvh) - 16px); overflow-y: auto; overscroll-behavior: contain; }
+.community-filter-search-results:not(:empty) { margin-top: 12px; }
+
+.community-search-summary { margin: 0 0 10px; color: var(--community-muted); font-size: 13px; }
+.community-search-result { display: grid; grid-template-columns: 48px minmax(0,1fr) 16px; align-items: center; gap: 10px; margin-top: 8px; padding: 10px; border: 1px solid var(--community-border); border-radius: 10px; background: color-mix(in srgb,var(--site-ink) 4%,transparent); }
+.community-search-result:is(:hover,:focus-visible) { background: color-mix(in srgb,var(--site-ink) 8%,transparent); }
+.community-search-copy { display: grid; gap: 5px; min-width: 0; }
+.community-search-copy strong { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.community-search-result > svg { width: 16px; height: 16px; }
+.community-search-result--text { grid-template-columns: minmax(0,1fr); }

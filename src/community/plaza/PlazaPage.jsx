@@ -8,7 +8,7 @@ import CommunityPage from '../CommunityPage';
 import { Button, DetailBack, DetailHero, DetailSections, DetailShare, Empty, Frame, ProjectGrid, RecruitmentInfo, Source } from '../CommunityUi';
 import { communityLink as link } from '../api';
 import { listFilters, matchesSearch, selectedOption, updateFilters } from '../filters';
-import { accountLink, pageLocation, returnDestination } from '../account/navigation';
+import { accountLink, pageLocation, linkWithSource, returnDestination } from '../account/navigation';
 import ProjectArtwork from './ProjectArtwork';
 import { featuredInSlots } from '../featured';
 
@@ -20,7 +20,7 @@ const reviewStatuses = { pending: '待审核', approved: '已公开', returned: 
 const newestFirst = (a, b) => (Date.parse(b.reviewedAt || b.createdAt) || 0) - (Date.parse(a.reviewedAt || a.createdAt) || 0);
 const mostLiked = (a, b) => (b.likes || 0) - (a.likes || 0) || newestFirst(a, b);
 
-function PlazaListing({ data, busy, reactToProject }) {
+function PlazaListing({ data, isReactionPending, reactToProject }) {
   const mobile = useMediaQuery('(max-width: 760px)');
   const initial = new URLSearchParams(window.location.search);
   const events = data.events.map(event => ({ id: 'event:' + event.id, label: event.name }));
@@ -36,18 +36,20 @@ function PlazaListing({ data, busy, reactToProject }) {
   const eventNames = new Map(data.events.map(event => [event.id, event.name]));
   const filters = listFilters('plaza', {source, sort, q:search});
   const filtering = Object.keys(filters).length > 0;
-  const popular = useMemo(() => featuredInSlots([...data.projects].sort(mostLiked), 3), [data.projects]);
-  const popularIds = new Set(popular.map(project => project.id));
-  const projects = data.projects.filter(project => {
+  const featured = useMemo(() => featuredInSlots([...data.projects].sort(newestFirst), 3), [data.projects]);
+  const featuredIds = new Set(featured.map(project => project.id));
+  const findProjects = query => data.projects.filter(project => {
     const origin = project.eventId ? 'club' : 'independent';
     return (selectedSource === 'all' || selectedSource === origin)
       && (selectedEvent === 'all' || selectedEvent === `event:${project.eventId}`)
-      && matchesSearch([project.name, project.summary, project.author, eventNames.get(project.eventId), project.externalSource, project.example ? '示例' : '', project.recruitment ? '招募中' : ''], search);
+      && matchesSearch([project.name, project.summary, project.author, eventNames.get(project.eventId), project.externalSource, project.example ? '示例' : '', project.recruitment ? '招募中' : ''], query);
   }).sort(sort === 'popular' ? mostLiked : newestFirst);
-  const listed = filtering ? projects : projects.filter(project => !popularIds.has(project.id));
+  const projects = findProjects(search);
+  const listed = filtering ? projects : projects.filter(project => !featuredIds.has(project.id));
+  const resultHref = project => linkWithSource(link('plaza', {project:project.id,...filters}),link('plaza',filters));
   return <>
-    <section className="plaza-popular" aria-label={popular.some(project => project.homePinPosition) ? '优先项目' : '热门项目'}>
-      <ProjectGrid projects={popular} listContext={filters} events={data.events} busy={busy} onReaction={reactToProject} showHomePins
+    <section className="plaza-popular" aria-label="优先项目">
+      <ProjectGrid projects={featured} listContext={filters} events={data.events} isReactionPending={isReactionPending} onReaction={reactToProject} showHomePins
         empty="公开作品上线后会在这里展示。" />
     </section>
     <section className="plaza-results" aria-labelledby="plaza-results-title">
@@ -62,17 +64,31 @@ function PlazaListing({ data, busy, reactToProject }) {
             onChange={value => setSource(value === 'all' ? 'club' : value)} />}
           <ChoiceMenu compact label="项目来源" value={mobile ? source : selectedSource} onChange={setSource} options={mobile ? mobileSources : sources} />
           <ChoiceMenu compact label="项目排序" value={sort} onChange={setSort} options={sorts} />
-          <FilterSearch label="搜索项目或作者" value={search} onChange={setSearch} />
+          <FilterSearch label="搜索项目或作者" value={search} onChange={setSearch}
+            onSearch={mobile ? query => {
+              const first = findProjects(query)[0];
+              if (!query.trim() || !first) return false;
+              window.location.assign(resultHref(first));
+              return true;
+            } : undefined}
+            renderResults={mobile ? (close, query) => { const results = findProjects(query); return query.trim() ? <div className="community-search-results">
+              <p className="community-search-summary" role="status">{results.length} 个公开项目</p>
+              {results.length ? results.map(project => <a key={project.id} className="community-search-result plaza-search-result" href={resultHref(project)} aria-label={project.name} onClick={close}>
+                <ProjectArtwork project={project} />
+                <div className="community-search-copy"><strong>{project.name}</strong>{project.author && <span className="community-search-author">{project.author}</span>}{project.summary && <span className="community-search-description">{project.summary}</span>}</div>
+                <FiArrowUpRight aria-hidden="true" />
+              </a>) : <Empty>没有找到符合条件的项目。</Empty>}
+            </div> : null; } : undefined} />
         </div>
       </header>
       <p className="community-results" role="status">{projects.length} 个公开项目</p>
       {(filtering || listed.length > 0) && <ProjectGrid projects={listed} listContext={filters} events={data.events} showHomePins
-        busy={busy} onReaction={reactToProject} empty="没有找到符合条件的项目。" />}
+        isReactionPending={isReactionPending} onReaction={reactToProject} empty="没有找到符合条件的项目。" />}
     </section>
   </>;
 }
 
-function ProjectDetail({ data, query, user, busy, reactToProject }) {
+function ProjectDetail({ data, query, user, isReactionPending, reactToProject }) {
   const p = data.project;
   useEffect(() => {
     if (!p?.id || location.hash !== '#project-recruitment') return;
@@ -133,8 +149,8 @@ function ProjectDetail({ data, query, user, busy, reactToProject }) {
             <div><dt>项目来源</dt><dd><Source project={p} events={data.events} /></dd></div>
             <div><dt>状态</dt><dd><a href={statusLink}>{reviewStatuses[p.status]}</a>{p.example && <> · <a href={link('plaza',{q:'示例'})}>示例作品</a></>}</dd></div></dl>
           {p.reviewNote && <p>修改建议：{p.reviewNote}</p>}
-          <div className="community-reactions"><Button disabled={busy || p.status !== 'approved'} aria-pressed={p.liked} onClick={() => reactToProject(p,'like')}><FiHeart />{p.liked ? '已点赞' : '点赞'} {p.likes || 0}</Button>
-            <Button disabled={busy || p.status !== 'approved'} aria-pressed={p.saved} onClick={() => reactToProject(p,'save')}><FiBookmark />{p.saved ? '已收藏' : '收藏'} {p.saves || 0}</Button></div>
+          <div className="community-reactions"><Button data-reaction="like" disabled={p.status !== 'approved'} aria-busy={isReactionPending(p.id, 'like') || undefined} aria-disabled={isReactionPending(p.id, 'like') || undefined} aria-pressed={p.liked} onClick={() => reactToProject(p,'like')}><FiHeart />{p.liked ? '已点赞' : '点赞'} {p.likes || 0}</Button>
+            <Button data-reaction="save" disabled={p.status !== 'approved'} aria-busy={isReactionPending(p.id, 'save') || undefined} aria-disabled={isReactionPending(p.id, 'save') || undefined} aria-pressed={p.saved} onClick={() => reactToProject(p,'save')}><FiBookmark />{p.saved ? '已收藏' : '收藏'} {p.saves || 0}</Button></div>
         </aside>
       </div>
     </div>

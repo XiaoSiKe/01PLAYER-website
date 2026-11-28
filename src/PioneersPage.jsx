@@ -9,6 +9,7 @@ import useMediaQuery from './components/useMediaQuery';
 import PioneerSearch from './components/PioneerSearch';
 import { isLeadershipMember, pioneerRoster, memberPageLink } from './data/people-navigation';
 import './PioneersPage.css';
+import { linkWithSource } from './community/account/navigation';
 
 const DARK_PALETTE = {
   ground: '#090909', deep: '#171717', hot: '#3e3e3e', glow: '#646464',
@@ -37,7 +38,7 @@ export function PeopleRosterPage({ members, heading, pageTitle, skipLabel, roste
     <main className={className ? `pioneers-page ${className}` : 'pioneers-page'}>
       <SiteBackground />
       <a className="pioneers-page__skip" href="#pioneers-roster">{t(skipLabel)}</a>
-      <SiteNavigation standalone />
+      <SiteNavigation standalone backHref="/#about" />
       <div id="pioneers-roster" className="pioneers-page__roster" tabIndex={-1}>
         <DuotoneTeamRoster
           members={members}
@@ -74,7 +75,7 @@ export function PeopleRosterPage({ members, heading, pageTitle, skipLabel, roste
 
 export default function PioneersPage() {
   const memberId = new URLSearchParams(window.location.search).get('member');
-  const redirect = isLeadershipMember(memberId) ? memberPageLink(memberId) : null;
+  const redirect = isLeadershipMember(memberId) ? linkWithSource(memberPageLink(memberId),new URLSearchParams(window.location.search).get('from') || '/#about') : null;
   useEffect(() => { if (redirect) window.location.replace(redirect); }, [redirect]);
   if (redirect) return null;
   return <PeopleRosterPage members={pioneerRoster} heading={'先锋\n玩家'} pageTitle="先锋玩家 · 零一玩家"

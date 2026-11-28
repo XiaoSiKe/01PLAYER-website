@@ -4,6 +4,7 @@
 .time-machine .sm-brand-controls { min-width:0; max-width:100%; }
 .tm-catalog-controls { display:flex; align-items:center; gap:6px; min-width:0; }
 .tm-catalog-toggle { flex:none; }
+.time-machine .tm-catalog-controls .site-nav-return { flex: none; min-height: 44px; padding: 0 10px; font-size: 13px; background: var(--site-surface); }
 .tm-catalog-controls .tm-session-select { width:clamp(88px,26vw,210px); min-width:0; flex:0 1 auto; }
 .tm-catalog-controls .tm-session-select .language-switcher__trigger {
   width:100%; max-width:none; min-width:0; min-height:44px; padding:0 8px;
@@ -52,6 +53,13 @@ body.pg-focused .time-machine--immersive :is(.staggered-menu-wrapper,.tm-event-c
   .time-machine .sm-brand-controls:has(.tm-session-select) .site-account-link { width:44px; padding-inline:0; }
   .time-machine .sm-brand-controls:has(.tm-session-select) .site-account-label { display:none; }
   .time-machine .tm-catalog-toggle { padding-inline:8px; }
+}
+@media(max-width:760px) {
+  .time-machine .sm-brand-controls { justify-self: stretch; width: 100%; }
+  .time-machine .tm-catalog-controls { width: 100%; justify-content: flex-end; }
+  .time-machine .tm-catalog-controls .tm-session-select { flex: 1 1 0; width: auto; }
+  .time-machine .tm-session-select .choice-menu__label { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; line-height: 1.35; }
+  .time-machine .tm-catalog-controls .tm-session-select .language-switcher__trigger { font-size: 14px; }
 }
 
 .tm-photo-form { display:grid; gap:16px; padding:12px 0 24px; }

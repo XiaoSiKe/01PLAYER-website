@@ -28,7 +28,7 @@ try {
     await p.waitForFunction(()=>document.querySelector('.staggered-menu-panel').getBoundingClientRect().right<=innerWidth);
     const menu=await p.locator('.staggered-menu-panel').evaluate(el=>({width:el.offsetWidth,x:el.getBoundingClientRect().x,
       font:parseFloat(getComputedStyle(el.querySelector('.sm-panel-item')).fontSize),gap:getComputedStyle(el.querySelector('.sm-panel-list')).gap}));
-    assert.ok(menu.width<=178 && menu.x>0);assert.ok(menu.font<=14);assert.equal(menu.gap,'0px');
+    assert.ok(menu.width<=178 && menu.x>0);assert.ok(Math.abs(menu.font-16.445)<.01);assert.equal(menu.gap,'5px');
     await p.keyboard.press('Escape');
     await p.locator('#about').scrollIntoViewIfNeeded();
     assert.equal(await p.locator('.home-about-quote').first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize)),11.7);
@@ -49,13 +49,14 @@ try {
     assert.ok(await p.locator('.branch-atlas__school-row').first().evaluate(el=>el.offsetHeight<80));
     assert.ok(await p.locator('.branch-atlas__panel').evaluate(el=>el.offsetHeight<650));
     const list=await p.locator('.branch-atlas__school-list').evaluate(el=>({height:el.clientHeight,scroll:el.scrollHeight,row:el.firstElementChild.getBoundingClientRect().height}));
-    assert.ok(list.height<=list.row*3+1);assert.ok(list.scroll>list.height);
+    assert.ok(list.height<=list.row*4+1);assert.ok(list.scroll>list.height);
     const branchSearch=p.locator('.branch-atlas__toolbar').getByRole('button',{name:'搜索分社或高校',exact:true});
     await branchSearch.click();const search=p.getByRole('searchbox',{name:'搜索分社或高校',exact:true});
+    const searchDialog=p.getByRole('dialog',{name:'搜索分社或高校',exact:true});
     await search.fill('福建师范大学');await search.press('ArrowDown');
-    assert.equal(await p.getByRole('dialog',{name:'搜索分社或高校',exact:true}).count(),0);
-    assert.ok(await p.locator('.branch-atlas__school-row').first().evaluate(node=>node===document.activeElement));
-    await p.locator('.branch-atlas__school-row').first().click();
+    assert.equal(await searchDialog.count(),1);
+    assert.ok(await searchDialog.locator('.branch-atlas__school-row').first().evaluate(node=>node===document.activeElement));
+    await searchDialog.locator('.branch-atlas__school-row').first().click();
     await p.locator('.branch-atlas__school-heading').getByRole('heading',{name:'福建师范大学',exact:true}).waitFor();
 
     await p.locator('#join').scrollIntoViewIfNeeded();
@@ -76,6 +77,10 @@ try {
   const desktop=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
   desktop.on('pageerror',e=>errors.push(e.message));
   await desktop.route('**/api/community/session',r=>r.fulfill({json:{user:{id:'demo-player',name:'验收玩家',role:'player'}}}));
+  await desktop.route('**/api/community/projects/campus-agent', async route => {
+    const response = await route.fetch();
+    await route.fulfill({ response, json: { ...await response.json(), demoUrl: 'https://example.test/project' } });
+  });
   await desktop.goto(origin+'/plaza?project=campus-agent');
   const actions=desktop.locator('.detail-section-actions');
   await actions.getByRole('link',{name:'修改',exact:true}).waitFor();

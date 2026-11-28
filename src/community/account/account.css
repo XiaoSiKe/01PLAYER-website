@@ -232,9 +232,6 @@
   padding-inline: 16px;
 }
 .player-settings-action .specular-button__label { gap: 6px; }
-.player-space-profile-entry {
-  margin-top: 14px;
-}
 .player-space-records {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -295,6 +292,14 @@ a.player-record-item:active > .border-glow-content {
   gap: 14px;
 }
 .player-space-settings .player-space-card h3 { margin-bottom: 14px; }
+.player-settings-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.player-space-settings .player-settings-heading h3 { margin-bottom: 0; }
 .player-password-heading { font-size: 15px; margin: 0 0 10px; }
 .player-account-actions {
   border-top: 1px solid var(--community-border);
@@ -308,7 +313,6 @@ a.player-record-item:active > .border-glow-content {
   .player-space { grid-template-columns: 1fr; gap: 16px; padding-top: 6px; }
   .player-space-profile .account-identity { gap: 8px; }
   .player-space-profile .account-avatar { inline-size: min(100%, 121.68px); }
-  .player-space-profile-entry { width: fit-content; max-width: 100%; margin-inline: auto; }
 }
 @media (max-width: 420px) {
   .player-space-records { grid-template-columns: 1fr; gap: 12px; }
@@ -319,4 +323,19 @@ a.player-record-item:active > .border-glow-content {
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
+}
+.player-space-shortcuts { display: grid; gap: 8px; margin-top: 14px; }
+.player-space-shortcuts .specular-button { width: 100%; min-width: 0; }
+.player-record-group--plain ul, .player-record-group--plain .player-record-empty { margin-top: 0; }
+@media(max-width:760px) {
+  .community-page:has(.player-space) .community-shell { padding-top: 76px; }
+  .player-space-profile > .border-glow-content { display: grid; grid-template-columns: minmax(0,1fr) 104px; gap: 12px; align-items: start; }
+  .player-space-identity { min-width: 0; overflow-wrap: anywhere; }
+  .player-space-profile .account-identity { justify-items: start; text-align: left; }
+  .player-space-profile .account-avatar { inline-size: min(100%,88px); }
+  .player-space-profile .account-identity h2 { font-size: 21px; overflow-wrap: anywhere; }
+  .player-space-profile .account-links { grid-column: 1 / -1; }
+  .player-space-shortcuts { gap: 6px; margin-top: 0; }
+  .community-page .player-space-shortcuts .specular-button { min-height: 38px; padding: 6px 8px; font-size: 13px; }
+  .player-record-project-summary, .player-record-project-status, .player-record-project-review, .player-record-registration-id { display: none; }
 }

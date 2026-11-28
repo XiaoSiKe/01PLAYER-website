@@ -13,7 +13,7 @@ import { accountStatus, advanceAccountRevision, revokeAccountSessions, updateAcc
 import { initialPasswordHash, passwordHash, passwordMatches, runPasswordWork } from './community-passwords.mjs';
 import { clientAddress, createAuthLimiter, createEnrollmentLimiter, createTrafficLimiter } from './community-rate-limits.mjs';
 import { createSiteTraffic } from './site-traffic.mjs';
-import { acceptsRegistration, importCatalog, isPublished, participantRegistrationView, registrationView, setEventPhase } from './player-events.mjs';
+import { acceptsRegistration, importCatalog, isPublished, participantRegistrationView, receiptView, registrationView, setEventPhase } from './player-events.mjs';
 import { acceptsProjectSubmissions, acceptsRecruitment, usesExternalRegistration } from './event-state.mjs';
 import { pruneHomePins } from './home-pins.mjs';
 import { createEventRoutes, initializeRegistrationState, isAnonymousRoute, reviewProject, trustedStaffRequest } from './player-event-routes.mjs';
@@ -247,7 +247,12 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
           catch { fail(503, '活动数据存储暂不可用。'); }
           return send({ service: '01player-community', status: 'ok', demo });
         }
-        if (route === 'session') return send({ user: sessionUser(user), demo });
+        if (route === 'session') {
+          const session = { user: sessionUser(user), demo };
+          const event = requestUrl.searchParams.get('registrationEvent');
+          if (event !== null) session.eventReceiptId = (user && registrations.receiptIdForEvent(user.id, event)) || null;
+          return send(session);
+        }
         if (route === 'account/avatar') {
           const avatar = requireUser().avatar;
           if (!avatar || requestUrl.searchParams.get('v') !== avatar.version) fail(404, '头像不存在。');
@@ -285,6 +290,12 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
         if (route === 'mine') {
           requireUser();
           const events = rowsById(db.events);
+          if (requestUrl.searchParams.get('view') === 'registrations') {
+            const id = requestUrl.searchParams.get('receipt');
+            const row = id === null ? null : registrations.byId(id);
+            const rows = id === null ? registrations.forUser(user.id) : row?.userId === user.id ? [row] : [];
+            return send({ registrations: rows.map(row => ({ ...receiptView(row, events.get(row.eventId)), name: row.name })) });
+          }
           return send({
             projects: db.projects.filter(p => p.ownerId === user.id).map(p => serializeProject(p, user, db)),
             registrations: registrations.forUser(user.id).map(row => participantRegistrationView(row, events.get(row.eventId))),

@@ -76,7 +76,7 @@ curl --connect-to club.01aiedu.com:443:club.01aiedu.com.w.kunlunaq.com:443 \
   https://club.01aiedu.com/version.json
 ```
 
-CDN 证书与 ECS 自动续期是两份独立配置。源站证书续期后，须安全更新阿里云 CDN 证书并重新验证；当前导入证书到期时间为北京时间 **2026-11-29 23:44:14**。不要把证书私钥放入 Git、流水线正文或公开日志。
+CDN 证书与 ECS 自动续期是两份独立配置。源站证书续期后，须安全更新阿里云 CDN 证书并重新验证；现行证书与自动同步的核验记录见[运维手册](docs/OPERATIONS.md)。不要把证书私钥放入 Git、流水线正文或公开日志。
 
 ## 发布结构
 

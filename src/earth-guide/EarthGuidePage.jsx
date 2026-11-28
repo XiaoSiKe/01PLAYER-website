@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FiArrowLeft, FiArrowRight, FiFolder, FiGithub, FiList, FiSearch, FiX } from 'react-icons/fi';
 import SiteNavigation from '../components/SiteNavigation';
+import useMediaQuery from '../components/useMediaQuery';
 import SpecularButton from '../SpecularButton';
 import { AccountHeading } from '../community/account/AccountAccess';
 import { useLanguage } from '../Language';
@@ -126,7 +127,8 @@ export default function EarthGuidePage() {
   const fragmentArticle = headingHash ? article : undefined;
   const groupId = groups.find(group => group.id === hash)?.id;
   const current = chapterId ?? (hash === 'skill' ? 'skill' : 'overview');
-  const matchedItems = [...startLinks, ...chapters].filter(item => (item.title + (item.group?.title || '')).toLowerCase().includes(query.trim().toLowerCase()));
+  const mobile = useMediaQuery('(max-width: 760px)');
+  const matchedItems = mobile && !query.trim() ? [] : [...startLinks, ...chapters].filter(item => (item.title + (item.group?.title || '')).toLowerCase().includes(query.trim().toLowerCase()));
 
   useLayoutEffect(() => {
     const root = page.current;
@@ -228,7 +230,11 @@ export default function EarthGuidePage() {
         <nav aria-label="首页小节"><a href="#skill">地球生存攻略 Skill</a><a href="#reading">章节目录</a>{groups.map(group => <a key={group.id} href={`#${group.id}`} style={{'--outline-level':1}}>{group.title}</a>)}</nav>
       </aside>}
     </div>
-    <dialog ref={searchDialog} className="guide-search-dialog" aria-labelledby="guide-search-title"
+    <dialog ref={searchDialog} className="guide-search-dialog" aria-labelledby="guide-search-title" onClose={() => setQuery('')}
+      onKeyDown={event => {
+        if (event.nativeEvent.isComposing) { event.stopPropagation(); return; }
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); searchDialog.current.close(); }
+      }}
       onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
       <div className="guide-search-panel">
         <header>
@@ -241,7 +247,7 @@ export default function EarthGuidePage() {
         </label>
         {matchedItems.length ? <ul className="guide-search-results">
           {matchedItems.map(item => <li key={item.id}><a href={`#${item.id}`} onClick={() => searchDialog.current.close()}>{item.title}</a></li>)}
-        </ul> : <p className="guide-search-empty" role="status">没有匹配的章节。</p>}
+        </ul> : query.trim() && <p className="guide-search-empty" role="status">没有匹配的章节。</p>}
       </div>
     </dialog>
   </div>;

@@ -10,7 +10,6 @@ const userAction = /^staff\/users\/[A-Za-z0-9_-]+\/(?:disable|restore|revoke-ses
 export function allowedRoute(path, method = 'GET') {
   if (typeof path !== 'string') return false;
   if (/^staff\/home-pins\/(events|projects)$/.test(path)) return method === 'GET' || method === 'POST';
-  if (/^staff\/events\/[A-Za-z0-9_-]+\/pin$/.test(path)) return method === 'POST';
   if (/^project-media\/[a-f0-9]{64}\.jpg$/.test(path)) return method === 'GET';
   if (path === 'staff/projects') return method === 'GET' || method === 'POST';
   if (/^staff\/projects\/[A-Za-z0-9_-]+(?:\/review)?$/.test(path)) return method === 'POST';

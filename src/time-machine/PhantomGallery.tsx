@@ -92,7 +92,7 @@ function calcArcTransform(opts: {
   }
 }
 
-export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]; tileScale?: number }) {
+export default function PhantomGallery({ items, tileScale = 1, bright = false }: { items: Item[]; tileScale?: number; bright?: boolean }) {
   const stageRef      = useRef<HTMLDivElement>(null);
   const gridRef       = useRef<HTMLDivElement>(null);
   const spotlightRef  = useRef<HTMLDivElement>(null);
@@ -117,6 +117,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
     });
     let viewport = measureViewport();
     const baseSize = () => Math.min(CFG.cellSize, Math.max(1, (viewport.w - 24) * 0.4928)) * tileScale;
+    const cellPadding = CFG.cellPadding * (bright ? Math.min(1, tileScale) : 1);
 
     /* ------- Motion state ------- */
     let offset          = { x: 0, y: 0 };
@@ -144,7 +145,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
     const cells = photos.map(item => {
       const cell = document.createElement("div");
       cell.className = "pg-cell";
-      cell.style.padding = CFG.cellPadding + "px";
+      cell.style.padding = cellPadding + "px";
       cell.dataset.src = item.fullSrc;
       cell.dataset.title = item.title;
       cell.dataset.year = item.year;
@@ -196,8 +197,8 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
       const placements = cells.map(cell => {
         const top = Math.min(...bottoms);
         const column = bottoms.indexOf(top);
-        const imageHeight = Math.max(1, size - CFG.cellPadding * 2) / cell.ratio;
-        const cellHeight = imageHeight + CFG.cellPadding * 2 + CFG.gap + CFG.captionHeight;
+        const imageHeight = Math.max(1, size - cellPadding * 2) / cell.ratio;
+        const cellHeight = imageHeight + cellPadding * 2 + CFG.gap + CFG.captionHeight;
         bottoms[column] = top + cellHeight + CFG.gap;
         return { left: column * (size + columnGap), top, height: cellHeight, imageHeight };
       });
@@ -236,7 +237,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
         const { z, yawDeg, pitchDeg, edgeFactor } = calcArcTransform({
           cellCenterX: left + currentCellSize / 2, cellCenterY: top + placement.height / 2,
           viewportW: viewport.w, viewportH: viewport.h, arcAxis: CFG.arcAxis,
-          arcMaxAngleDeg: CFG.arcMaxAngleDeg, arcAmount: CFG.arcAmount,
+          arcMaxAngleDeg: CFG.arcMaxAngleDeg, arcAmount: bright ? 0 : CFG.arcAmount,
         });
         const scale = 1 - CFG.edgeFade * edgeFactor * edgeFactor;
         cell.style.left = left + "px";
@@ -299,6 +300,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
       return cell && grid.contains(cell) ? cell : null;
     };
     function updateSpotlight(x: number, y: number) {
+      if (bright) return;
       spotlightEl.style.setProperty("--mx", x + "px");
       spotlightEl.style.setProperty("--my", y + "px");
     }
@@ -344,6 +346,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
         lastMove = { x: e.clientX, y: e.clientY, t: now };
       }
       if (!isPressing) {
+        if (bright) return;
         if (cellAt(e.target)) targetMouseOff = { ...mouseOffset };
         else {
           targetMouseOff.x = (viewport.w / 2 - e.clientX) * CFG.parallaxStrength;
@@ -543,7 +546,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
     /* 3D tilt on focus card */
     let tiltRX = 0, tiltRY = 0, tiltTX = 0, tiltTY = 0;
     function tiltTick() {
-      if (!focusOn) return;
+      if (!focusOn || bright) return;
       tiltRX += (tiltTX - tiltRX) * 0.14;
       tiltRY += (tiltTY - tiltRY) * 0.14;
       focusCard.style.transform =
@@ -551,7 +554,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
       tiltFrame = requestAnimationFrame(tiltTick);
     }
     const onTiltMove = (e: MouseEvent) => {
-      if (!focusOn) return;
+      if (!focusOn || bright) return;
       const rect = focusCard.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top  + rect.height / 2;
@@ -594,7 +597,7 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
 
     /* When focus opens, kick the tilt loop */
     const focusObserver = new MutationObserver(() => {
-      if (focusCard.classList.contains("on") && focusOn) {
+      if (focusCard.classList.contains("on") && focusOn && !bright) {
         tiltRX = tiltRY = tiltTX = tiltTY = 0;
         tiltFrame = requestAnimationFrame(tiltTick);
       }
@@ -630,11 +633,11 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
       headerObserver.disconnect();
       grid.replaceChildren();
     };
-  }, [items, tileScale]);
+  }, [items, tileScale, bright]);
 
   return (
     <>
-      <div id="pg-stage" ref={stageRef} role="region" aria-label="零一影像画廊" tabIndex={-1}>
+      <div id="pg-stage" ref={stageRef} data-presentation={bright ? 'bright' : 'spotlight'} role="region" aria-label="零一影像画廊" tabIndex={-1}>
         <div id="pg-grid" ref={gridRef}></div>
       </div>
       <div id="pg-dim"></div>
@@ -676,8 +679,13 @@ export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]
           transform-style: preserve-3d;
           will-change: transform, opacity;
         }
-        #pg-stage:not(.dragging) .pg-cell:hover { background-color: #fff; }
-        #pg-stage:not(.dragging) .pg-cell:hover .pg-meta { color: #252525; }
+        #pg-stage:not([data-presentation='bright']):not(.dragging) .pg-cell:hover { background-color: #fff; }
+        #pg-stage:not([data-presentation='bright']):not(.dragging) .pg-cell:hover .pg-meta { color: #252525; }
+        #pg-stage[data-presentation='bright'] { perspective: none; }
+        #pg-stage[data-presentation='bright'] .pg-meta { color: #d0d0d0; }
+        #pg-stage[data-presentation='bright'] ~ #pg-dim,
+        #pg-stage[data-presentation='bright'] ~ #pg-spotlight,
+        #pg-stage[data-presentation='bright'] ~ #pg-vignette { display: none; }
         .pg-thumb {
           flex: none;
           display: block;

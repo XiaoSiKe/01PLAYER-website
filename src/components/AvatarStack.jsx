@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ResponsiveImage from './ResponsiveImage';
 import './AvatarStack.css';
+import { linkWithSource } from '../community/account/navigation';
 
 const EMPTY_ITEMS = [];
 const SIZES = { sm: 28, md: 36, lg: 44 };
@@ -191,7 +192,7 @@ export function AvatarStack({
           <Avatar
             ref={node => { avatarRefs.current[index] = node; }}
             type={item.href ? undefined : 'button'}
-            href={item.href}
+            href={item.href && linkWithSource(item.href)}
             className="avatar-stack__avatar"
             aria-label={item.href ? t("查看{0}的成员介绍", [item.name]) : t(item.name)}
             tabIndex={roving === index ? 0 : -1}

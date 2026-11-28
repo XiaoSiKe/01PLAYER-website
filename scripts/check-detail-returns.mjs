@@ -33,6 +33,7 @@ try {
   await page.getByRole('link',{name:'查看报名',exact:true}).click();await page.locator('.registration-ticket').waitFor();
   await page.reload();await page.locator('.registration-ticket').waitFor();
   assert.equal(await page.locator('.registration-receipt-return').count(),0);
+  assert.equal(await page.locator('.site-tickets-link').isVisible(),width>760);
   await page.locator('.registration-receipt-status').getByRole('link',{name:'返回',exact:true}).click();await page.waitForURL(eventUrl);
   await goBack();await page.waitForFunction(()=>!new URLSearchParams(location.search).has('event'));
   assert.equal(new URL(page.url()).searchParams.get('q'),'返回');assert.equal(new URL(page.url()).searchParams.get('category'),'competition');
