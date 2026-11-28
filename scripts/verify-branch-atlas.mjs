@@ -2,8 +2,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { atlasFlightTarget, atlasLayerOpacity, atlasMarkerLabels, atlasMarkerLayout, atlasSpringResponse, fitAtlasCamera, stepAtlasSpring, parentAtlasView } from '../src/components/atlasCamera.js';
 import { branches, branchCities, searchBranches } from '../src/data/branches.js';
+import { encodeAtlas, decodeAtlas } from '../src/components/atlasCodec.js';
 
 const atlas = JSON.parse(readFileSync(new URL('../src/data/maps/branch-atlas.json', import.meta.url)));
+const packed = encodeAtlas(atlas);
+assert.deepEqual(decodeAtlas(packed), atlas, 'Packing must preserve every path, coordinate, label and metadata value');
+assert.throws(() => decodeAtlas(packed.subarray(0, -1)), /Incomplete/);
 for (const name of ['china', 'fujian', 'fuzhou', 'quanzhou', 'campuses', 'localDetails', 'context']) {
   const ids = atlas[name].map(item => item.id);
   assert(ids.every(id => id && id !== 'undefined'), `${name} render IDs must be defined`);

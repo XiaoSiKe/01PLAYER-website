@@ -5,7 +5,7 @@ export const registrationFile = identity => identity + '.registrations.sqlite';
 const DatabaseSync = process.getBuiltinModule?.('node:sqlite')?.DatabaseSync;
 const contactKey = value => value?.trim().toLowerCase() ?? null;
 
-function pageBounds(total, { page, pageSize }) {
+export function pageBounds(total, { page, pageSize }) {
   const totalPages = Math.ceil(total / pageSize);
   return { total, page: Math.min(page, totalPages || 1), pageSize, totalPages };
 }
@@ -23,13 +23,24 @@ function jsonRegistrations(current, persist) {
     hasContact: (event, contact) => rows().some(r => r.eventId === event && contactKey(r.contact) === contactKey(contact)),
     hasUser: (event, user) => rows().some(r => r.eventId === event && r.userId === user),
     forUser: user => rows().filter(r => r.userId === user),
+    pageForUser(user, requested) {
+      const matches = rows().filter(row => row.userId === user).reverse();
+      const bounds = pageBounds(matches.length, requested);
+      const offset = (bounds.page - 1) * bounds.pageSize;
+      return { ...bounds, items: matches.slice(offset, offset + bounds.pageSize) };
+    },
     countForUser: user => rows().filter(r => r.userId === user).length,
     countStatus: status => rows().reduce((count, row) => count + Number((row.status || 'approved') === status), 0),
     list: (event, status) => rows().filter(row => matches(row, event, status)),
-    page(event, status, requested) {
+    page(event, status, requested, includeCounts = false) {
       const all = rows();
       const total = event || status ? all.reduce((n, row) => n + Number(matches(row, event, status)), 0) : all.length;
       const bounds = pageBounds(total, requested);
+      if (includeCounts) {
+        const statusCounts = { pending: 0, approved: 0, rejected: 0 };
+        for (const row of all) if (matches(row, event, null)) statusCounts[row.status || 'approved']++;
+        bounds.statusCounts = statusCounts;
+      }
       const offset = (bounds.page - 1) * bounds.pageSize;
       if (!event && !status) return { ...bounds, items: all.slice(offset, offset + bounds.pageSize) };
       const items = [];
@@ -132,8 +143,11 @@ export function openRegistrations(identity, current, persist) {
     const byContact = db.prepare('SELECT 1 FROM registrations WHERE event=? AND contact=?');
     const byUser = db.prepare('SELECT 1 FROM registrations WHERE event=? AND user=?');
     const forUser = db.prepare('SELECT body FROM registrations WHERE user=? ORDER BY rowid');
+    const forUserPage = db.prepare('SELECT body FROM registrations WHERE user=? ORDER BY rowid DESC LIMIT ? OFFSET ?');
     const count = db.prepare('SELECT count(*) AS n FROM registrations WHERE user=?');
     const countStatus = db.prepare('SELECT count(*) AS n FROM registrations WHERE status=?');
+    const countsByStatus = db.prepare('SELECT status, count(*) AS n FROM registrations GROUP BY status');
+    const eventCountsByStatus = db.prepare('SELECT status, count(*) AS n FROM registrations WHERE event=? GROUP BY status');
     const add = db.prepare(insert);
     const update = db.prepare('UPDATE registrations SET status=?,body=? WHERE id=?');
     const unpack = r => r && JSON.parse(r.body);
@@ -160,18 +174,29 @@ export function openRegistrations(identity, current, persist) {
       hasContact: (event, contact) => Boolean(byContact.get(event, contactKey(contact))),
       hasUser: (event, user) => Boolean(byUser.get(event, user)),
       forUser: user => Array.from(forUser.iterate(user), unpack),
+      pageForUser(user, requested) {
+        return transaction('BEGIN', () => {
+          const bounds = pageBounds(count.get(user).n, requested);
+          const offset = (bounds.page - 1) * bounds.pageSize;
+          return { ...bounds, items: forUserPage.all(user, bounds.pageSize, offset).map(unpack) };
+        });
+      },
       countForUser: user => count.get(user).n,
       countStatus: status => countStatus.get(status).n,
       list(event, status) {
         const { queries, params } = roster(event, status);
         return Array.from(queries.all.iterate(...params), unpack);
       },
-      page(event, status, requested) {
+      page(event, status, requested, includeCounts = false) {
         const { queries, params } = roster(event, status);
         return transaction('BEGIN', () => {
           const bounds = pageBounds(queries.count.get(...params).n, requested);
           const offset = (bounds.page - 1) * bounds.pageSize;
           const items = Array.from(queries.page.iterate(...params, bounds.pageSize, offset), unpack);
+          if (includeCounts) {
+            const counts = event ? eventCountsByStatus.all(event) : countsByStatus.all();
+            bounds.statusCounts = Object.fromEntries(counts.map(({ status, n }) => [status, n]));
+          }
           return { ...bounds, items };
         });
       },

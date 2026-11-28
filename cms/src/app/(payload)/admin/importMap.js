@@ -5,11 +5,13 @@ import { DeskNavExpand as DeskNavExpand_e8ac282337e54ce91298af14ab75f66f } from 
 import { DeskAccountControls as DeskAccountControls_e8ac282337e54ce91298af14ab75f66f } from '../../../components/DeskNav.jsx'
 import { Icon as Icon_7acd948c708128c4e6d0240739a28ffe } from '../../../components/Brand.jsx'
 import { Logo as Logo_7acd948c708128c4e6d0240739a28ffe } from '../../../components/Brand.jsx'
-import { default as default_7b3ec82c0f7c074ee5b7f95ff7a7fdee } from '../../../components/Dashboard.jsx'
 import { default as default_e8ac282337e54ce91298af14ab75f66f } from '../../../components/DeskNav.jsx'
 import { OfficialTheme as OfficialTheme_1c13fc0582b30d8b7f8a796f8c9cd852 } from '../../../components/OfficialUI.jsx'
+import { DashboardView as DashboardView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
 import { default as default_7faae23c2e3d32579dbfa08d69a5bb2a } from '../../../components/StaffLogin.jsx'
 import { default as default_ab4cb504a1a3a945e1442b78721f38a4 } from '../../../components/StaffPasswordHelp.jsx'
+import { GuideView as GuideView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
+import { ResearchView as ResearchView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
 import { OperationsView as OperationsView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
 import { UsersView as UsersView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
 import { PreviewView as PreviewView_d1a2f487f2c990c61d376bf99c398987 } from '../../../components/StaffViews.jsx'
@@ -24,11 +26,13 @@ export const importMap = {
   "/components/DeskNav.jsx#DeskAccountControls": DeskAccountControls_e8ac282337e54ce91298af14ab75f66f,
   "/components/Brand.jsx#Icon": Icon_7acd948c708128c4e6d0240739a28ffe,
   "/components/Brand.jsx#Logo": Logo_7acd948c708128c4e6d0240739a28ffe,
-  "/components/Dashboard.jsx#default": default_7b3ec82c0f7c074ee5b7f95ff7a7fdee,
   "/components/DeskNav.jsx#default": default_e8ac282337e54ce91298af14ab75f66f,
   "/components/OfficialUI.jsx#OfficialTheme": OfficialTheme_1c13fc0582b30d8b7f8a796f8c9cd852,
+  "/components/StaffViews.jsx#DashboardView": DashboardView_d1a2f487f2c990c61d376bf99c398987,
   "/components/StaffLogin.jsx#default": default_7faae23c2e3d32579dbfa08d69a5bb2a,
   "/components/StaffPasswordHelp.jsx#default": default_ab4cb504a1a3a945e1442b78721f38a4,
+  "/components/StaffViews.jsx#GuideView": GuideView_d1a2f487f2c990c61d376bf99c398987,
+  "/components/StaffViews.jsx#ResearchView": ResearchView_d1a2f487f2c990c61d376bf99c398987,
   "/components/StaffViews.jsx#OperationsView": OperationsView_d1a2f487f2c990c61d376bf99c398987,
   "/components/StaffViews.jsx#UsersView": UsersView_d1a2f487f2c990c61d376bf99c398987,
   "/components/StaffViews.jsx#PreviewView": PreviewView_d1a2f487f2c990c61d376bf99c398987,

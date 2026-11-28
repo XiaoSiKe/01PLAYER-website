@@ -1,3 +1,4 @@
+import { validateGuide } from '../../../server/guide-content.mjs';
 export const labels = {
   name:'名称', title:'标题', role:'职务', description:'介绍', summary:'摘要', image:'图片', fullImage:'高清原图',
   photo:'照片', src:'图片', href:'链接', url:'地址', link:'链接', label:'导航文字', alt:'图片说明', ariaLabel:'辅助说明',
@@ -63,6 +64,7 @@ export function validUrl(value, media = false) {
   } catch { return false; }
 }
 export function validateRows(rows, section, defaults) {
+  if (section === 'earthGuide') return validateGuide(rows);
   const shape = templateFor(section);
   if (!shape || !Array.isArray(rows) || rows.length > 1000) return '栏目条目格式无效。';
   const allowed = defaults && isFixedSection(section) ? new Set(defaults.map(row => row.id || row.source)) : null;

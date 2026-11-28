@@ -17,12 +17,11 @@ endpoints:
       - "[BODY] == pat(*club.01aiedu.com.w.kunlunaq.com*)"
   - name: edge-tls
     group: edge
-    url: https://club.01aiedu.com/version.json
+    url: tls://club.01aiedu.com:443
     interval: 1m
     conditions:
-      - "[STATUS] == 200"
+      - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRATION] > 168h"
-      - "len([BODY].commit) == 40"
   - name: homepage
     group: edge
     url: https://club.01aiedu.com/

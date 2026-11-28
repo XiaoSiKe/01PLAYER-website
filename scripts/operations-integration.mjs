@@ -8,6 +8,7 @@ import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkOperationsSite } from '../deploy/operations/smoke.mjs';
 
@@ -82,9 +83,37 @@ async function verifyCommunityUsers({ community, endpoint, desk, owner, operator
   assert.equal(list.items[0].id,id);
   assert.equal(list.items[0].activeSessions,2);
   assert.ok(list.items[0].createdAt && list.items[0].lastLoginAt);
-  await sign('projects',{name:'账号关联作品',summary:'审核用户关联',description:'按作者账号 ID 找回官网用户。',demoUrl:'https://example.test/demo'},{cookie:created.cookie});
-  assert.ok((await desk('staff/projects')).some(p=>p.accountId===id));
+  const project = await sign('projects',{name:'账号关联作品',summary:'审核用户关联',description:'按作者账号 ID 找回官网用户。',demoUrl:'https://example.test/demo',imageUrl:'https://example.test/cover.jpg',bannerUrl:'https://example.test/banner.jpg'},{cookie:created.cookie});
+  assert.ok((await desk('staff/projects')).some(p=>p.id===project.id && p.accountId===id));
+  assert.equal((await endpoint('work-queue',{auth:operator})).projects,1);
+  await desk('staff/projects/'+project.id+'/review','POST',{status:'approved'});
+  assert.equal((await endpoint('work-queue',{auth:operator})).projects,0);
   assert.equal((await desk(path)).projectCount,1);
+  for (const kind of ['save', 'like']) {
+    await sign('reaction/' + project.id, { kind, active: true }, { cookie: created.cookie });
+  }
+  const activityEvent = 'account-activity';
+  await desk('staff/events', 'POST', {
+    id: activityEvent, name: '账号联调活动', description: '验证玩家活动记录。',
+    date: (new Date().getUTCFullYear() + 1) + '.12.01', registrationMode: 'direct',
+  });
+  await desk('staff/events/' + activityEvent + '/publish', 'POST', {});
+  const registration = await sign('register-event', {
+    eventId: activityEvent, name: '官网联调玩家', contact: 'activity@example.test',
+  }, { cookie: created.cookie });
+  const activityPath = path + '/activity';
+  await endpoint('desk', { method: 'POST', staff: true, cookie: created.cookie, status: 403,
+    body: { path: activityPath, method: 'GET', query: { kind: 'saved' } } });
+  for (const kind of ['projects', 'saved', 'liked']) {
+    const result = await desk(activityPath, 'GET', undefined, { kind, page: '99' });
+    assert.equal(result.page, 1);
+    assert.equal(result.total, 1);
+    assert.deepEqual(result.items.map(item => item.id), [project.id]);
+  }
+  const bookings = await desk(activityPath, 'GET', undefined, { kind: 'registrations' });
+  assert.deepEqual(bookings.items.map(item => item.id), [registration.id]);
+  assert.equal(bookings.items[0].title, '账号联调活动');
+  assert.ok(!Object.hasOwn(bookings.items[0], 'contact') && !Object.hasOwn(bookings.items[0], 'answers'));
   await endpoint('desk',{method:'POST',cookie:created.cookie,staff:true,body:{path:'staff/users',method:'GET'},status:403});
   const action = (role,kind,status=200) => endpoint('desk',{method:'POST',auth:role,staff:true,status,body:{path:path+'/'+kind,method:'POST',data:{}}});
   for (const kind of ['disable','restore','revoke-sessions']) await action(operator,kind,403);
@@ -100,6 +129,9 @@ async function verifyCommunityUsers({ community, endpoint, desk, owner, operator
   assert.equal((await community('session',{cookie:again.cookie})).user,null);
   const detail=await desk(path);
   assert.equal(detail.projectCount,1);
+  assert.equal(detail.registrationCount,1);
+  assert.equal(detail.savedCount,1);
+  assert.equal(detail.likedCount,1);
   assert.deepEqual(detail.accountHistory.map(record=>record.kind),['revoke-sessions','restore','disable']);
   const actor=(await endpoint('staff/me',{auth:owner})).user;
   assert.ok(detail.accountHistory.every(record=>String(record.actorId)===String(actor.id)));
@@ -107,9 +139,23 @@ async function verifyCommunityUsers({ community, endpoint, desk, owner, operator
   await endpoint('player-directory',{status:403});
   await endpoint('player-directory',{cookie:created.cookie,status:403});
   const directory = await endpoint('player-directory',{auth:owner});
-  assert.ok(directory.items.some(account => account.id === id && account.role === 'player'));
-  assert.ok(directory.items.some(account => account.email === actor.email && account.role === 'admin' && account.source === 'staff'));
+  assert.ok(directory.items.some(account => account.id === id && account.role === 'player' && account.identity === 'player'));
+  assert.ok(directory.items.some(account => account.email === actor.email && account.identity === 'head' && account.source === 'staff'));
   assert.ok(directory.items.every(account => !('password' in account) && !('sessions' in account)));
+  const heads = await endpoint('player-directory?role=head', { auth: owner });
+  assert.ok(heads.items.some(account => account.email === actor.email));
+  assert.ok(heads.items.every(account => account.identity === 'head'));
+  const pioneers = await endpoint('player-directory?role=pioneer', { auth: owner });
+  assert.ok(pioneers.items.length > 0);
+  assert.ok(pioneers.items.every(account => account.identity === 'pioneer' && account.source === 'staff'));
+  const players = await endpoint('player-directory?role=player', { auth: owner });
+  assert.ok(players.items.some(account => account.id === id));
+  assert.ok(players.items.every(account => account.identity === 'player' && account.source === 'community'));
+  const matchedHead = await endpoint('player-directory?role=head&q=' + encodeURIComponent(actor.email), { auth: owner });
+  assert.deepEqual(matchedHead.items.map(account => account.email), [actor.email]);
+  const operatorAccount = (await endpoint('staff/me', { auth: operator })).user;
+  await endpoint('staff/' + operatorAccount.id, { method: 'PATCH', auth: operator, body: { role: 'owner' }, status: 403 });
+  await endpoint('staff/' + actor.id, { method: 'PATCH', auth: owner, body: { role: 'operator' }, status: 400 });
   const administrators = await endpoint('player-directory?role=admin',{auth:operator});
   assert.ok(administrators.items.every(account => account.role === 'admin' && account.email !== actor.email));
   assert.ok(administrators.items.some(account => account.source === 'staff'));
@@ -145,8 +191,12 @@ async function run() {
   await checked([payload, 'migrate'], cms, env);
   await checked([payload, 'generate:importmap'], cms, env);
   await checked([next, 'build', '--webpack'], cms, env);
-  // The production runtime ships the generated Next bundle, without frontend build dependencies.
+  // Match the production runtime: keep the shared identity module, without frontend build dependencies.
   for (const input of websiteBuildInputs) await rm(join(temp,input), { recursive:true });
+  await mkdir(join(temp,'src/community/account'), { recursive:true });
+  await cp(join(root,'src/community/account/identity.js'), join(temp,'src/community/account/identity.js'));
+  await mkdir(join(temp,'server'), { recursive:true });
+  await cp(join(root,'server/guide-content.mjs'), join(temp,'server/guide-content.mjs'));
   await checked([payload, 'migrate'], cms, env);
   // Browser writes use HTTP on this loopback fixture; production terminates HTTPS at NGINX.
   const server = command([join(root,'server/start.mjs')], root, {...env, NODE_ENV:'test', PORT:String(sitePort)});
@@ -154,7 +204,7 @@ async function run() {
   await Promise.all([awaitServer(site+'/api/community/health',server,r=>r.status===200), awaitServer(admin+'/cms-api/staff/me',cmsServer)]);
   const previewOrigin = 'http://127.0.0.1:' + previewPort;
   const preview = command([join(root,'node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(previewPort), '--strictPort'], root,
-    {...env,NODE_ENV:'test',COMMUNITY_DATA_FILE:join(temp,'preview-events.json')});
+    {...env,NODE_ENV:'test',PLAYER_ORIGIN:site,COMMUNITY_DATA_FILE:join(temp,'preview-events.json')});
   await awaitServer(previewOrigin+'/site-content/manifest.json',preview,r=>r.status===200);
   const endpoint = (path, args) => request(admin+'/cms-api/'+path,args);
   const community = (path,args) => request(site+'/api/community/'+path,args);
@@ -173,6 +223,11 @@ async function run() {
     await endpoint('health-board',{auth:priorSession,status:[401,403]});
     await endpoint('staff/login',{method:'POST',body:{email:operatorEmail,password:temporaryPassword},status:401});
     const operator = (await endpoint('staff/login',{method:'POST',body:{email:operatorEmail,password:operatorPassword}})).token;
+    await endpoint('site-traffic', { status: 403 });
+    assert.equal((await endpoint('site-traffic', { auth: operator })).trend.length, 7);
+    const dashboard = await request(admin + '/admin', { cookie: 'payload-token=' + operator });
+    assert.match(dashboard.toString(), /class="op-chart-plot"/);
+    assert.doesNotMatch(dashboard.toString(), /class="op-traffic-placeholder"/);
     await endpoint('staff',{method:'POST',auth:operator,body:{email:'denied@example.test',password:token(),role:'owner'},status:403});
     await endpoint('health-board',{status:403});
     const board = await endpoint('health-board',{auth});
@@ -180,13 +235,76 @@ async function run() {
     await community('staff/registrations',{status:401});
     const desk = (path, method = 'GET', body, query) => endpoint('desk',{method:'POST',auth:operator,staff:true,body:{path,method,data:body,query}});
     await endpoint('desk',{method:'POST',auth:operator,staff:true,body:{path:'login',method:'POST'},status:400});
+    if (process.env.GUIDE_BROWSER === '1') {
+      const {verifyGuideEditor} = await import('./verify-guide-editor-browser.mjs');
+      await verifyGuideEditor({site:previewOrigin,operator,endpoint});
+    }
+    console.log('核验攻略编辑、草稿隔离、发布更新、冲突保护与删除…');
+    await endpoint('guide', {status:403});
+    const guide = await endpoint('guide', {auth:operator});
+    assert.equal(guide.rows.length,3);
+    const guideRows = structuredClone(guide.rows);
+    const guideArticle = {id:'integration-article',title:'攻略后台验收',author:'验收作者',university:'验收大学',uploadedAt:'2026-11-27',body:'## 新标题\n\n运营后台发布的 Markdown。'};
+    guideRows[0].chapters.unshift(guideArticle);
+    const guideDraft = await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:guideRows,revision:guide.revision,status:'draft'}});
+    assert.ok(!(await request(site+'/site-content/earth-guide.json')).articles[guideArticle.id]);
+    assert.equal((await endpoint('site-preview?key=earthGuide',{auth:operator})).sections.earthGuide[0].chapters[0].body,guideArticle.body);
+    await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:guideRows,revision:guide.revision,status:'published'},status:409});
+    await endpoint('guide',{method:'POST',auth:operator,body:{rows:guideRows,revision:guideDraft.revision,status:'published'},status:403});
+    const guidePublication = await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:guideRows,revision:guideDraft.revision,status:'published'}});
+    assert.deepEqual((await request(site+'/site-content/earth-guide.json')).articles[guideArticle.id],Object.fromEntries(Object.entries(guideArticle).filter(([key])=>key!=='id')));
+    assert.equal((await request(previewOrigin+'/site-content/earth-guide.json')).groups[0].chapters[0].id,guideArticle.id);
+    const guideEmpty = await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:[],revision:guidePublication.revision,status:'published'}});
+    assert.deepEqual((await request(site+'/site-content/earth-guide.json')).groups,[]);
+    await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:guide.rows,revision:guideEmpty.revision,status:'published'}});
+    await endpoint('research', { status: 403 });
+    const research = await endpoint('research', { auth: operator });
+    assert.ok(research.rows.some(row => row.kind === 'certificate') && research.rows.some(row => row.kind === 'photo'));
+    const researchRow = { id: 'integration-research', title: '后台科研素材验收', kind: 'certificate',
+      image: '/images/competition/certificate-01-thumb.webp', aspectRatio: 0.7 };
+    const researchRows = [...research.rows, researchRow];
+    const researchDraft = await endpoint('research', { method: 'POST', auth: operator, staff: true,
+      body: { rows: researchRows, revision: research.revision, status: 'draft' } });
+    const manifestPath = site + '/site-content/manifest.json';
+    assert.ok(!(await request(manifestPath)).sections.competitionItems?.some(row => row.id === researchRow.id));
+    await endpoint('research', { method: 'POST', auth: operator, staff: true,
+      body: { rows: researchRows, revision: researchDraft.revision, status: 'published' } });
+    assert.ok((await request(manifestPath)).sections.competitionItems.some(row => row.id === researchRow.id));
     console.log('核验官网注册、运营用户目录、权限、撤销会话、恢复与审计…');
     await verifyCommunityUsers({community,endpoint,desk,owner:auth,operator,admin,site});
+    const sharp = createRequire(join(source, 'package.json'))('sharp');
+    const projectJpeg = await sharp({create:{width:160,height:160,channels:3,background:'#555'}}).jpeg().toBuffer();
+    const projectImage = 'data:image/jpeg;base64,'+projectJpeg.toString('base64');
+    const staffProject = {
+      id: randomUUID(), name: '后台共创作品', author: '测试创作团队', summary: '运营后台录入的作品',
+      description: '审核通过后在共创广场展示。', demoUrl: 'https://example.test/work',
+      imageUrl:projectImage,bannerUrl:projectImage,showcaseImages:[projectImage,projectImage],
+    };
+    await endpoint('desk', { method: 'POST', staff: true, status: 403,
+      body: { path: 'staff/projects', method: 'POST', data: staffProject } });
+    const added = await desk('staff/projects', 'POST', staffProject);
+    assert.equal(added.status, 'pending');
+    const filename=added.imageUrl.split('/').pop();
+    await endpoint('project-media/'+filename,{status:403});
+    assert.deepEqual(await endpoint('project-media/'+filename,{auth:operator}),projectJpeg);
+    await request(site+added.imageUrl,{status:404});
+    assert.equal(added.showcaseImages.length,2);
+    assert.deepEqual(await desk('staff/projects', 'POST', staffProject), added);
+    assert.equal((await desk('staff/projects')).filter(project => project.id === added.id).length, 1);
+    await community('projects/' + added.id, { status: 404 });
+    const staffProjectPath = 'staff/projects/' + added.id;
+    await desk(staffProjectPath + '/review', 'POST', { status: 'returned', note: '请补充作品介绍。' });
+    const updated = await desk(staffProjectPath, 'POST', { ...staffProject, description: '已补充作品介绍。' });
+    assert.equal(updated.status, 'pending');
+    await desk(staffProjectPath + '/review', 'POST', { status: 'approved' });
+    const publicProject = await community('projects/' + added.id);
+    assert.equal(publicProject.author, staffProject.author);
+    assert.equal(publicProject.description, updated.description);
+    assert.ok(!Object.hasOwn(publicProject, 'createdByStaff'));
 
     console.log('核验实际上传、草稿预览、发布、引用保护与旧版本…');
     const mediaData = new FormData();
     // A small original PNG is generated with the same image library used by the CMS.
-    const sharp = (await import(join(source,'node_modules/sharp/lib/index.js'))).default;
     const img = await sharp({ create:{width:300,height:200,channels:3,background:{r:50,g:120,b:185}} }).png().toBuffer();
     mediaData.set('_payload',JSON.stringify({alt:'独立集成测试图像'}));
     mediaData.set('file',new Blob([img],{type:'image/png'}),'integration-photo.png');
@@ -221,7 +339,7 @@ async function run() {
     const eventId='ops-integration', record={ id:eventId, name:'运营集成验收',description:'实际 CMS 与社区 API 的联动。',date:(new Date().getUTCFullYear()+1)+'.12.01',type:'共创活动',
       coverUrl:upload.url,registrationMode:'review',formFields:[{id:'interest',label:'关注什么？',type:'text',required:true}] };
     const draft = await desk('staff/events','POST',record);
-    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 1, registrations: 0 });
+    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 1, registrations: 0, projects: 0 });
     assert.deepEqual(await desk('staff/events','POST',record), draft);
     await community('events/'+eventId,{status:404});
     const eventPath = 'staff/events/'+eventId;
@@ -233,27 +351,43 @@ async function run() {
     const live = await desk(eventPath+'/publish','POST',approval);
     assert.deepEqual(await desk(eventPath+'/publish','POST',approval),live);
     assert.equal((await community('events/'+eventId)).coverUrl,upload.url);
-    const pinAction = { path: eventPath+'/pin', method:'POST', data:{pinned:true} };
-    await endpoint('desk',{method:'POST',staff:true,body:pinAction,status:403});
-    assert.equal((await desk(pinAction.path,'POST',pinAction.data)).miniHomePinned,true);
-    assert.equal((await community('events/'+eventId)).miniHomePinned,true);
-    assert.equal((await desk(pinAction.path,'POST',{pinned:false})).miniHomePinned,false);
-    const signup={name:'集成玩家',contact:'test@example.test',answers:{interest:'交互设计'},idempotencyKey:token()};
+    console.log('核验后台置顶位与官网展示顺序…');
+    const emptyPins = [null, null, null];
+    await desk('staff/home-pins/events', 'POST', { slots: [null, eventId, null], expected: emptyPins });
+    await desk('staff/home-pins/projects', 'POST', { slots: [null, added.id, null], expected: emptyPins });
+    assert.equal((await community('events?view=card')).find(item => item.id === eventId).homePinPosition, 2);
+    assert.equal((await community('projects')).find(item => item.id === added.id).homePinPosition, 2);
+    if (process.env.OPERATIONS_BROWSER === '1') {
+      const { chromium } = await import('playwright-core');
+      const browser = await chromium.launch({ channel: 'chrome' });
+      try {
+        const page = await browser.newPage({ viewport: { width: 1280, height: 844 } });
+        await page.goto(site + '/players');
+        const featuredEvent = page.locator('.calendar-featured .calendar-lead').nth(1);
+        await featuredEvent.getByRole('heading', { name: record.name, exact: true }).waitFor();
+        await featuredEvent.getByText('置顶第 2 位', { exact: true }).waitFor();
+        assert.equal(await page.locator('.calendar-featured .community-pin-badge').count(), 1);
+        await page.goto(site + '/plaza');
+        const featuredProject = page.locator('.plaza-popular .community-list-card').nth(1);
+        await featuredProject.getByRole('heading', { name: staffProject.name, exact: true }).waitFor();
+        await featuredProject.getByText('置顶第 2 位', { exact: true }).waitFor();
+        assert.equal(await page.locator('.plaza-popular .community-pin-badge').count(), 1);
+      } finally {
+        await browser.close();
+      }
+    }
+    const signup={name:'集成玩家',phone:'13800000009',wechat:'ops_player',answers:{interest:'交互设计'},idempotencyKey:token()};
     const receipt=await community('events/'+eventId+'/registrations',{method:'POST',body:signup});
     const rosterEvent = (await desk('staff/events', 'GET', undefined, { view: 'roster' })).find(row => row.id === eventId);
     assert.deepEqual(Object.keys(rosterEvent).sort(), ['formFields', 'id', 'name']);
     assert.equal(receipt.status,'pending');
-    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 0, registrations: 1 });
+    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 0, registrations: 1, projects: 0 });
     const duplicate=await community('events/'+eventId+'/registrations',{method:'POST',body:signup});assert.equal(duplicate.id,receipt.id);
-    const list=await desk('staff/registrations','GET',undefined,{event:eventId});assert.equal(list.length,1);assert.equal(list[0].contact,signup.contact);
+    const list=await desk('staff/registrations','GET',undefined,{event:eventId});assert.equal(list.length,1);assert.equal(list[0].phone,signup.phone);assert.equal(list[0].wechat,signup.wechat);
     await desk('staff/registrations/'+receipt.id+'/review','POST',{status:'approved'});
-    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 0, registrations: 0 });
+    assert.deepEqual(await endpoint('work-queue', { auth: operator }), { events: 0, registrations: 0, projects: 0 });
     assert.equal((await community('registration-status',{method:'POST',body:{id:receipt.id,receiptToken:receipt.receiptToken}})).status,'approved');
     await community('registration-status',{method:'POST',body:{id:receipt.id,receiptToken:token()},status:404});
-    if (process.env.OPERATIONS_BROWSER === '1' && existsSync(join(root,'../07-玩家计划小程序/miniprogram'))) {
-      const { verifyMiniRegistration } = await import('./verify-mini-registration-browser.mjs');
-      await verifyMiniRegistration({ admin, site, email: operatorEmail, password: operatorPassword });
-    }
     console.log('核验专题照片的独立素材引用与归档…');
     mediaData.set('file',new Blob([img],{type:'image/png'}),'event-only-photo.png');
     const albumAsset=(await endpoint('media',{method:'POST',auth:operator,body:mediaData,status:201})).doc;
@@ -272,6 +406,10 @@ async function run() {
     assert.ok(!((await published()).images||{})[albumAsset.url]);
     await desk('staff/events/'+eventId+'/archive','POST',{});
     await community('events/'+eventId,{status:404});
+    if (process.env.EVENT_ENTRY_BROWSER === '1') {
+      const {verifyEventEntry} = await import('./verify-event-entry-browser.mjs');
+      await verifyEventEntry({site:previewOrigin,operator,desk});
+    }
     console.log('通过：正式迁移与构建、后台权限、素材上传与保护、预览与发布隔离、活动报名审核、运维看板。');
   } catch (error) {
     const compact = (cmsServer.output()+'\n'+server.output()).split('\n').filter(line => /Error:|ERROR:|Failed|Cannot find/.test(line)).slice(-8).join('\n');

@@ -1,5 +1,5 @@
 'use client';
-import { Action } from './OfficialUI';
+import { Action, DeskBack, DeskTitle } from './OfficialUI';
 import React, { useEffect, useState } from 'react';
 export default function MobilePreview() {
   const [url, setUrl] = useState(''),
@@ -32,8 +32,9 @@ export default function MobilePreview() {
   }, [attempt]);
   return (
     <main className="community-page op-shell">
-      <a href="/admin/collections/sections">← 网站内容</a>
-      <h1>手机预览</h1>
+      <DeskTitle title="手机预览">
+        <DeskBack href="/admin/collections/sections" />
+      </DeskTitle>
       {error ? (
         <div role="alert">
           <p>{error}</p>

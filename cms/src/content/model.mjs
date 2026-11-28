@@ -85,7 +85,7 @@ export async function restorePublishedContent(payload, defaults) {
   let site = blankManifest();
   for (const section of pages.docs) {
     const seed = defaults.find((s) => s.key === section.sectionKey);
-    if (!seed || JSON.stringify(section.rows) !== JSON.stringify(seed.rows))
+    if (section.sectionKey === 'earthGuide' || !seed || JSON.stringify(section.rows) !== JSON.stringify(seed.rows))
       site = mergeSection(site, section.sectionKey, section.rows);
   }
   store(site);

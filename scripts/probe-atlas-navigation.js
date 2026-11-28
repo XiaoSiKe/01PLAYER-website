@@ -22,6 +22,7 @@
     transform: canvas.atlasFrame.transform,
     scale: canvas.atlasFrame.scale,
     height: viewport.clientHeight,
+    canvasHeight: canvas.height,
     moving: viewport.dataset.moving === 'true',
     renderMs: canvas.atlasFrame.renderMs,
     drawn: canvas.atlasFrame.drawn,
@@ -90,7 +91,8 @@
       movingFrames: samples.filter(item => item.moving).length,
       maxZoomStepRatio: Math.round(maxZoomStepRatio * 1000) / 1000,
       listLabel, visibleSchools, labelOverlaps,
-      pass: first.height === last.height && distinctPoses > 12 && settledMs >= 180 && maxZoomStepRatio < .25 && listLabel === expectedLabel && markersVisible && !labelOverlaps,
+      pass: samples.every(item => item.canvasHeight === Math.round(item.height * Math.min(devicePixelRatio || 1, 2)))
+        && distinctPoses > 12 && settledMs >= 180 && maxZoomStepRatio < .25 && listLabel === expectedLabel && markersVisible && !labelOverlaps,
     });
   }
   renderTimes.sort((a, b) => a - b);

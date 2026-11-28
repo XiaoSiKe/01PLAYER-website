@@ -29,7 +29,7 @@ html[data-theme='light'] .earth-guide { --guide-chapter-ink: #6026a5; }
   margin-inline: auto;
   padding: calc(var(--guide-header-height) + clamp(23px, 3vw, 42px)) 0 72px;
 }
-.guide-layout--chapter { min-height: 100dvh; grid-template-columns: minmax(190px, 228px) minmax(0, 1fr); }
+.guide-layout--chapter { min-height: 100dvh; }
 .guide-layout--chapter main, .guide-article--chapter { display: flex; flex-direction: column; }
 .guide-article--chapter { flex: 1; }
 .guide-layout main { min-width: 0; outline: none; }
@@ -42,7 +42,7 @@ html[data-theme='light'] .earth-guide { --guide-chapter-ink: #6026a5; }
   overscroll-behavior: contain;
 }
 .guide-directory-desktop { padding-inline-end: 14px; border-inline-end: 1px solid var(--guide-line); }
-.guide-outline { padding-inline-start: 14px; border-inline-start: 1px solid var(--guide-line); }
+.guide-outline { overscroll-behavior: auto; padding-inline-start: 14px; border-inline-start: 1px solid var(--guide-line); }
 .guide-directory section + section { margin-top: 19px; }
 .guide-directory h2, .guide-outline > p {
   margin: 0 0 6px;
@@ -124,6 +124,9 @@ html[data-theme='light'] .earth-guide { --guide-chapter-ink: #6026a5; }
   font-size: 16px;
   line-height: 1.75;
 }
+@media (min-width: 761px) {
+  .guide-article--chapter .guide-markdown { max-width: 88ch; }
+}
 .guide-heading {
   display: flex;
   align-items: baseline;
@@ -177,6 +180,7 @@ html[data-theme='light'] .earth-guide { --guide-chapter-ink: #6026a5; }
 }
 .guide-breadcrumb a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .guide-skill {
+  width: 60%;
   padding: clamp(17px, 2.1vw, 26px);
   border: 1px solid var(--guide-line);
   border-radius: 14px;
@@ -323,3 +327,8 @@ html[data-theme='light'] .earth-guide { --guide-chapter-ink: #6026a5; }
   .guide-command code { flex-basis: 100%; }
   .guide-command .specular-button { margin-inline-start: auto; }
 }
+
+.guide-outline a { padding-inline-start: calc(9px + var(--outline-level, 0) * 12px); }
+.guide-outline a[aria-current] { color: var(--site-ink); background: var(--guide-hover); font-weight: 600; }
+.guide-outline-empty { display: block; padding: 8px 9px; color: var(--guide-muted); font-size: 13px; }
+@media (max-width: 760px) { .guide-skill { width: 100%; } }

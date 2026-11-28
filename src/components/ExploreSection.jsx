@@ -6,6 +6,7 @@ import BorderGlow from '../BorderGlow';
 import { useTheme } from '../Theme';
 import { learningFolderItems, practiceFolderItems } from '../data/explore';
 import { COMMUNITY_SLOGAN } from '../data/positioning';
+import { pagePaths } from '../data/page-paths';
 import SocialIcon from './SocialIcon';
 import ExploreEntry from './ExploreEntry';
 import ExploreModuleIcon from './ExploreModuleIcon';
@@ -15,7 +16,7 @@ import './ExploreSection.css';
 const Folder = lazy(() => import('./Folder'));
 const mediaChannels = socialChannels.filter(channel => channel.id !== 'channels');
 const resourceEntries = [
-  { id: 'compass', title: '「零一玩家」地球生存攻略', href: siteDestination('earth'), label: '打开「零一玩家」地球生存攻略（新窗口）', external: true },
+  { id: 'compass', title: '「零一玩家」地球生存攻略', href: pagePaths.earth, label: '「零一玩家」地球生存攻略' },
   { id: 'knowledge', title: '零一开源知识库', href: siteDestination('wiki'), label: '零一开源知识库（新窗口）', external: true },
   { id: 'architecture', title: '战略、架构与发展', href: siteDestination('strategy'), label: '战略、架构与发展（新窗口）', external: true },
   { id: 'archive', title: '零一时光机', href: '/?page=time-machine', label: '零一时光机' },

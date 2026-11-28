@@ -3,6 +3,7 @@ import { sqliteAdapter } from '@payloadcms/db-sqlite';
 import { zh } from '@payloadcms/translations/languages/zh';
 import sharp from 'sharp';
 import { resolve } from 'node:path';
+import { playerIdentityLabels } from '../../src/community/account/identity.js';
 import { operationsName } from './branding.mjs';
 import { dir, localSecret } from './env.mjs';
 import catalog from './content/catalog.json';
@@ -38,10 +39,12 @@ export default buildConfig({
       beforeNavLinks: ['/components/DeskNav.jsx'],
       logout: { Button: '/components/DeskNav.jsx#DeskAccountControls' },
       header: ['/components/DeskNav.jsx#DeskNavExpand'],
-      beforeDashboard: ['/components/Dashboard.jsx'],
       views: {
+        dashboard: { Component: '/components/StaffViews.jsx#DashboardView' },
         login: { Component: '/components/StaffLogin.jsx', path: '/login' },
         forgot: { Component: '/components/StaffPasswordHelp.jsx', path: '/forgot' },
+        guide: { Component: '/components/StaffViews.jsx#GuideView', path: '/guide' },
+        research: { Component: '/components/StaffViews.jsx#ResearchView', path: '/research' },
         operations: { Component: '/components/StaffViews.jsx#OperationsView', path: '/operations' },
         communityUsers: { Component: '/components/StaffViews.jsx#UsersView', path: '/community-users' },
         mobilePreview: { Component: '/components/StaffViews.jsx#PreviewView', path: '/content-preview' },
@@ -68,13 +71,13 @@ export default buildConfig({
         {
           name: 'role',
           type: 'select',
-          label: '权限',
+          label: '身份',
           defaultValue: 'operator',
           admin: { hidden: true },
           required: true,
           options: [
-            { label: '运营人员', value: 'operator' },
-            { label: '站点负责人', value: 'owner' },
+            { label: playerIdentityLabels.pioneer, value: 'operator' },
+            { label: playerIdentityLabels.head, value: 'owner' },
           ],
         },
       ],
@@ -82,7 +85,7 @@ export default buildConfig({
         beforeOperation: [
           ({ args, operation, req }) => {
             if (operation === 'forgotPassword' && !args.disableEmail && req.payload.email.name === 'console')
-              throw new APIError('运营密码由站点负责人重置，请联系负责人。', 409);
+              throw new APIError('请联系头号玩家重置运营密码。', 409);
           },
         ],
         beforeDelete: [
@@ -94,10 +97,10 @@ export default buildConfig({
           ({ data, originalDoc, req }) => {
             if (
               originalDoc?.role === 'owner' &&
-              originalDoc?.id === req.user?.id &&
+              String(originalDoc.id) === String(req.user?.id) &&
               data.role === 'operator'
             )
-              throw new APIError('不能撤销自己的负责人权限', 400);
+              throw new APIError('不能撤销自己的头号玩家权限。', 400);
             return data;
           },
         ],

@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer } from 'node:http';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { checkOperationsSite } from '../deploy/operations/smoke.mjs';
+import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { gzipSync, gunzipSync } from 'node:zlib';
+import { get } from 'node:http';
 
 const run = promisify(execFile);
 const commit = 'a'.repeat(40);
@@ -14,6 +19,63 @@ const js = '/_next/static/chunks/app.js';
 const css = '/_next/static/css/admin.css';
 const login = '<title>登录 · 零一玩家</title><form><input type="password"></form>' +
   '<script src="' + js + '"></script><link rel="stylesheet" href="' + css + '">';
+
+test('地图静态资源按浏览器能力返回预压缩文件，普通读取与 HEAD 保留正确正文和长度', async t => {
+  const directory = await mkdtemp(join(tmpdir(), '01player-asset-'));
+  const dist = join(directory, 'dist');
+  await mkdir(join(dist, 'assets'), { recursive: true });
+  const raw = Buffer.from('lossless atlas fixture '.repeat(200));
+  const compressed = gzipSync(raw);
+  await Promise.all([
+    writeFile(join(dist, 'index.html'), homepage),
+    writeFile(join(dist, 'assets/map.bin'), raw),
+    writeFile(join(dist, 'assets/map.bin.gz'), compressed),
+    writeFile(join(dist, 'assets/plain.bin'), raw),
+  ]);
+  const listener = createServer();
+  listener.listen(0, '127.0.0.1');
+  await once(listener, 'listening');
+  const port = listener.address().port;
+  await new Promise(resolve => listener.close(resolve));
+  const server = spawn(process.execPath, [fileURLToPath(new URL('../server/start.mjs', import.meta.url))], {
+    cwd: directory, env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), COMMUNITY_EXTERNAL: '1' },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(async () => {
+    if (server.exitCode === null && server.signalCode === null) {
+      const exited = once(server, 'exit');
+      server.kill('SIGTERM');
+      await exited;
+    }
+    await rm(directory, { recursive: true, force: true });
+  });
+  await once(server.stdout, 'data');
+  const request = (path, encoding, method = 'GET') => new Promise((resolve, reject) => {
+    const req = get({ hostname: '127.0.0.1', port, path, method, headers: { 'Accept-Encoding': encoding } }, res => {
+      const chunks = [];
+      res.on('data', chunk => chunks.push(chunk));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+  });
+  for (const encoding of ['gzip', 'br, gzip;q=0.5']) {
+    const response = await request('/assets/map.bin', encoding);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers['content-encoding'], 'gzip');
+    assert.equal(response.headers.vary, 'Accept-Encoding');
+    assert.equal(Number(response.headers['content-length']), compressed.length);
+    assert.deepEqual(gunzipSync(response.body), raw);
+  }
+  for (const encoding of ['identity', 'gzip;q=0', 'br']) {
+    const response = await request('/assets/map.bin', encoding);
+    assert.equal(response.headers['content-encoding'], undefined);
+    assert.deepEqual(response.body, raw);
+  }
+  const head = await request('/assets/map.bin', 'gzip', 'HEAD');
+  assert.equal(head.body.length, 0);
+  assert.equal(Number(head.headers['content-length']), compressed.length);
+  assert.deepEqual((await request('/assets/plain.bin', 'gzip')).body, raw);
+});
 
 test('部署冒烟及只读运维命令识别静态首页回落', async t => {
   function json(value, status = 200) { return [status, 'application/json', JSON.stringify(value)]; }
@@ -39,6 +101,14 @@ test('部署冒烟及只读运维命令识别静态首页回落', async t => {
   const check = () => checkOperationsSite(origin, {expectedCommit: commit, requireProduction: true});
   await check();
   assert.deepEqual(requested.toSorted(), [...routes.keys()].filter(path => path !== '/game.html').sort());
+  await t.test('本地快照可用于预览，正式验收需要实际提交', async () => {
+    const original = routes.get('/version.json');
+    try {
+      routes.set('/version.json', json({ commit: null, source: 'working-tree-snapshot' }));
+      await checkOperationsSite(origin);
+      await assert.rejects(check, /工作区快照/);
+    } finally { routes.set('/version.json', original); }
+  });
 
   await t.test('Next 已开始发送 HTML 时也可跳转登录', async () => {
     const original = routes.get('/admin');

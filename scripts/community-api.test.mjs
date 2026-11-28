@@ -8,11 +8,12 @@ import { join } from 'node:path';
 import { createCommunityApi } from '../server/community-api.mjs';
 import { createPasswordQueue, runPasswordWork } from '../server/community-passwords.mjs';
 import { clientAddress } from '../server/community-rate-limits.mjs';
-import { sceneFor } from '../server/player-events.mjs';
 import { pioneerRoster, memberPageLink } from '../src/data/people-navigation.js';
 import { events } from '../server/community-seed.mjs';
 import { leadership } from '../src/data/leadership.js';
 import { matchesFilter } from '../cms/src/ops/workflow.mjs';
+import { featuredInSlots } from '../src/community/featured.js';
+import { historicalArchivePhotos } from '../src/time-machine/photos.js';
 
 // The demo calendar deliberately contains November and December 2026 activities.
 test.beforeEach(t => t.mock.timers.enable({ apis: ['Date'], now: Date.parse('2026-11-22T12:00:00Z') }));
@@ -51,7 +52,7 @@ async function fixture(t, catalog) {
 const playerLogin = {email:'player@example.test',password:'Player-2026!'};
 const adminLogin = {email:'admin@example.test',password:'Admin-2026!'};
 const recruitment = {roles:'前端开发伙伴',work:'一起开发可用原型',requirements:'每周参与讨论',contact:'demo@example.test'};
-const submission = {name:'自主验收项目',summary:'端到端验证提交和审核',description:'一个用于验证公开流程的原创示例项目。',demoUrl:'https://example.com/demo',imageUrl:'',recruitment};
+const submission = {name:'自主验收项目',summary:'端到端验证提交和审核',description:'一个用于验证公开流程的原创示例项目。',demoUrl:'https://example.com/demo',imageUrl:'https://example.test/card.jpg',bannerUrl:'https://example.test/banner.jpg',recruitment};
 
 test('玩家资料只由登录本人修改，校验头像且旧会话能读取已保存资料', async t => {
   const { client, dataFile } = await fixture(t);
@@ -119,7 +120,7 @@ test('退回原因、作者修改重新审核、活动投稿关联、关闭提�
  await player('projects',{...submission,eventId:'autumn-hack'},409);
  await player('projects',{...submission,eventId:'weekend-lab'},409);
  await player('projects',{...submission,demoUrl:'javascript:alert(1)'},400);
- await player('projects',{...submission,demoUrl:''},400);
+ await player('projects',{...submission,imageUrl:'',bannerUrl:'',demoUrl:''},400);
 });
 test('报名唯一、联系方式私密；注册不能提权，退出后失去权限；拒绝跨站写入',async t=>{
  const {client,origin,dataFile}=await fixture(t), player=client(), admin=client(), visitor=client();
@@ -230,6 +231,43 @@ const staffEvent = { name: '周末工作坊', id: 'public-workshop', description
     { id: 'track', type: 'select', label: '想参加哪个工作坊？', required: true, options: ['模型','应用'] },
     { id: 'goals', type: 'multiselect', label: '期待', required: false, options: ['学习','交朋结友'] },
   ] };
+test('报名时保存投稿开关，活动开始才兑现，并在结束时停收', async t => {
+  const api = await businessFixture(t);
+  const startsAt = '2026-11-22T13:00:00.000Z';
+  const endsAt = '2026-11-22T14:00:00.000Z';
+  const id = 'scheduled-projects';
+  const unchecked = 'scheduled-projects-disabled';
+  const schedule = { ...staffEvent, category: 'activity', startsAt, endsAt, status: 'open',
+    registrationClosesAt: '2026-11-22T12:30:00.000Z' };
+  for (const [eventId, submissionsOpen] of [[id, true], [unchecked, false]]) {
+    const draft = await api.staff('staff/events', { ...schedule, id: eventId, submissionsOpen });
+    assert.equal(draft.data.submissionsOpen, submissionsOpen);
+    assert.equal((await api.staff('staff/events/' + eventId + '/publish', {})).status, 200);
+  }
+  const browser = { 'x-community-request': '1' };
+  const { cookie } = await api.send('login', playerLogin, browser);
+  const submit = eventId => api.send('projects', { ...submission, eventId }, { ...browser, cookie });
+
+  t.mock.timers.setTime(Date.parse(startsAt) - 1);
+  const before = (await api.send('events/' + id)).data;
+  assert.equal(before.status, 'open');
+  assert.equal(before.registrationOpen, false);
+  assert.equal(before.hasAlbum, false);
+  assert.equal((await submit(id)).status, 409);
+
+  t.mock.timers.setTime(Date.parse(startsAt));
+  const current = (await api.send('events/' + id)).data;
+  assert.equal(current.status, 'active');
+  assert.equal(current.hasAlbum, true);
+  assert.equal((await api.send('albums')).data.find(album => album.eventId === id).createdAt, startsAt);
+  assert.equal((await submit(id)).data.status, 'pending');
+  assert.equal((await submit(unchecked)).status, 409);
+
+  t.mock.timers.setTime(Date.parse(endsAt));
+  assert.equal((await api.send('events/' + id)).data.status, 'ended');
+  assert.equal((await submit(id)).status, 409);
+});
+
 test('官网浏览入库去重，统计仅对运营开放并可重启恢复', async t => {
   const api = await businessFixture(t);
   const headers = { 'x-community-request': '1' };
@@ -250,6 +288,20 @@ test('官网浏览入库去重，统计仅对运营开放并可重启恢复', as
   assert.deepEqual(response.data.popular.map(item => item.page), ['home', 'players']);
   assert.ok(!JSON.stringify(response.data).includes(visitor));
 });
+test('访问统计首次连接遇到锁时可在解锁后恢复读写', async t => {
+  const api = await businessFixture(t);
+  const { DatabaseSync } = await import('node:sqlite');
+  const other = new DatabaseSync(api.dataFile + '.traffic.sqlite');
+  try {
+    other.exec('BEGIN EXCLUSIVE');
+    assert.equal((await api.staff('staff/traffic')).status, 503);
+  } finally {
+    other.close();
+  }
+  const view = { page: 'home', id: '20000000-0000-4000-8000-000000000000', visitor: '10000000-0000-4000-8000-000000000000' };
+  assert.equal((await api.send('page-view', view, { 'x-community-request': '1' })).status, 200);
+  assert.equal((await api.staff('staff/traffic')).data.today.views, 1);
+});
 test('活动归档后作者仍可修改原项目并保留关联，活动不再接收新作品', async t => {
   const api = await businessFixture(t);
   const eventId = 'ai-build-sprint';
@@ -263,72 +315,22 @@ test('活动归档后作者仍可修改原项目并保留关联，活动不再�
   assert.equal(edited.data.eventId, eventId);
   assert.equal(edited.data.status, 'pending');
 });
-test('小程序置顶只能由运营选择已发布场次，替换后重试取消旧项不会清除新项', async t => {
-  const api = await businessFixture(t);
-  const id = staffEvent.id, path = 'staff/events/' + id;
-  const pinned = async () => (await api.send('events')).data.filter(row => row.miniHomePinned).map(row => row.id);
-  const pin = (event, selected) => api.staff('staff/events/' + event + '/pin', { pinned: selected });
-  assert.ok((await api.send('events')).data.every(row => row.miniHomePinned === false));
-  await api.staff('staff/events', staffEvent);
-  assert.equal((await pin(id, true)).status, 409);
-  await api.staff(path + '/publish', {});
-  assert.equal((await api.send(path + '/pin', { pinned: true }, { 'x-community-request': '1' })).status, 401);
-  const member = await api.send('register', {name:'普通玩家', email:'pin@example.test', password:'safe-test-password'},
-    { 'x-community-request': '1' });
-  assert.equal(member.status, 200);
-  assert.equal((await api.send(path + '/pin', { pinned: true }, { 'x-community-request': '1', cookie:member.cookie })).status, 403);
-  assert.equal((await api.staff(path + '/pin', { pinned: 'true' })).status, 400);
-  assert.equal((await pin('autumn-hack', true)).status, 409);
-  await api.staff(path, { name: '尚未发布的名称', status:'ended' });
-  assert.equal((await pin(id, true)).data.miniHomePinned, true);
-  assert.equal((await pin(id, true)).data.miniHomePinned, true);
-  const publicEvent = (await api.send('events/' + id)).data;
-  const fullList = (await api.send('events')).data;
-  const cards = (await api.send('events?view=card')).data;
-  assert.deepEqual(cards.map(card => card.id), fullList.map(event => event.id));
-  const card = cards.find(item => item.id === id);
-  assert.ok(card.miniHomePinned);
-  assert.equal(card.name, publicEvent.name);
-  assert.equal(card.registrationOpen, publicEvent.registrationOpen);
-  assert.ok(!('description' in card) && !('formFields' in card) && !('rules' in card));
-  assert.deepEqual(publicEvent.formFields, fullList.find(item => item.id === id).formFields);
-  assert.equal(publicEvent.name, staffEvent.name);
-  assert.equal(publicEvent.miniHomePinned, true);
-  assert.equal((await api.send('event-scenes/' + sceneFor(id))).data.miniHomePinned, true);
-  await api.restart();
-  assert.deepEqual(await pinned(), [id]);
-  await pin('weekend-lab', true);
-  await pin(id, false);
-  assert.deepEqual(await pinned(), ['weekend-lab']);
-  await pin('weekend-lab', false);
-  assert.deepEqual(await pinned(), []);
-  await pin(id, true);
-  await api.staff(path + '/archive', {});
-  assert.deepEqual(await pinned(), []);
-  assert.equal((await pin(id, true)).status, 409);
-  await api.staff(path + '/publish', {});
-  assert.deepEqual(await pinned(), []);
-  assert.equal((await pin(id, true)).status, 409);
-  await api.staff(path, { status:'active', endsAt:'2026-11-22T12:01:00Z' });
-  await api.staff(path + '/publish', {});
-  assert.equal((await pin(id, true)).status, 200);
-  t.mock.timers.tick(60000);
-  assert.equal((await pin(id, false)).status, 200);
-  assert.equal((await pin(id, true)).status, 409);
-});
-test('运营待办只返回两个计数，与实际活动和报名筛选实时一致', async t => {
+
+test('运营待办计数与活动、报名及作品的实际待办一致', async t => {
   const api = await businessFixture(t);
   const queue = 'staff/work-queue';
   assert.equal((await api.send(queue)).status, 401);
   assert.equal((await api.staff(queue, {})).status, 404);
-  async function check(events, registrations) {
+  async function check(events, registrations, projects = 0) {
     const result = await api.staff(queue);
     assert.equal(result.status, 200);
-    assert.deepEqual(result.data, { events, registrations });
+    assert.deepEqual(result.data, { events, registrations, projects });
     const eventList = (await api.staff('staff/events')).data;
     const roster = (await api.staff('staff/registrations')).data;
     assert.equal(events, eventList.filter(row => matchesFilter('events', row, 'unpublished')).length);
     assert.equal(registrations, roster.filter(row => matchesFilter('registrations', row, 'pending')).length);
+    const works = (await api.staff('staff/projects')).data;
+    assert.equal(projects, works.filter(row => matchesFilter('projects', row, 'pending')).length);
   }
   const path = 'staff/events/' + staffEvent.id;
   await api.staff('staff/events', { ...staffEvent, formFields: [] });
@@ -345,6 +347,19 @@ test('运营待办只返回两个计数，与实际活动和报名筛选实时�
   await api.staff('staff/registrations/' + receipt.data.id + '/review', { status: 'rejected' });
   await check(1, 0);
   await api.staff(path + '/publish', {});
+  await check(0, 0);
+  const headers = { 'x-community-request': '1' };
+  const login = await api.send('login', playerLogin, headers);
+  const player = { ...headers, cookie: login.cookie };
+  const project = await api.send('projects', submission, player);
+  assert.equal(project.status, 200);
+  await check(0, 0, 1);
+  const review = 'staff/projects/' + project.data.id + '/review';
+  assert.equal((await api.staff(review, { status: 'returned', note: '补充项目说明' })).status, 200);
+  await check(0, 0);
+  assert.equal((await api.send('edit/' + project.data.id, submission, player)).status, 200);
+  await check(0, 0, 1);
+  assert.equal((await api.staff(review, { status: 'approved' })).status, 200);
   await check(0, 0);
 });
 
@@ -377,6 +392,7 @@ test('运营分页名单先筛选再分页，审核后夹到末页，保留原�
   const last = (await api.staff(query + '&page=2')).data;
   assert.deepEqual(last, {items:all.slice(2,3), total:3, page:2, pageSize:2, totalPages:2});
   await api.staff(route + '/' + all[2].id + '/review', {status:'approved'});
+  assert.deepEqual((await api.staff(query + '&page=1&summary=1')).data.statusCounts, { approved: 1, pending: 2 });
   assert.deepEqual((await api.staff(query + '&page=99')).data,
     {items:all.slice(0,2), total:2, page:1, pageSize:2, totalPages:1});
   assert.deepEqual((await api.staff(route + '?event=absent&pageSize=1')).data,
@@ -412,6 +428,30 @@ test('后台活动草稿、发布快照、归档、旧日期、问卷校验与�
   assert.ok(!(await api.send('events')).data.some(e => e.id === 'public-workshop'));
   assert.equal((await api.staff('staff/events/public-workshop')).data.publicationStatus, 'archived');
 });
+test('赛事投稿仅接受已公布且开放投稿的场次，包括社区管理员投稿', async t => {
+  const api = await businessFixture(t);
+  const event = { ...staffEvent, type: '比赛', status: 'active', submissionsOpen: true };
+  const route = 'staff/events/' + event.id;
+  const headers = { 'x-community-request': '1' };
+  const player = { ...headers, cookie: (await api.send('login', playerLogin, headers)).cookie };
+  const admin = { ...headers, cookie: (await api.send('login', adminLogin, headers)).cookie };
+  const entry = { ...submission, eventId: event.id };
+
+  assert.equal((await api.staff('staff/events', event)).status, 200);
+  assert.ok(!(await api.send('events')).data.some(item => item.id === event.id));
+  assert.equal((await api.send('projects', entry, player)).status, 404);
+  assert.equal((await api.send('projects', entry, admin)).status, 404);
+
+  assert.equal((await api.staff(route + '/publish', {})).status, 200);
+  const posted = await api.send('projects', entry, player);
+  assert.equal(posted.status, 200);
+  assert.equal(posted.data.eventId, event.id);
+
+  assert.equal((await api.staff(route + '/archive', {})).status, 200);
+  assert.equal((await api.send('projects', entry, player)).status, 404);
+  assert.equal((await api.send('projects', entry, admin)).status, 404);
+  assert.equal((await api.send('edit/' + posted.data.id, submission, player)).data.eventId, event.id);
+});
 test('无账号报名并发幂等，跨设备重复保护，私有回执，操作员审核与重启', async t => {
   const api = await businessFixture(t);
   await api.staff('staff/events', staffEvent); await api.staff('staff/events/public-workshop/publish', {});
@@ -439,6 +479,80 @@ test('无账号报名并发幂等，跨设备重复保护，私有回执，操�
   assert.ok(!readFileSync(api.dataFile, 'utf8').includes(a.data.receiptToken));
   assert.ok(!readFileSync(api.dataFile, 'utf8').includes(body.idempotencyKey));
 });
+test('票根进群二维码仅随已通过的回执读取，草稿变更发布后生效', async t => {
+  const api = await businessFixture(t);
+  const qr = '/cms-api/media/file/group-qr.png';
+  const path = 'staff/events/public-workshop';
+  await api.staff('staff/events', { ...staffEvent, formFields: [], ticketGroupQrUrl: qr });
+  await api.staff(path + '/publish', {});
+  assert.ok(!Object.hasOwn((await api.send('events/public-workshop')).data, 'ticketGroupQrUrl'));
+  assert.ok(!JSON.stringify((await api.send('events')).data).includes(qr));
+
+  const browser = { 'x-community-request': '1' };
+  const { cookie } = await api.send('login', playerLogin, browser);
+  const submitted = await api.send('events/public-workshop/registrations', {
+    name: '二维码验收玩家', phone: '13812121213', answers: {}, idempotencyKey: 'ticket-group-qr-fixture',
+  }, { ...browser, cookie });
+  assert.equal(submitted.data.status, 'pending');
+  assert.ok(!Object.hasOwn(submitted.data, 'ticketGroupQrUrl'));
+  const credentials = { id: submitted.data.id, receiptToken: submitted.data.receiptToken };
+  const refresh = async () => (await api.send('registration-status', credentials)).data;
+  const mine = async () => (await api.send('mine', undefined, { cookie })).data.registrations[0];
+  assert.ok(!Object.hasOwn(await refresh(), 'ticketGroupQrUrl'));
+  assert.ok(!Object.hasOwn(await mine(), 'ticketGroupQrUrl'));
+  assert.equal((await api.send('registration-status', { ...credentials, receiptToken: 'invalid' })).status, 404);
+
+  await api.staff('staff/registrations/' + submitted.data.id + '/review', { status: 'approved' });
+  assert.equal((await refresh()).ticketGroupQrUrl, qr);
+  assert.equal((await mine()).ticketGroupQrUrl, qr);
+  const draft = (await api.staff(path, { ticketGroupQrUrl: '' })).data;
+  assert.equal(draft.ticketGroupQrUrl, '');
+  assert.equal(draft.publishedTicketGroupQrUrl, qr);
+  assert.equal((await refresh()).ticketGroupQrUrl, qr);
+  await api.staff(path + '/publish', {});
+  assert.ok(!Object.hasOwn(await refresh(), 'ticketGroupQrUrl'));
+  assert.ok(!Object.hasOwn(await mine(), 'ticketGroupQrUrl'));
+});
+
+test('活动与作品各有三个官网置顶位，支持改位、清除和下架释放', async t => {
+  const api = await businessFixture(t);
+  const eventPins = 'staff/home-pins/events';
+  const projectPins = 'staff/home-pins/projects';
+  const empty = [null, null, null];
+  assert.deepEqual((await api.staff(eventPins)).data.slots, empty);
+  assert.equal((await api.send(eventPins)).status, 401);
+  const selected = ['weekend-lab', null, 'ai-build-sprint'];
+  assert.equal((await api.staff(eventPins, { slots: ['weekend-lab', 'weekend-lab', null], expected: empty })).status, 400);
+  assert.equal((await api.staff(eventPins, { slots: ['unavailable-event', null, null], expected: empty })).status, 409);
+  assert.deepEqual((await api.staff(eventPins, { slots: selected, expected: empty })).data.slots, selected);
+  assert.deepEqual((await api.staff(eventPins, { slots: selected, expected: empty })).data.slots, selected);
+  assert.equal((await api.staff(eventPins, { slots: [null, 'weekend-lab', null], expected: empty })).status, 409);
+  const publicEvents = (await api.send('events?view=card')).data;
+  assert.deepEqual(featuredInSlots(publicEvents, 2).map(row => row.id),
+    ['weekend-lab', 'autumn-hack', 'ai-build-sprint']);
+
+  const projects = ['study-map', 'tiny-garden', 'campus-agent'];
+  assert.deepEqual((await api.staff(projectPins, { slots: projects, expected: empty })).data.slots, projects);
+  const publicProjects = (await api.send('projects')).data;
+  assert.deepEqual(featuredInSlots(publicProjects, 3).map(row => row.id), projects);
+  assert.equal((await api.staff('staff/projects')).data.find(row => row.id === 'tiny-garden').homePinPosition, 2);
+  await api.restart();
+  assert.deepEqual((await api.staff(eventPins)).data.slots, selected);
+  await api.staff('staff/events/weekend-lab/archive', {});
+  const remaining = [null, null, 'ai-build-sprint'];
+  assert.deepEqual((await api.staff(eventPins)).data.slots, remaining);
+  await api.staff('staff/events/weekend-lab/publish', {});
+  assert.ok(!Object.hasOwn((await api.send('events/weekend-lab')).data, 'homePinPosition'));
+  assert.deepEqual((await api.staff(eventPins, { slots: empty, expected: remaining })).data.slots, empty);
+  assert.deepEqual((await api.staff(projectPins)).data.slots, projects);
+
+  const browser = { 'x-community-request': '1' };
+  const { cookie } = await api.send('login', playerLogin, browser);
+  assert.equal((await api.send('edit/campus-agent', submission, { ...browser, cookie })).status, 200);
+  assert.deepEqual((await api.staff(projectPins)).data.slots, ['study-map', 'tiny-garden', null]);
+  assert.equal((await api.staff(projectPins, { slots: projects, expected: ['study-map', 'tiny-garden', null] })).status, 409);
+});
+
 test('同一场馆可集中报名，登录与免登录入口共用持续限额并告知重试时间', async t => {
   const api = await businessFixture(t);
   const browser = { 'x-community-request': '1' };
@@ -487,74 +601,7 @@ test('同一网络上查看已持有的回执，不会耗尽其他玩家提交�
   t.mock.timers.tick(60000);
   assert.equal((await api.send('registration-status', first)).status, 200);
 });
-test('微信报名入口依赖正式配置，短 scene 还原长活动 ID，复用微信返回的真码与链接', async t => {
-  const demo = await businessFixture(t);
-  assert.equal((await demo.send('events/weekend-lab/wechat')).data.available, false);
-  assert.equal((await demo.send('events/weekend-lab/wechat-code')).status, 503);
-  const calls = [];
-  const image = Buffer.from([137,80,78,71,13,10,26,10,1,2,3]);
-  const fetchApi = async (url, opts) => {
-    const path = new URL(url).pathname, body = JSON.parse(opts.body); calls.push({ path, body });
-    if (path === '/cgi-bin/stable_token') return Response.json({ access_token: 'fake-access', expires_in: 7200 });
-    if (path === '/wxa/generate_urllink') return Response.json({ url_link: 'https://wxaurl.cn/test-only' });
-    if (path === '/wxa/getwxacodeunlimit') return new Response(image);
-    throw Error('unexpected provider URL');
-  };
-  const api = await businessFixture(t, { demo: false, adminEmail: 'owner@example.test', adminPassword: 'Test-Only-Admin-Password', wechatOptions: { appId: 'test-only', appSecret: 'not-real', fetchApi } });
-  const id = 'very-long-event-identifier-'.repeat(3);
-  await api.staff('staff/events', { ...staffEvent, id }); await api.staff('staff/events/' + id + '/publish', {});
-  const [h1,h2] = await Promise.all([api.send('events/' + id + '/wechat'), api.send('events/' + id + '/wechat')]);
-  assert.equal(h1.data.available, true); assert.deepEqual(h1.data, h2.data); assert.equal(h1.data.urlLink, 'https://wxaurl.cn/test-only');
-  assert.equal(calls.length, 3);
-  const link = calls.find(c => c.path === '/wxa/generate_urllink').body;
-  assert.equal(link.path, 'pages/registration/index'); assert.equal(link.query, 'id=' + id);
-  const code = calls.find(c => c.path === '/wxa/getwxacodeunlimit').body;
-  assert.equal(code.page, 'pages/registration/index');
-  const { scene } = code;
-  assert.ok(scene.length < 32); assert.equal((await api.send('event-scenes/' + scene)).data.id, id);
-  assert.equal((await api.send('event-scenes/unknown')).status, 404);
-  const home = (await api.send('miniprogram/wechat')).data;
-  assert.equal(home.available, true);
-  assert.equal(home.codeUrl, '/api/community/miniprogram/wechat-code');
-  assert.deepEqual((await api.send('miniprogram/wechat-code')).data, image);
-  const homeLink = calls.slice(3).find(call => call.path === '/wxa/generate_urllink').body;
-  const homeCode = calls.slice(3).find(call => call.path === '/wxa/getwxacodeunlimit').body;
-  assert.equal(homeLink.path, 'pages/events/index');
-  assert.equal(homeLink.query, undefined);
-  assert.equal(homeCode.page, homeLink.path);
-  assert.equal(homeCode.scene, 'players');
-  await api.restart();
-  const cached = await api.send(h1.data.codeUrl.replace('/api/community/',''));
-  assert.equal(cached.mime, 'image/png'); assert.deepEqual(cached.data, image);
-  assert.equal((await api.send('events/' + id + '/wechat')).data.urlLink, h1.data.urlLink); assert.equal(calls.length, 5);
-});
 
-
-test('微信暂时不可用时返回剩余等待时间，恢复后可在同一场次重新获取入口', async t => {
-  let clock = Date.now(), calls = 0, online = false;
-  const api = await businessFixture(t, { demo: false, adminEmail: 'owner@example.test', adminPassword: 'Test-Only-Admin-Password',
-    wechatOptions: { appId: 'test-only', appSecret: 'not-real', now: () => clock, fetchApi: async url => {
-      calls++;
-      if (!online) return new Response(null, { status: 503 });
-      if (url.includes('stable_token')) return Response.json({ access_token: 'test-only', expires_in: 7200 });
-      if (url.includes('generate_urllink')) return Response.json({ url_link: 'https://wxaurl.cn/test-only' });
-      return Response.json({ errcode: 1 });
-    } } });
-  await api.staff('staff/events', staffEvent);
-  await api.staff('staff/events/' + staffEvent.id + '/publish', {});
-  const handoff = () => api.send('events/' + staffEvent.id + '/wechat');
-  assert.equal((await handoff()).data.retryAfterSeconds, 60);
-  const initialCalls = calls;
-  online = true;
-  clock += 15000;
-  assert.equal((await handoff()).data.retryAfterSeconds, 45);
-  assert.equal(calls, initialCalls);
-  clock += 45000;
-  const recovered = (await handoff()).data;
-  assert.equal(recovered.available, true);
-  assert.equal(recovered.urlLink, 'https://wxaurl.cn/test-only');
-  assert.equal(recovered.codeUrl, null);
-});
 
 test('运营人员管理已开始的专题照片，公开更新归档和图片引用', async t => {
   const api = await businessFixture(t);
@@ -569,6 +616,8 @@ test('运营人员管理已开始的专题照片，公开更新归档和图片�
   const updated=(await api.staff('staff/photos/'+photo.id,{credit:'新署名',category:'competition'})).data;
   assert.equal(updated.credit,'新署名');
   assert.equal((await api.send('albums')).data.find(a=>a.eventId===body.eventId).photos[0].category,'competition');
+  assert.equal((await api.staff('staff/photos/'+photo.id,{category:'team-building'})).status,200);
+  assert.equal((await api.send('albums')).data.find(a=>a.eventId===body.eventId).photos[0].category,'team-building');
   await api.staff('staff/events/ai-build-sprint/archive',{});
   assert.ok(!(await api.send('albums')).data.some(a=>a.eventId===body.eventId));
   assert.equal((await api.staff('staff/photos/'+photo.id,{title:'归档后'})).status,409);
@@ -577,7 +626,27 @@ test('运营人员管理已开始的专题照片，公开更新归档和图片�
   assert.deepEqual((await api.staff('staff/photos?event=ai-build-sprint')).data,[]);
 });
 
-test('草稿与归档活动对新报名不可见，活动结束瞬间关闭两个报名入口并保留原回执', async t => {
+test('运营人员可以修改既有历史照片，保留原图并同步到公开时光机', async t => {
+  const api = await businessFixture(t);
+  const original = historicalArchivePhotos.find(photo => photo.fullImage !== photo.image);
+  const path = 'staff/photos/' + original.id;
+  const changes = { title: '新的现场照片说明', credit: '新的署名' };
+  assert.equal((await api.send(path, changes, { 'x-community-request': '1' })).status, 401);
+  assert.equal((await api.staff(path, { eventId: 'ai-build-sprint', ...changes })).status, 400);
+  assert.equal((await api.staff('staff/photos/history-photo-missing', changes)).status, 404);
+  assert.equal((await api.staff(path, changes)).status, 200);
+  await api.restart();
+  const { albums, historicalPhotos } = (await api.send('albums?historical=1')).data;
+  assert.deepEqual(historicalPhotos, [{ id: original.id, image: original.image, fullImage: original.fullImage, ...changes }]);
+  assert.deepEqual(albums, (await api.send('albums')).data);
+  const stored = (await api.staff('staff/photos?event=' + original.eventId)).data;
+  assert.equal(stored[0].title, changes.title);
+  const replacement = '/cms-api/media/file/history-replacement.webp';
+  assert.equal((await api.staff(path, { imageUrl: replacement })).data.fullImage, replacement);
+  assert.equal((await api.send('albums?historical=1')).data.historicalPhotos[0].image, replacement);
+});
+
+test('草稿与归档活动对新报名不可见，活动结束瞬间关闭报名入口并保留原回执', async t => {
   const api = await businessFixture(t);
   const path = 'events/public-workshop';
   const endpoint = path + '/registrations';
@@ -592,8 +661,6 @@ test('草稿与归档活动对新报名不可见，活动结束瞬间关闭两�
   assert.ok(receipt.receiptToken);
   t.mock.timers.tick(1000);
   assert.equal((await api.send(path)).data.registrationOpen, false);
-  assert.equal((await api.send(path + '/wechat')).status, 409);
-  assert.equal((await api.send(path + '/wechat-code')).status, 409);
   const another = { ...entry, contact: 'second@example.test', idempotencyKey: 'demo-retry-key-5678' };
   assert.equal((await api.send(endpoint, another)).status, 409);
   assert.deepEqual((await api.send(endpoint, entry)).data, receipt);
@@ -790,7 +857,7 @@ test('运营查询账号按真实状态分页和搜索，旧字段可缺省，�
   assert.equal((await api.staff('staff/users/missing')).status, 404);
   const legacy = (await api.staff('staff/users/demo-player')).data;
   assert.deepEqual(Object.keys(legacy).sort(), [
-    'id','name','email','role','status','createdAt','lastLoginAt','disabledAt','activeSessions','projectCount','registrationCount','accountHistory','accountRevision','university',
+    'id','name','email','role','status','createdAt','lastLoginAt','disabledAt','activeSessions','projectCount','registrationCount','accountHistory','accountRevision','university','likedCount','savedCount',
   ].sort());
   assert.equal(legacy.createdAt, null);
   assert.equal(legacy.status, 'active');
@@ -978,9 +1045,9 @@ test('另一标签页换号后，旧表单不能以新账号投稿、收藏、�
   assert.equal((await api.send('logout', {}, current)).status, 200);
   assert.equal((await api.send('login', credentials, browser)).status, 200);
 
-  const anonymous = { 'x-community-account':first.data.user.id };
+  const anonymous = { 'x-community-account':'anonymous' };
   const entered = await api.send('events/weekend-lab/registrations',
-    {name:'小程序玩家',contact:'anon@example.test',idempotencyKey:'unrelated-account-header-01'}, anonymous);
+    {name:'官网玩家',contact:'anon@example.test',idempotencyKey:'unrelated-account-header-01'}, anonymous);
   assert.equal(entered.status, 200);
   const receipt = await api.send('registration-status', {id:entered.data.id, receiptToken:entered.data.receiptToken}, anonymous);
   assert.equal(receipt.data.status, 'approved');
@@ -1149,4 +1216,177 @@ test('未登录、角色无权限和不属于本人的写请求在复制业务�
   assert.equal(submitted.status, 200);
   assert.ok((await api.send('mine', undefined, signed)).data.projects.some(p => p.id === submitted.data.id));
   assert.equal(copies, 0);
+});
+
+test('活动报名入口在官网和外链间切换，草稿隔离、关闭本站收集并保留原票根', async t => {
+  const {client}=await fixture(t), admin=client(), visitor=client(), player=client();
+  await admin('login',adminLogin); await player('login',playerLogin);
+  const input={id:'external-entry',name:'外部赛事',description:'通过主办方报名。',date:'2026.12.10',status:'open',registrationDestination:'external',registrationUrl:'https://example.test/enroll?event=01'};
+  const draft=await admin('staff/events',input);
+  assert.equal(draft.registrationDestination,'external');
+  await admin('staff/events/'+draft.id+'/publish',{draftRevision:draft.draftRevision});
+  let event=await visitor('events/'+draft.id);
+  assert.equal(event.registrationUrl,input.registrationUrl);assert.equal(event.registrationOpen,true);
+  const body={name:'玩家',contact:'external@example.test',answers:{},idempotencyKey:'external-entry-test-key'};
+  await visitor('events/'+draft.id+'/registrations',body,409);
+  await player('register-event',{...body,eventId:draft.id},409);
+  const internal=await admin('staff/events/'+draft.id,{registrationDestination:'website'});
+  assert.equal((await visitor('events/'+draft.id)).registrationDestination,'external');
+  await admin('staff/events/'+draft.id+'/publish',{draftRevision:internal.draftRevision});
+  event=await visitor('events/'+draft.id);assert.equal(event.registrationDestination,'website');assert.equal(event.registrationUrl,'');
+  const receipt=await visitor('events/'+draft.id+'/registrations',body);assert.ok(receipt.id);
+  const switched=await admin('staff/events/'+draft.id,{registrationDestination:'external',registrationUrl:input.registrationUrl});
+  await admin('staff/events/'+draft.id+'/publish',{draftRevision:switched.draftRevision});
+  assert.equal((await visitor('events/'+draft.id+'/registrations',body)).id,receipt.id);
+  await admin('staff/events',{...input,id:'unsafe-entry',registrationUrl:'javascript:alert(1)'},400);
+  await admin('staff/events',{...input,id:'credential-entry',registrationUrl:'https://a:b@example.test'},400);
+  const incomplete=await admin('staff/events',{...input,id:'empty-entry',registrationUrl:''});
+  await admin('staff/events/'+incomplete.id+'/publish',{draftRevision:incomplete.draftRevision},400);
+  assert.equal((await visitor('events/weekend-lab')).registrationDestination,'website');
+});
+test('报名中及进行中均可组队招募，结束和下架后禁止新增招募',async t=>{
+ const {client}=await fixture(t), player=client(),admin=client();await player('login',playerLogin);await admin('login',adminLogin);
+ const body={eventId:'weekend-lab',projectId:'campus-agent',title:'报名期寻找伙伴',description:'准备一起参加活动',recruitment};
+ const created=await player('recruitments',body);assert.equal(created.eventId,'weekend-lab');
+ assert.ok((await player('recruitments?event=weekend-lab')).some(row=>row.id===created.id));
+ await player('recruitments',{...body,eventId:'ai-build-sprint'});
+ await player('recruitments',{...body,eventId:'autumn-hack'},409);
+ await admin('staff/events/weekend-lab/archive',{});
+ await player('recruitments',body,404);
+});
+
+
+test('进行中的官网报名遵守截止时间，招募带项目名称且简介最多三十字', async t=>{
+ const {client}=await fixture(t),admin=client(),visitor=client(),player=client();await admin('login',adminLogin);await player('login',playerLogin);
+ const record=await admin('staff/events',{id:'active-signup',name:'进行中报名',description:'进行中也能参与。',status:'active',date:'2026.11.20 — 11.30',registrationClosesAt:'2026-11-23T12:00:00Z'});
+ await admin('staff/events/'+record.id+'/publish',{draftRevision:record.draftRevision});
+ assert.equal((await visitor('events/'+record.id)).registrationOpen,true);
+ const body={name:'参与者',contact:'active@example.test',answers:{},idempotencyKey:'active-signup-test-key'};
+ assert.ok((await visitor('events/'+record.id+'/registrations',body)).id);
+ const closed=await admin('staff/events/'+record.id,{registrationClosesAt:'2026-11-21T12:00:00Z'});
+ await admin('staff/events/'+record.id+'/publish',{draftRevision:closed.draftRevision});
+ assert.equal((await visitor('events/'+record.id)).registrationOpen,false);
+ await visitor('events/'+record.id+'/registrations',{...body,contact:'late@example.test',idempotencyKey:'active-signup-late-key'},409);
+ const team={eventId:record.id,projectId:'campus-agent',title:'招募标题',description:'字'.repeat(30),recruitment};
+ const saved=await player('recruitments',team);
+ const view=(await visitor('recruitments?event='+record.id)).find(item=>item.id===saved.id);
+ assert.equal(view.projectName,(await player('projects/campus-agent')).name);
+ assert.equal(view.description.length,30);
+ await player('recruitments',{...team,description:'字'.repeat(31)},400);
+});
+
+test('报名分别保存电话与微信，电话判重、重试及隐私保持一致', async t=>{
+ const {client}=await fixture(t),admin=client(),visitor=client(),player=client();await admin('login',adminLogin);await player('login',playerLogin);
+ const body={name:'电话报名玩家',phone:'138 0000 0000',wechat:'player_wechat',answers:{},idempotencyKey:'phone-wechat-test-key'};
+ const receipt=await player('events/weekend-lab/registrations',body);
+ assert.equal((await player('events/weekend-lab/registrations',body)).id,receipt.id);
+ const mine=(await player('mine')).registrations.find(row=>row.id===receipt.id);
+ assert.equal(mine.phone,'13800000000');assert.equal(mine.wechat,'player_wechat');
+ const row=(await admin('registrations')).find(row=>row.id===receipt.id);assert.equal(row.contact,mine.phone);assert.equal(row.phone,mine.phone);
+ assert.ok(!JSON.stringify(await visitor('events')).includes(body.wechat));
+ const publicReceipt=await visitor('registration-status',{id:receipt.id,receiptToken:receipt.receiptToken});
+ assert.ok(!Object.hasOwn(publicReceipt,'phone'));assert.ok(!Object.hasOwn(publicReceipt,'wechat'));
+ await visitor('events/weekend-lab/registrations',{...body,phone:'138-0000-0000',idempotencyKey:'phone-wechat-duplicate-key'},409);
+ await visitor('events/weekend-lab/registrations',{...body,phone:'not-a-phone',idempotencyKey:'phone-wechat-invalid-key'},400);
+ await player('events/weekend-lab/registrations',{...body,wechat:'changed_wechat'},409);
+});
+
+test('公开主页展示昵称头像和大学，不披露账号与报名资料', async t=>{
+ const {client}=await fixture(t),visitor=client(),player=client(),admin=client();
+ const user=(await player('login',playerLogin)).user;await admin('login',adminLogin);
+ const pending=await player('projects',{...submission,name:'尚未公开的作品',description:'私人审核中的正文。'});
+ await player('account/profile',{name:'公开主页玩家',university:'公开主页大学',publicContact:'微信：公开联系号'});
+ await player('events/weekend-lab/registrations',{name:'报名姓名',phone:'13898765432',wechat:'private_wechat',answers:{},idempotencyKey:'profile-private-registration-key'});
+ const team=await player('recruitments',{eventId:'ai-build-sprint',projectId:pending.id,title:'寻找伙伴',description:'一起完成实用项目',recruitment});
+ let profile=await visitor('profiles/'+user.id);
+ assert.deepEqual(Object.keys(profile).sort(),['avatar','id','name','projects','publicContact','recruitments','university']);
+ assert.equal(profile.name,'公开主页玩家');assert.ok(!profile.projects.some(project=>project.id===pending.id));
+ assert.ok(profile.recruitments.some(row=>row.id===team.id));
+ const serialized=JSON.stringify(profile);for(const value of [playerLogin.email,'13898765432','private_wechat','私人审核中的正文。'])assert.ok(!serialized.includes(value));
+ assert.equal(profile.university,'公开主页大学');assert.equal(profile.publicContact,'微信：公开联系号');assert.equal(profile.avatar,'');assert.ok(!Object.hasOwn(profile,'registrations'));
+ await admin('review/'+pending.id,{status:'approved'});profile=await visitor('profiles/'+user.id);
+ assert.ok(profile.projects.some(project=>project.id===pending.id));
+ const newcomer=client();const newUser=(await newcomer('register',{email:'no-public-profile@example.test',password:'Safe-Test-12345',name:'未公开玩家'})).user;
+ await visitor('profiles/'+newUser.id,undefined,404);await visitor('profiles/unknown-player',undefined,404);
+});
+
+test('项目收藏数随不同玩家的收藏和取消更新，重复收藏不重复计数',async t=>{
+ const {client}=await fixture(t),player=client(),admin=client(),visitor=client();await player('login',playerLogin);await admin('login',adminLogin);
+ const path='reaction/study-map',body={kind:'save',active:true};
+ assert.equal((await visitor('projects/study-map')).saves,0);
+ assert.equal((await player(path,body)).saves,1);assert.equal((await player(path,body)).saves,1);
+ assert.equal((await admin(path,body)).saves,2);
+ const publicView=await visitor('projects/study-map');assert.equal(publicView.saves,2);assert.equal(publicView.saved,false);
+ assert.equal((await player(path,{kind:'save',active:false})).saves,1);
+});
+
+test('后台录入作品的署名可打开公开作者页，无需暴露后台账号',async t=>{
+ const {client}=await fixture(t),admin=client(),visitor=client();await admin('login',adminLogin);
+ const project=await admin('staff/projects',{...submission,id:crypto.randomUUID(),name:'后台录入作品',author:'公开署名作者'});
+ await admin('review/'+project.id,{status:'approved'});
+ const profile=await visitor('profiles/project-'+project.id);
+ assert.equal(profile.name,'公开署名作者');assert.equal(profile.projects[0].id,project.id);
+ assert.ok(!JSON.stringify(profile).includes(adminLogin.email));assert.ok(!Object.hasOwn(profile,'email'));
+});
+
+test('合作活动可通过后台发布，公开卡片、报名、投稿和相册保留合作分类',async t=>{
+ const {client}=await fixture(t),admin=client(),player=client(),visitor=client();await admin('login',adminLogin);await player('login',playerLogin);
+ const draft=await admin('staff/events',{id:'co-create-category',name:'合作类型验收',type:'合作',category:'activity',description:'面向玩家的合作活动。',date:'2035.12.01',status:'active',submissionsOpen:true});
+ await admin('staff/events/'+draft.id+'/publish',{draftRevision:draft.draftRevision});
+ const event=await visitor('events/'+draft.id);assert.equal(event.category,'activity');assert.equal(event.type,'合作');
+ assert.equal((await visitor('events?view=card')).find(row=>row.id===draft.id).category,'activity');
+ assert.equal((await visitor('albums')).find(row=>row.eventId===draft.id).category,'activity');
+ const project=await player('projects',{...submission,eventId:draft.id});assert.equal(project.eventId,draft.id);
+ const receipt=await visitor('events/'+draft.id+'/registrations',{name:'合作参加者',phone:'13812121212',wechat:'',answers:{},idempotencyKey:'co-create-category-signup-key'});assert.ok(receipt.id);
+ const changed=await admin('staff/events/'+draft.id,{category:'salon',type:'沙龙'});
+ assert.equal((await visitor('events/'+draft.id)).category,'activity');
+ await admin('staff/events/'+draft.id+'/publish',{draftRevision:changed.draftRevision});assert.equal((await visitor('events/'+draft.id)).category,'salon');
+ await admin('staff/events',{id:'invalid-co-create-type',name:'类型无效',description:'验证类型',date:'2035.12.01',category:'unsupported'},400);
+});
+
+
+test('项目简介限制20字，作品展示图限制2张，图片分工独立保存',async t=>{
+ const {client}=await fixture(t), player=client();await player('login',playerLogin);
+ await player('projects',{...submission,summary:'字'.repeat(21)},400);
+ await player('projects',{...submission,showcaseImages:['https://example.test/1.jpg','https://example.test/2.jpg','https://example.test/3.jpg']},400);
+ await player('projects',{...submission,imageUrl:42},400);
+ const images=['https://example.test/1.jpg','https://example.test/2.jpg'];
+ const result=await player('projects',{...submission,imageUrl:'https://example.test/card.jpg',bannerUrl:'https://example.test/banner.jpg',showcaseImages:images});
+ assert.equal(result.imageUrl,'https://example.test/card.jpg');assert.equal(result.bannerUrl,'https://example.test/banner.jpg');assert.deepEqual(result.showcaseImages,images);
+ const edited=await player('edit/'+result.id,{...result,summary:'修改后的项目简介'});
+ assert.deepEqual(edited.showcaseImages,images);assert.equal(edited.bannerUrl,result.bannerUrl);
+});
+
+
+test('团建照片可通过运营添加并保留活动关联',async t=>{
+ const {client}=await fixture(t),admin=client(),visitor=client();await admin('login',adminLogin);
+ const photo=await admin('photos',{eventId:'ai-build-sprint',title:'玩家团建',imageUrl:'https://example.test/team.jpg',category:'team-building'});
+ const album=(await visitor('albums')).find(album=>album.eventId==='ai-build-sprint');
+ assert.equal(album.photos.find(row=>row.id===photo.id).category,'team-building');
+});
+
+
+test('投稿和修改必须有封面与横幅，项目链接可留空',async t=>{
+ const {client}=await fixture(t),player=client();await player('login',playerLogin);
+ await player('projects',{...submission,imageUrl:''},400);
+ await player('projects',{...submission,bannerUrl:''},400);
+ await player('projects',{...submission,imageUrl:'   '},400);
+ const created=await player('projects',{...submission,demoUrl:''});assert.equal(created.demoUrl,'');
+ await player('edit/'+created.id,{...created,imageUrl:''},400);
+ await player('edit/'+created.id,{...created,bannerUrl:''},400);
+ const updated=await player('edit/'+created.id,{...created,demoUrl:'https://example.test/live'});assert.equal(updated.demoUrl,'https://example.test/live');
+});
+
+
+test('选填公开联系方式可保存、沿用和清空，不从报名资料自动填入',async t=>{
+ const {client}=await fixture(t),player=client(),visitor=client();const {user}=await player('login',playerLogin);
+ assert.equal((await visitor('profiles/'+user.id)).publicContact,'');
+ let saved=await player('account/profile',{name:user.name,university:'测试大学',publicContact:'  微信：contact_demo  '});
+ assert.equal(saved.user.publicContact,'微信：contact_demo');
+ assert.equal((await visitor('profiles/'+user.id)).publicContact,'微信：contact_demo');
+ saved=await player('account/profile',{name:user.name,university:'测试大学'});assert.equal(saved.user.publicContact,'微信：contact_demo');
+ await player('account/profile',{name:user.name,publicContact:'字'.repeat(201)},400);
+ await player('account/profile',{name:user.name,publicContact:123},400);
+ saved=await player('account/profile',{name:user.name,university:'测试大学',publicContact:''});
+ assert.equal(saved.user.publicContact,undefined);assert.equal((await visitor('profiles/'+user.id)).publicContact,'');
 });

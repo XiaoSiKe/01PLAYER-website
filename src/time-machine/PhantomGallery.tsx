@@ -22,9 +22,9 @@ import { PhotoPreviewHeader } from "../components/ImageLightbox";
 /* ============================================================================
    PhantomGallery
    ----------------------------------------------------------------------------
-   Infinite draggable image grid on a dark stage. Cursor spotlight brightens
+   Draggable image grid on a dark stage. Cursor spotlight brightens
    the local area; everything else sits in shadow. Click any card to lift it
-   out of its slot, land it in the center at ~1.5× cell size, and type the
+   out of its slot, enlarge it in the center, and type the
    title / year / description in a monospaced typewriter with a blinking
    caret. Cursor tilts the focused card in 3D. Click anywhere to send it
    back. Full drag + throw / inertia + press-hold zoom preserved.
@@ -32,33 +32,33 @@ import { PhotoPreviewHeader } from "../components/ImageLightbox";
 
 // Zero One supplies the archive records. The viewport and animation below
 // are from the supplied component.
-type Item = { title: string; src: string; fullSrc: string; year: string; desc: string };
+type Item = { title: string; src: string; fullSrc: string; aspectRatio?: number; year: string; desc: string };
+type Cell = { element: HTMLDivElement; thumb: HTMLImageElement; ratio: number };
+type Placement = { left: number; top: number; height: number; imageHeight: number };
 
 const CFG = {
-  cellSize:              200,
-  hoverColor:            "#FF5588",
+  cellSize:              215.6,
   cellPadding:           10,
   gap:                   12,
+  captionHeight:         18,
   arcAmount:             0.6,
   arcMaxAngleDeg:        28,
   arcAxis:               "horizontal" as "horizontal" | "vertical",
   edgeFade:              0.25,
   parallaxEnabled:       true,
-  parallaxStrength:      0.1,
+  parallaxStrength:      0.04,
   parallaxEase:          0.12,
-  parallaxWhileDragging: false,
   inertiaEnabled:        true,
   throwFriction:         0.92,
   throwVelocityScale:    1,
   throwMinSpeed:         80,
   throwMaxSpeed:         2500,
   zoomValue:             0.7,
-  DRAG_THRESHOLD:        4,
-  PRESS_ZOOM_DELAY:      120,
-  GRID_SIZE:             20,
+  PRESS_ZOOM_DELAY:      240,
 };
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+const validRatio = (ratio?: number): ratio is number => typeof ratio === "number" && Number.isFinite(ratio) && ratio > 0;
 
 function computePinnedOffset(prevSize: number, nextSize: number, pivot: {x:number;y:number}, prevOffset: {x:number;y:number}) {
   const worldX = (pivot.x - prevOffset.x) / prevSize;
@@ -92,7 +92,7 @@ function calcArcTransform(opts: {
   }
 }
 
-export default function PhantomGallery({ items }: { items: Item[] }) {
+export default function PhantomGallery({ items, tileScale = 1 }: { items: Item[]; tileScale?: number }) {
   const stageRef      = useRef<HTMLDivElement>(null);
   const gridRef       = useRef<HTMLDivElement>(null);
   const spotlightRef  = useRef<HTMLDivElement>(null);
@@ -106,18 +106,31 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
   const exitFocusRef  = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    const stage = stageRef.current!;
+    const grid = gridRef.current!;
+    const header = stage.closest(".time-machine")?.querySelector(".staggered-menu-header");
+    const photos = [...new Map(items.map(item => [item.fullSrc, item])).values()];
+    const measureViewport = () => ({
+      w: window.innerWidth,
+      h: window.innerHeight,
+      top: header?.getBoundingClientRect().bottom ?? 0,
+    });
+    let viewport = measureViewport();
+    const baseSize = () => Math.min(CFG.cellSize, Math.max(1, (viewport.w - 24) * 0.4928)) * tileScale;
+
     /* ------- Motion state ------- */
     let offset          = { x: 0, y: 0 };
     let targetOffset    = { x: 0, y: 0 };
-    let inertia         = { x: 0, y: 0 };
     let velocity        = { x: 0, y: 0 };
     let mouseOffset     = { x: 0, y: 0 };
     let targetMouseOff  = { x: 0, y: 0 };
-    let currentCellSize = CFG.cellSize;
-    let targetCellSize  = CFG.cellSize;
-    let viewport        = { w: window.innerWidth, h: window.innerHeight };
+    let currentCellSize = baseSize();
+    let targetCellSize  = currentCellSize;
     let isPressing      = false;
     let isDragging      = false;
+    let didZoom         = false;
+    let pressedCell: HTMLDivElement | null = null;
+    let pendingClickCell: HTMLDivElement | null = null;
     let inertiaActive   = false;
     let pressPos        = { x: 0, y: 0 };
     let startOffset     = { x: 0, y: 0 };
@@ -126,86 +139,114 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
     let lastTime = performance.now();
     let previousPaint = "";
     let rafId = 0;
+    let ratioRevision = 0;
 
-    /* ------- Cell cache ------- */
-    const stage = stageRef.current!;
-    const grid  = gridRef.current!;
-    const cellCache: Record<string, HTMLDivElement> = {};
+    const cells = photos.map(item => {
+      const cell = document.createElement("div");
+      cell.className = "pg-cell";
+      cell.style.padding = CFG.cellPadding + "px";
+      cell.dataset.src = item.fullSrc;
+      cell.dataset.title = item.title;
+      cell.dataset.year = item.year;
+      cell.dataset.desc = item.desc;
 
-    function ensureCell(gx: number, gy: number) {
-      const key = `${gx}-${gy}`;
-      let el = cellCache[key];
-      if (!el) {
-        el = document.createElement("div");
-        el.className = "pg-cell";
-        const thumb = document.createElement("div"); thumb.className = "pg-thumb";
-        const meta  = document.createElement("div"); meta.className  = "pg-meta";
-        const title = document.createElement("span"); title.className = "pg-title";
-        const year  = document.createElement("span"); year.className  = "pg-year";
-        meta.appendChild(title); meta.appendChild(year);
-        el.appendChild(thumb); el.appendChild(meta);
-        el.addEventListener("mouseenter", () => { el.style.backgroundColor = CFG.hoverColor; });
-        el.addEventListener("mouseleave", () => { el.style.backgroundColor = "rgba(0,0,0,0.1)"; });
-        grid.appendChild(el);
-        cellCache[key] = el;
+      const thumb = document.createElement("img");
+      thumb.className = "pg-thumb";
+      thumb.alt = "";
+      thumb.draggable = false;
+      thumb.loading = "lazy";
+      thumb.decoding = "async";
+      thumb.style.marginBottom = CFG.gap + "px";
+      const entry: Cell = { element: cell, thumb, ratio: validRatio(item.aspectRatio) ? item.aspectRatio : 1 };
+      if (!validRatio(item.aspectRatio)) {
+        thumb.addEventListener("load", () => {
+          const ratio = thumb.naturalWidth / thumb.naturalHeight;
+          if (validRatio(ratio) && ratio !== entry.ratio) {
+            entry.ratio = ratio;
+            ratioRevision++;
+          }
+        }, { once: true });
       }
-      return el;
+      thumb.src = item.src;
+      const meta = document.createElement("div");
+      meta.className = "pg-meta";
+      meta.style.lineHeight = CFG.captionHeight + "px";
+      const title = document.createElement("span");
+      title.textContent = item.title;
+      const year = document.createElement("span");
+      year.className = "pg-year";
+      year.textContent = item.year;
+      meta.append(title, year);
+      cell.append(thumb, meta);
+      return entry;
+    });
+    const cellsByElement = new Map(cells.map(cell => [cell.element, cell]));
+    grid.replaceChildren(...cells.map(cell => cell.element));
+
+    let cachedLayout: { key: string; placements: Placement[]; x: number; y: number; minX: number; minY: number } | null = null;
+    function gridLayout(size: number) {
+      const key = [size, viewport.w, viewport.h, viewport.top, ratioRevision].join(":");
+      if (cachedLayout?.key === key) return cachedLayout;
+      const width = Math.max(1, viewport.w - 24);
+      const height = Math.max(1, viewport.h - viewport.top - 24);
+      const columnGap = Math.min(CFG.gap, width * 0.014);
+      const maxColumns = Math.floor((width + columnGap) / (baseSize() + columnGap));
+      const columns = Math.max(1, Math.min(cells.length, maxColumns, Math.ceil(Math.sqrt(cells.length * width / height))));
+      const bottoms = Array<number>(columns).fill(0);
+      const placements = cells.map(cell => {
+        const top = Math.min(...bottoms);
+        const column = bottoms.indexOf(top);
+        const imageHeight = Math.max(1, size - CFG.cellPadding * 2) / cell.ratio;
+        const cellHeight = imageHeight + CFG.cellPadding * 2 + CFG.gap + CFG.captionHeight;
+        bottoms[column] = top + cellHeight + CFG.gap;
+        return { left: column * (size + columnGap), top, height: cellHeight, imageHeight };
+      });
+      const gridWidth = columns * size + (columns - 1) * columnGap;
+      const gridHeight = Math.max(0, Math.max(...bottoms) - CFG.gap);
+      cachedLayout = {
+        key,
+        placements,
+        x: 12 + Math.max(0, (width - gridWidth) / 2),
+        y: viewport.top + 12 + Math.max(0, (height - gridHeight) / 2),
+        minX: Math.min(0, width - gridWidth),
+        minY: Math.min(0, height - gridHeight),
+      };
+      return cachedLayout;
     }
 
-    function render() {
-      const cellWithGap = currentCellSize;
-      const startX = Math.floor(-offset.x / cellWithGap) - 5;
-      const startY = Math.floor(-offset.y / cellWithGap) - 5;
-      const active = new Set<string>();
+    function boundPan(pan: { x: number; y: number }, layout = gridLayout(currentCellSize)) {
+      return { x: clamp(pan.x, layout.minX, 0), y: clamp(pan.y, layout.minY, 0) };
+    }
 
-      for (let y = startY; y < startY + CFG.GRID_SIZE; y++) {
-        for (let x = startX; x < startX + CFG.GRID_SIZE; x++) {
-          const idx  = Math.abs((x + y * 3) % items.length);
-          const item = items[idx];
-          const key  = `${x}-${y}`;
-          active.add(key);
-          const el = ensureCell(x, y);
+    function zoomAtCenter(size: number) {
+      const from = gridLayout(currentCellSize);
+      const to = gridLayout(size);
+      const pivot = { x: viewport.w / 2, y: (viewport.top + viewport.h) / 2 };
+      const pinned = computePinnedOffset(currentCellSize, size, pivot, { x: from.x + offset.x, y: from.y + offset.y });
+      targetCellSize = size;
+      targetOffset = boundPan({ x: pinned.x - to.x, y: pinned.y - to.y }, to);
+    }
 
-          const tileLeft = x * cellWithGap + offset.x + mouseOffset.x + inertia.x;
-          const tileTop  = y * cellWithGap + offset.y + mouseOffset.y + inertia.y;
-          const cx = tileLeft + currentCellSize / 2;
-          const cy = tileTop  + currentCellSize / 2;
-
-          const { z, yawDeg, pitchDeg, edgeFactor } = calcArcTransform({
-            cellCenterX: cx, cellCenterY: cy,
-            viewportW: viewport.w, viewportH: viewport.h,
-            arcAxis: CFG.arcAxis,
-            arcMaxAngleDeg: CFG.arcMaxAngleDeg,
-            arcAmount: CFG.arcAmount,
-          });
-          const scale   = 1 - CFG.edgeFade * (edgeFactor * edgeFactor);
-          const opacity = 1 - 0.4 * (edgeFactor * CFG.arcAmount);
-
-          el.style.left    = tileLeft + "px";
-          el.style.top     = tileTop  + "px";
-          el.style.width   = currentCellSize + "px";
-          el.style.height  = currentCellSize + "px";
-          el.style.padding = CFG.cellPadding + "px";
-          el.style.transform =
-            `translate3d(0, 0, ${z}px) rotateY(${yawDeg}deg) rotateX(${pitchDeg}deg) scale(${scale})`;
-          el.style.opacity = String(opacity);
-
-          el.dataset.src   = item.fullSrc;
-          el.dataset.title = item.title;
-          el.dataset.year  = String(item.year);
-          el.dataset.desc  = item.desc;
-
-          const thumb = el.querySelector<HTMLDivElement>(".pg-thumb")!;
-          thumb.style.backgroundImage = `url(${JSON.stringify(item.src)})`;
-          thumb.style.marginBottom = CFG.gap + "px";
-          const [titleEl, yearEl] = el.querySelectorAll<HTMLSpanElement>(".pg-meta span");
-          titleEl.textContent = item.title;
-          yearEl.textContent  = String(item.year);
-        }
-      }
-      for (const key in cellCache) {
-        if (!active.has(key)) { cellCache[key].remove(); delete cellCache[key]; }
-      }
+    function render(layout: ReturnType<typeof gridLayout>) {
+      const { placements, x, y } = layout;
+      cells.forEach(({ element: cell, thumb }, index) => {
+        const placement = placements[index];
+        const left = x + placement.left + offset.x + mouseOffset.x;
+        const top = y + placement.top + offset.y + mouseOffset.y;
+        const { z, yawDeg, pitchDeg, edgeFactor } = calcArcTransform({
+          cellCenterX: left + currentCellSize / 2, cellCenterY: top + placement.height / 2,
+          viewportW: viewport.w, viewportH: viewport.h, arcAxis: CFG.arcAxis,
+          arcMaxAngleDeg: CFG.arcMaxAngleDeg, arcAmount: CFG.arcAmount,
+        });
+        const scale = 1 - CFG.edgeFade * edgeFactor * edgeFactor;
+        cell.style.left = left + "px";
+        cell.style.top = top + "px";
+        cell.style.width = currentCellSize + "px";
+        cell.style.height = placement.height + "px";
+        thumb.style.height = placement.imageHeight + "px";
+        cell.style.transform = `translate3d(0, 0, ${z}px) rotateY(${yawDeg}deg) rotateX(${pitchDeg}deg) scale(${scale})`;
+        cell.style.opacity = String(1 - 0.4 * edgeFactor * CFG.arcAmount);
+      });
     }
 
     /* ------- rAF loop ------- */
@@ -217,34 +258,34 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       currentCellSize += (targetCellSize - currentCellSize) * 0.15;
       if (Math.abs(currentCellSize - targetCellSize) < 0.05) currentCellSize = targetCellSize;
 
-      if (!isDragging) {
+      const layout = gridLayout(currentCellSize);
+      if (inertiaActive) {
+        const friction = Math.pow(CFG.throwFriction, dt * 60);
+        velocity.x *= friction;
+        velocity.y *= friction;
+        const next = { x: offset.x + velocity.x * dt, y: offset.y + velocity.y * dt };
+        offset = boundPan(next, layout);
+        if (offset.x !== next.x) velocity.x = 0;
+        if (offset.y !== next.y) velocity.y = 0;
+        targetOffset = { ...offset };
+        inertiaActive = Math.hypot(velocity.x, velocity.y) >= 1;
+      } else if (!isDragging) {
         offset.x += (targetOffset.x - offset.x) * 0.15;
         offset.y += (targetOffset.y - offset.y) * 0.15;
         if (Math.abs(offset.x - targetOffset.x) < 0.1) offset.x = targetOffset.x;
         if (Math.abs(offset.y - targetOffset.y) < 0.1) offset.y = targetOffset.y;
+        offset = boundPan(offset, layout);
       }
-      if (CFG.inertiaEnabled && inertiaActive) {
-        const f = Math.pow(CFG.throwFriction, dt * 60);
-        velocity.x *= f; velocity.y *= f;
-        const speed = Math.hypot(velocity.x, velocity.y);
-        if (speed < 1) {
-          velocity.x = 0;
-          velocity.y = 0;
-          inertiaActive = false;
-        }
-        inertia.x += velocity.x * dt;
-        inertia.y += velocity.y * dt;
-      }
-      const applyPa = CFG.parallaxEnabled && (CFG.parallaxWhileDragging || !isDragging);
+      const applyPa = CFG.parallaxEnabled;
       const paTx = applyPa ? targetMouseOff.x : 0;
       const paTy = applyPa ? targetMouseOff.y : 0;
       mouseOffset.x += (paTx - mouseOffset.x) * CFG.parallaxEase;
       mouseOffset.y += (paTy - mouseOffset.y) * CFG.parallaxEase;
 
-      const paint = [offset.x, offset.y, currentCellSize, mouseOffset.x, mouseOffset.y, inertia.x, inertia.y, viewport.w, viewport.h]
+      const paint = [offset.x, offset.y, currentCellSize, mouseOffset.x, mouseOffset.y, viewport.w, viewport.h, viewport.top, ratioRevision]
         .map(value => value.toFixed(2)).join(":");
       if (paint !== previousPaint) {
-        render();
+        render(layout);
         previousPaint = paint;
       }
       rafId = requestAnimationFrame(tick);
@@ -252,14 +293,11 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
     rafId = requestAnimationFrame(tick);
 
     /* ------- Interaction: pointer + spotlight ------- */
-    function commitInertiaToBase() {
-      offset = { x: offset.x + inertia.x, y: offset.y + inertia.y };
-      targetOffset = { ...offset };
-      inertia = { x: 0, y: 0 };
-      inertiaActive = false;
-    }
-
     const spotlightEl = spotlightRef.current!;
+    const cellAt = (target: EventTarget | null) => {
+      const cell = target instanceof Element ? target.closest<HTMLDivElement>(".pg-cell") : null;
+      return cell && grid.contains(cell) ? cell : null;
+    };
     function updateSpotlight(x: number, y: number) {
       spotlightEl.style.setProperty("--mx", x + "px");
       spotlightEl.style.setProperty("--my", y + "px");
@@ -268,10 +306,15 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0 || isPressing) return;
-      if (inertiaActive || inertia.x !== 0 || inertia.y !== 0) commitInertiaToBase();
+      inertiaActive = false;
+      targetOffset = { ...offset };
+      targetMouseOff = { ...mouseOffset };
+      pressedCell = cellAt(e.target);
+      pendingClickCell = null;
       stage.setPointerCapture(e.pointerId);
       isPressing = true;
       isDragging = false;
+      didZoom = false;
       stage.classList.remove("dragging");
       lastMove = { x: e.clientX, y: e.clientY, t: performance.now() };
       velocity = { x: 0, y: 0 };
@@ -281,13 +324,8 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       if (pressTimer) clearTimeout(pressTimer);
       pressTimer = window.setTimeout(() => {
         if (!isDragging && isPressing) {
-          const rect = stage.getBoundingClientRect();
-          const pivot = { x: rect.width / 2, y: rect.height / 2 };
-          const newSize = CFG.cellSize * CFG.zoomValue;
-          const visibleOff = { x: offset.x + inertia.x, y: offset.y + inertia.y };
-          const pinned = computePinnedOffset(currentCellSize, newSize, pivot, visibleOff);
-          targetCellSize = newSize;
-          targetOffset = pinned;
+          didZoom = true;
+          zoomAtCenter(baseSize() * CFG.zoomValue);
         }
       }, CFG.PRESS_ZOOM_DELAY);
     };
@@ -305,26 +343,24 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
         velocity.y = vy * 0.6 + velocity.y * 0.4;
         lastMove = { x: e.clientX, y: e.clientY, t: now };
       }
-      const suppressPa = isPressing || isDragging;
-      if (CFG.parallaxEnabled && (CFG.parallaxWhileDragging || !isDragging) && !suppressPa) {
-        const rect = stage.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        const cx = rect.width / 2, cy = rect.height / 2;
-        targetMouseOff.x = (cx - mx) * CFG.parallaxStrength;
-        targetMouseOff.y = (cy - my) * CFG.parallaxStrength;
+      if (!isPressing) {
+        if (cellAt(e.target)) targetMouseOff = { ...mouseOffset };
+        else {
+          targetMouseOff.x = (viewport.w / 2 - e.clientX) * CFG.parallaxStrength;
+          targetMouseOff.y = (viewport.h / 2 - e.clientY) * CFG.parallaxStrength;
+        }
+        return;
       }
-      if (!isPressing) return;
       const dx = e.clientX - pressPos.x;
       const dy = e.clientY - pressPos.y;
-      if (!isDragging && Math.hypot(dx, dy) > CFG.DRAG_THRESHOLD) {
+      const dragThreshold = e.pointerType === "touch" ? 12 : 8;
+      if (!isDragging && Math.hypot(dx, dy) > dragThreshold) {
         isDragging = true;
         stage.classList.add("dragging");
         startOffset = { ...offset };
       }
       if (isDragging) {
-        offset.x = startOffset.x + dx;
-        offset.y = startOffset.y + dy;
+        offset = boundPan({ x: startOffset.x + dx, y: startOffset.y + dy });
         targetOffset = { ...offset };
       }
     };
@@ -335,20 +371,17 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       isPressing = false;
       if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
       const speed = Math.hypot(velocity.x, velocity.y);
-      if (wasDragging && e.type === "pointerup" && CFG.inertiaEnabled && speed >= CFG.throwMinSpeed) inertiaActive = true;
-      else { inertiaActive = false; inertia = { x: 0, y: 0 }; }
+      inertiaActive = wasDragging && e.type === "pointerup" && CFG.inertiaEnabled && speed >= CFG.throwMinSpeed && currentCellSize === baseSize();
       isDragging = false;
       stage.classList.remove("dragging");
 
-      const rect = stage.getBoundingClientRect();
-      const pivot = { x: rect.width / 2, y: rect.height / 2 };
-      const visibleOff = { x: offset.x + inertia.x, y: offset.y + inertia.y };
-      const pinnedBack = computePinnedOffset(currentCellSize, CFG.cellSize, pivot, visibleOff);
       targetMouseOff = { x: 0, y: 0 };
-      targetCellSize = CFG.cellSize;
-      targetOffset = pinnedBack;
+      zoomAtCenter(baseSize());
 
-      if (!wasDragging && e && e.type === "pointerup") handleClick(e);
+      pendingClickCell = !wasDragging && !didZoom && e.type === "pointerup"
+        ? pressedCell ?? cellAt(document.elementFromPoint(e.clientX, e.clientY))
+        : null;
+      pressedCell = null;
     };
 
     /* ------- Focus mode + typewriter + 3D tilt ------- */
@@ -361,6 +394,7 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
     const focusCaret = focusCaretRef.current!;
     let focusOn = false;
     let focusCell: HTMLDivElement | null = null;
+    let focusRatio = 1;
 
     let typeTimer: number | null = null;
     let focusTimer: number | undefined;
@@ -399,18 +433,33 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       step();
     };
 
-    function computeFinalSize() {
-      const w = Math.min(currentCellSize * 1.5, window.innerWidth * 0.45);
-      const h = w * 1.25;
-      return { w, h };
+    function previewGeometry(ratio: number) {
+      const top = Math.min(Math.max(80, viewport.top), viewport.h * 0.28);
+      const captionSpace = Math.min(110, viewport.h * 0.18) + 28;
+      const height = Math.max(1, viewport.h - top - captionSpace);
+      const width = Math.max(1, Math.min(600, viewport.w * 0.9, viewport.w - 32, height * ratio));
+      return { width, height: width / ratio, centerY: top + height / 2 };
+    }
+
+    function fitFocusImage() {
+      if (!focusOn) return;
+      const ratio = focusImg.naturalWidth / focusImg.naturalHeight;
+      if (validRatio(ratio)) focusRatio = ratio;
+      const geometry = previewGeometry(focusRatio);
+      focusCard.style.width = geometry.width + "px";
+      focusCard.style.height = geometry.height + "px";
+      focusCard.style.left = viewport.w / 2 + "px";
+      focusCard.style.top = geometry.centerY + "px";
     }
 
     function openFocus(cell: HTMLDivElement) {
       clearTimeout(closeTimer);
-      const rect = cell.getBoundingClientRect();
+      const original = cellsByElement.get(cell);
+      const rect = (original?.thumb ?? cell).getBoundingClientRect();
       const cx = rect.left + rect.width  / 2;
       const cy = rect.top  + rect.height / 2;
-      const { w: finalW, h: finalH } = computeFinalSize();
+      focusRatio = original?.ratio ?? 1;
+      const { width: finalW, height: finalH, centerY } = previewGeometry(focusRatio);
       const initScale = rect.width / finalW;
 
       const snap = {
@@ -440,8 +489,8 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
         "transform 0.6s cubic-bezier(0.34, 1.25, 0.64, 1), " +
         "opacity 0.3s ease";
       focusCard.style.opacity = "1";
-      focusCard.style.left = (window.innerWidth  / 2) + "px";
-      focusCard.style.top  = (window.innerHeight / 2) + "px";
+      focusCard.style.left = viewport.w / 2 + "px";
+      focusCard.style.top  = centerY + "px";
       focusCard.style.transform = "translate(-50%, -50%) scale(1)";
 
       focusDim.classList.add("on");
@@ -464,7 +513,7 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       const finalW = parseFloat(focusCard.style.width);
       let toLeft: number, toTop: number, toScale: number;
       if (focusCell && document.body.contains(focusCell)) {
-        const rect = focusCell.getBoundingClientRect();
+        const rect = (cellsByElement.get(focusCell)?.thumb ?? focusCell).getBoundingClientRect();
         toLeft  = rect.left + rect.width  / 2;
         toTop   = rect.top  + rect.height / 2;
         toScale = rect.width / finalW;
@@ -484,11 +533,10 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       focusOn = false;
       focusCell = null;
     }
-    function handleClick(e: PointerEvent) {
-      if (focusOn) { closeFocus(); return; }
-      const hit = document.elementFromPoint(e.clientX, e.clientY);
-      const cell = hit && (hit as HTMLElement).closest && (hit as HTMLElement).closest(".pg-cell");
-      if (cell && grid.contains(cell)) openFocus(cell as HTMLDivElement);
+    function handleClick() {
+      const cell = pendingClickCell;
+      pendingClickCell = null;
+      if (cell) openFocus(cell);
     }
     exitFocusRef.current = closeFocus;
 
@@ -519,6 +567,7 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
     stage.addEventListener("pointermove",   onPointerMove as any);
     stage.addEventListener("pointerup",     endPress      as any);
     stage.addEventListener("pointercancel", endPress      as any);
+    stage.addEventListener("click", handleClick);
     const onPointerLeave = () => { targetMouseOff = { x: 0, y: 0 }; };
     const onKeyDown = (event: KeyboardEvent) => {
       if (focusOn && (event.key === "Escape" || event.target === focusCard && ["Enter", " "].includes(event.key))) {
@@ -528,10 +577,19 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
     };
     stage.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("keydown", onKeyDown);
-    focusCard.addEventListener("click", closeFocus);
+    focusImg.addEventListener("click", closeFocus);
+    focusImg.addEventListener("load", fitFocusImage);
     focusDim.addEventListener("click",  closeFocus);
 
-    const onResize = () => { viewport = { w: window.innerWidth, h: window.innerHeight }; };
+    const onResize = () => {
+      const zoom = targetCellSize / baseSize();
+      viewport = measureViewport();
+      targetCellSize = baseSize() * zoom;
+      targetOffset = boundPan(targetOffset, gridLayout(targetCellSize));
+      fitFocusImage();
+    };
+    const headerObserver = new ResizeObserver(onResize);
+    if (header) headerObserver.observe(header);
     window.addEventListener("resize", onResize);
 
     /* When focus opens, kick the tilt loop */
@@ -555,7 +613,8 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       focusCard.classList.remove("on");
       focusDim.classList.remove("on");
       focusCard.removeAttribute("style");
-      focusCard.removeEventListener("click", closeFocus);
+      focusImg.removeEventListener("click", closeFocus);
+      focusImg.removeEventListener("load", fitFocusImage);
       window.removeEventListener("keydown", onKeyDown);
       focusDim.removeEventListener("click", closeFocus);
       stage.removeEventListener("pointerleave", onPointerLeave);
@@ -565,11 +624,13 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
       stage.removeEventListener("pointermove",   onPointerMove as any);
       stage.removeEventListener("pointerup",     endPress      as any);
       stage.removeEventListener("pointercancel", endPress      as any);
+      stage.removeEventListener("click", handleClick);
       window.removeEventListener("mousemove", onTiltMove);
       window.removeEventListener("resize", onResize);
-      for (const key in cellCache) cellCache[key].remove();
+      headerObserver.disconnect();
+      grid.replaceChildren();
     };
-  }, [items]);
+  }, [items, tileScale]);
 
   return (
     <>
@@ -609,15 +670,19 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
           position: absolute;
           background-color: rgba(0, 0, 0, 0.1);
           cursor: pointer;
-          transition: background-color 0.3s ease;
+          transition: background-color 120ms ease;
           display: flex; flex-direction: column;
           box-sizing: border-box;
           transform-style: preserve-3d;
           will-change: transform, opacity;
         }
+        #pg-stage:not(.dragging) .pg-cell:hover { background-color: #fff; }
+        #pg-stage:not(.dragging) .pg-cell:hover .pg-meta { color: #252525; }
         .pg-thumb {
-          flex: 1;
-          background-size: cover; background-position: center;
+          flex: none;
+          display: block;
+          width: 100%;
+          object-fit: contain;
           border-radius: 4px;
         }
         .pg-meta {
@@ -641,15 +706,22 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
         #pg-spotlight {
           position: fixed; inset: 0; pointer-events: none; z-index: 9;
           background: radial-gradient(
-            circle 340px at var(--mx, 50%) var(--my, 50%),
-            rgba(255, 255, 255, 0.55)  0%,
-            rgba(255, 255, 255, 0.30)  25%,
-            rgba(255, 255, 255, 0.08)  50%,
+            circle 420px at var(--mx, 50%) var(--my, 50%),
+            rgba(255, 255, 255, var(--pg-light-core, 0.76)) 0%,
+            rgba(255, 255, 255, var(--pg-light-mid, 0.50)) 25%,
+            rgba(255, 255, 255, var(--pg-light-edge, 0.18)) 50%,
             rgba(0, 0, 0, 0)           65%,
             rgba(0, 0, 0, 0.30)        100%
           );
           mix-blend-mode: overlay;
           transition: background 0.05s linear;
+        }
+        @media (hover: hover) {
+          #pg-stage:not(.dragging):has(.pg-cell:hover) ~ #pg-spotlight {
+            --pg-light-core: 0.98;
+            --pg-light-mid: 0.78;
+            --pg-light-edge: 0.32;
+          }
         }
         #pg-vignette {
           position: fixed; inset: 0; pointer-events: none; z-index: 10;
@@ -670,37 +742,40 @@ export default function PhantomGallery({ items }: { items: Item[] }) {
 
         #pg-focus-card {
           position: fixed; z-index: 12;
-          border-radius: 10px; overflow: hidden;
-          background: #222;
           opacity: 0; pointer-events: none;
-          box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.85);
           transform-style: preserve-3d;
         }
         #pg-focus-card.on { pointer-events: auto; cursor: pointer; }
         #pg-focus-card img {
           width: 100%; height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           display: block;
+          border-radius: 8px;
           transform: translateZ(0);
         }
         .pg-cap {
           position: absolute;
-          left: 20px; right: 20px; bottom: 18px;
+          inset: calc(100% + 12px) 0 auto;
+          max-height: min(110px, 18vh);
+          overflow: auto;
           display: flex; flex-direction: column; gap: 6px;
           font-family: 'JetBrains Mono', ui-monospace, monospace;
           color: rgba(255, 255, 255, 0.95);
-          font-size: 12px;
+          font-size: clamp(16px, 2.5vw, 19px);
           font-weight: 400;
           letter-spacing: 0.02em;
           text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75);
         }
         .pg-cap-head {
-          display: flex; justify-content: space-between; align-items: baseline;
+          display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
           font-weight: 400;
+          line-height: 1.35;
           text-transform: uppercase;
         }
+        .pg-cap-head > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+        .pg-cap-head > span:last-child { flex-shrink: 0; }
         .pg-cap-desc {
-          font-size: 11px;
+          font-size: clamp(14px, 2vw, 16px);
           line-height: 1.55;
           color: rgba(255, 255, 255, 0.78);
           font-weight: 400;

@@ -1,0 +1,1 @@
+export const PROJECT_IMAGE_LIMIT = 350_000;

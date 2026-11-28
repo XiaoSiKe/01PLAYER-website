@@ -12,6 +12,7 @@
 .community-page :is(.discovery-detail-back--inline, .project-detail-edit) .specular-button__label { gap: 6px; }
 .plaza-popular { margin: 0 0 clamp(26px, 3vw, 44px); }
 .plaza-results { min-block-size: 50svh; }
+.plaza-results-heading { display: flex; align-items: center; gap: 12px; }
 .discovery-action { width: fit-content; }
 .community-page .community-results { margin: 14px 0 17px; font-variant-numeric: tabular-nums; }
 .plaza-tools, .calendar-tools {
@@ -61,16 +62,14 @@
 .community-page .community-art--lens { background: #503629; color: #f7bf8c; }
 .community-page .community-art--garden { background: #edd1a3; color: #695116; }
 .community-page .community-art svg { transform: none; }
-.signup-panel > .border-glow-content {
-  padding: clamp(20px, 2.1vw, 34px);
-}
 .project-detail-side .community-reactions { display: flex; flex-wrap: wrap; }
 .project-detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .38fr); gap: clamp(24px, 5vw, 72px); align-items: start; }
-.project-detail-main { min-width: 0; display: grid; gap: clamp(26px, 4vw, 52px); }
+.project-detail-main { min-width: 0; display: grid; gap: clamp(20px, 3vw, 32px); }
 .project-detail-main h2, .project-detail-side h2 { margin: 0 0 14px; font-size: clamp(21px, 1.7vw, 26px); }
 .project-detail-main .community-prose { margin: 0; }
 .project-detail-main .community-prose, .event-intro .community-prose { font-size: clamp(16px, 1.25vw, 18px); line-height: 1.85; }
 .project-detail-main .community-prose p { max-width: 64ch; margin: 0; }
+.project-detail-main .community-prose p + p { margin-top: 6px; }
 .project-detail-media .community-art { aspect-ratio: 16 / 10; max-height: 520px; }
 .project-detail-media .community-art:has(img[src]) svg { visibility: hidden; }
 .project-detail-media .community-art img { object-fit: contain; background: var(--site-background); }
@@ -98,16 +97,19 @@
 .project-detail-facts { display: grid; gap: 13px; margin: 0; overflow-wrap: anywhere; }
 .project-detail-facts dt { margin-bottom: 4px; color: var(--community-muted); font-size: 14px; }
 .project-detail-facts dd { margin: 0; line-height: 1.5; font-size: 17px; }
-.project-recruitment-section { padding-top: 18px; border-top: 1px solid var(--community-border); }
+.project-recruitment-section { padding-top: 14px; border-top: 1px solid var(--community-border); }
+.project-recruitment-section .community-recruit-info { gap: 12px; margin: 0; }
+.project-recruitment-section .community-recruit-info dt { margin-bottom: 2px; font-size: 16px; }
+.project-recruitment-section .community-recruit-info dd { line-height: 1.5; }
 .calendar-highlights {
   display: grid;
   gap: clamp(10px, 1.3vw, 18px);
   grid-template-columns: minmax(0, 1fr) minmax(292px, .25fr);
-  margin-top: clamp(18px, 2.4vw, 32px);
+  margin-top: 0;
 }
 .calendar-featured {
   display: grid;
-  align-self: center;
+  align-self: start;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   gap: inherit;
@@ -120,10 +122,10 @@
   justify-content: center;
   min-width: 0;
   gap: 10px;
-  padding-block: 12px;
+  padding-block: 0;
 }
 .calendar-signup h2 {
-  --signup-leading: 1.16;
+  --signup-leading: 1.05;
   margin: 0;
   font-size: clamp(28px, 2.5vw, 36px);
   font-weight: 650;
@@ -146,17 +148,6 @@
 .calendar-signup-word, .calendar-signup-sample { letter-spacing: var(--signup-tracking, normal); white-space: nowrap; }
 .calendar-signup-word { grid-area: 1 / 1; justify-self: start; }
 :is(.calendar-signup-word, .calendar-signup-sample) > span { display: inline-block; }
-.calendar-signup p {
-  width: fit-content;
-  max-width: 100%;
-  margin: 0;
-  color: var(--community-muted);
-  font-size: 17px;
-  font-size: clamp(16px, calc(100cqi / 17), 17px);
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-.calendar-signup p span { white-space: nowrap; }
 .calendar-lead > .border-glow-content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 44.8%);
@@ -181,11 +172,11 @@
 .community-page { --event-closed-ink: #ff858c; }
 html[data-theme="light"] .community-page { --event-closed-ink: #af2634; }
 .community-page :is([data-event-status="closed"], [data-event-status="ended"]) { color: var(--event-closed-ink); }
-.calendar-lead { --featured-open-ink: #84baff; --featured-active-ink: #c9a6ff; }
-html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featured-active-ink: #632da2; }
-.calendar-lead [data-event-status="open"] { color: var(--featured-open-ink); }
-.calendar-lead [data-event-status="active"] { color: var(--featured-active-ink); }
-.calendar-lead .calendar-labels :is([data-event-status="open"], [data-event-status="active"]) {
+:is(.calendar-lead, .event-entry) { --featured-open-ink: #84baff; --featured-active-ink: #c9a6ff; }
+html[data-theme="light"] :is(.calendar-lead, .event-entry) { --featured-open-ink: #174d96; --featured-active-ink: #632da2; }
+:is(.calendar-lead, .event-entry) [data-event-status="open"] { color: var(--featured-open-ink); }
+:is(.calendar-lead, .event-entry) [data-event-status="active"] { color: var(--featured-active-ink); }
+:is(.calendar-lead, .event-entry) .calendar-labels :is([data-event-status="open"], [data-event-status="active"]) {
   padding: 4px 7px;
   border-radius: 7px;
   background: color-mix(in srgb, currentColor 10%, transparent);
@@ -215,6 +206,13 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
 .calendar-card .event-poster-mark { width: min(32%, 56px); }
 .event-poster .event-poster-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.12); }
 .calendar-program, .event-linked { margin-top: clamp(35px, 5vw, 78px); scroll-margin-top: 94px; }
+.event-team-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.community-team-link > .border-glow-content { display: grid; gap: 3px; padding: 10px 14px; }
+.community-team-link h3 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0; font-size: 16px; font-weight: 600; }
+.community-team-link h3 svg { flex-shrink: 0; }
+.community-team-link :is(h3 span, p) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.community-team-link p { margin: 0; color: var(--community-muted); font-size: 14px; }
+.community-team-link:is(:hover, :focus-visible) h3 span { text-decoration: underline; text-underline-offset: 3px; }
 .calendar-program { margin-top: clamp(20px, 3.4vw, 48px); }
 .plaza-results-title, .calendar-head, .event-linked > h2 { margin: 0 0 18px; font-size: clamp(23px, 2.1vw, 33px); letter-spacing: -.025em; font-weight: 580; }
 :is(.plaza-results-title, .calendar-head) { margin: 0; white-space: nowrap; }
@@ -334,10 +332,15 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
 }
 .community-page .detail-section-links a:focus-visible { outline-offset: -2px; }
 .detail-section-actions { display: flex; flex-shrink: 0; align-items: center; gap: 8px; }
-.project-detail-media:hover .project-image-action { text-decoration: underline; text-underline-offset: 4px; }
 .discovery-detail .detail-section { scroll-margin-top: calc(var(--detail-header-height) + var(--detail-menu-height) + 18px); }
-@media (width > 760px) {
-  .discovery-detail[data-pin-sidebar] .detail-sidebar { position: sticky; top: calc(var(--detail-header-height) + var(--detail-menu-height) + 20px); }
+@media (min-width: 1024px) {
+  .discovery-detail .detail-sidebar {
+    position: sticky;
+    top: calc(var(--detail-header-height) + var(--detail-menu-height) + 20px);
+    max-height: calc(100dvh - var(--detail-header-height) - var(--detail-menu-height) - 36px);
+    scrollbar-width: thin;
+  }
+  .discovery-detail[data-scroll-sidebar] .detail-sidebar { overflow-y: auto; }
 }
 .event-detail-layout {
   display: grid;
@@ -359,27 +362,6 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
 .event-entry-facts dt, .event-signup-heading > span { font-size: 16px; color: var(--community-muted); }
 .event-entry-facts dd, .event-signup-heading h3 { font-size: 19px; line-height: 1.5; }
 .event-entry-facts dd { margin: 4px 0 0; font-variant-numeric: tabular-nums; }
-.event-entry-actions { display: grid; justify-items: start; gap: 10px; padding-top: 14px; border-top: 1px solid var(--community-border); }
-.event-entry-actions h3 { margin: 0; font-size: 18px; }
-.event-album-link { display: inline-flex; justify-self: start; align-items: center; gap: 8px; min-height: 44px; }
-.signup-panel h2 { display: flex; align-items: center; gap: 8px; font-size: 21px; margin: 0; }
-.signup-panel > .border-glow-content > p, .signup-panel .signup-code p { color: var(--community-muted); line-height: 1.65; font-size: 14px; margin: 10px 0 17px; }
-.signup-panel .signup-status { border-top: 1px solid var(--community-border); padding-top: 14px; margin-bottom: 0; }
-.signup-code img { display: block; width: min(174px,100%); height: auto; padding: 7px; background: #fff; border-radius: 8px; }
-.signup-panel .signup-code p { margin: 8px 0 0; }
-.signup-panel--embedded { padding-top: 14px; border-top: 1px solid var(--community-border); }
-.event-signup-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
-.event-signup-heading h3 { margin: 0; font-weight: inherit; }
-.signup-panel--embedded p, .signup-panel--embedded .signup-code p {
-  color: var(--community-muted);
-  font-size: 16px;
-  line-height: 1.65;
-  margin: 8px 0 12px;
-}
-.signup-panel--embedded .signup-status { padding-top: 0; border-top: 0; }
-.community-page .signup-mobile { display: none; }
-.registration-legacy { max-width: 620px; margin-inline: auto; }
-.registration-legacy .community-heading { gap: 12px; }
 @media (max-width: 1140px) {
   .community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) { --listing-columns: 3; }
   .calendar-lead .calendar-card-text { padding-block: 8px; }
@@ -412,6 +394,7 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
   .detail-section-nav { position: static; }
 }
 @media (max-width: 600px) {
+  .event-team-grid { grid-template-columns: minmax(0, 1fr); }
   .calendar-featured { grid-auto-flow: row; }
   .calendar-lead > .border-glow-content { min-height: 160px; }
   .calendar-controls { width: 100%; flex-wrap: nowrap; }
@@ -428,10 +411,6 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
   .community-page :is(.plaza-popular .community-grid, .plaza-results .community-grid, .calendar-cards) { --listing-columns: 1; }
   .community-page .community-grid { grid-template-columns: 1fr; }
 }
-@media (pointer: coarse) {
-  .community-page .signup-mobile { display: inline-flex; }
-  .community-page .signup-desktop { display: none; }
-}
 
 .discovery-sr-only {
   position: absolute;
@@ -443,12 +422,63 @@ html[data-theme="light"] .calendar-lead { --featured-open-ink: #174d96; --featur
 }
 
 .community-page .fixed-wrapper:not([data-open]) > .staggered-menu-header {
-  background: color-mix(in srgb, var(--site-background) 96%, transparent);
+  background: transparent;
 }
 .community-page:has(.discovery-detail) .fixed-wrapper:not([data-open]) > .staggered-menu-header {
-  background: var(--site-background);
+  background: transparent;
 }
 .community-page #community-main :is(button, a, input, summary) { scroll-margin-block-start: 88px; }
 .community-page #community-main .discovery-detail :is(.event-detail-layout, .project-detail-layout, .event-linked) :is(button, a, input, summary) {
   scroll-margin-block-start: calc(var(--detail-header-height) + var(--detail-menu-height) + 12px);
 }
+
+.community-page .detail-section-links a[aria-current="location"] { font-weight: 700; }
+
+@media (max-width: 760px) {
+  .calendar-lead > .border-glow-content { min-height: 172.8px; }
+  .calendar-lead .calendar-card-text { padding-block: 6px; gap: 4px; }
+  .calendar-lead .calendar-event-title { font-size: 22px; }
+  .calendar-lead .calendar-card-text p { font-size: 14px; line-height: 1.4; }
+  .calendar-lead .calendar-facts { font-size: 14px; line-height: 1.4; gap: 2px 10px; }
+}
+@media (max-width: 600px) { .calendar-lead > .border-glow-content { min-height: 144px; } }
+
+.calendar-filter-row { display: flex; flex: 1; min-width: 0; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
+@media(max-width:760px) {
+  .calendar-tools { gap: 10px; }
+  .calendar-tools > .calendar-head, .plaza-results-heading { width: 100%; }
+  .calendar-filter-row { width: 100%; flex-wrap: nowrap; gap: 4px; }
+  .calendar-filter-row .calendar-categories { flex: 1; min-width: 0; flex-wrap: nowrap; gap: 3px; }
+  .community-page .calendar-filter-row .filter-choice { flex: 1; min-width: 0; min-height: 38px; padding: 0 6px; font-size: 12px; }
+  .calendar-filter-row .calendar-controls { flex: none; width: auto; margin-left: 0; flex-wrap: nowrap; gap: 4px; }
+  .community-page .calendar-controls .language-switcher__trigger { min-height: 38px; padding: 0 7px; font-size: 12px; }
+  .calendar-controls .language-switcher__trigger .specular-button__label { gap: 4px; }
+  .community-page .community-search-toggle { flex: none; width: 36px; min-width: 36px; min-height: 38px; padding: 0; }
+  .community-search-toggle svg { width: 18px; height: 18px; }
+  .community-page .plaza-tools .community-filter-controls { display: flex; flex-wrap: nowrap; width: 100%; gap: 5px; }
+  .community-page .plaza-tools .community-filter-controls > .choice-menu--compact { flex: 1; min-width: 0; }
+  .community-page .plaza-tools .community-filter-controls .language-switcher__trigger { min-height: 38px; padding: 0 7px; font-size: 12px; }
+  .plaza-tools .community-filter-controls .specular-button__label { gap: 4px; }
+  .plaza-tools .choice-menu__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .community-page .plaza-publish-button { flex: none; min-height: 38px; padding: 0 7px; font-size: 12px; }
+  .plaza-popular .community-list-card-cover { min-height: 54px; max-height: 176.4px; aspect-ratio: 3.222222; }
+  .plaza-popular .community-list-card-content { padding: 8px 9px; gap: 4.5px; }
+}
+@media(max-width:760px) { .plaza-popular .community-list-card-content { padding-block:7px; gap:3.5px; } }
+@media(min-width:375px) and (max-width:760px) { .plaza-popular .community-list-card:nth-child(-n+2) .community-list-card-content { padding-block:5px; gap:3px; } }
+
+@media(max-width:760px) {
+  .calendar-filter-row .filter-choice .specular-button__label { display: block; width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+  .calendar-controls .choice-menu__label { max-width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+@media(max-width:760px) {
+  .community-card-meta { position: relative; z-index: 2; flex-wrap: nowrap; gap: 4px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .community-card-meta::-webkit-scrollbar { display: none; }
+  .community-card-meta .community-card-author { flex: none; max-width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .community-card-meta :is(.community-badge,.community-pin-badge) { flex: none; padding: 1px 4px; font-size: 11px; line-height: 1.3; white-space: nowrap; }
+  .community-card-meta .community-badge { gap: 3px; }
+  .community-card-meta .community-badge svg { width: 11px; height: 11px; }
+  .community-list-card-content { padding-block: 8px; gap: 6px; }
+}
+@media(max-width:760px) { .community-page--players:is(.community-page--listing,.community-page--detail) .community-shell { padding-top: 76px; } }

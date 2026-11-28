@@ -27,7 +27,8 @@ if (readFileSync(join(dist, 'CNAME'), 'utf8').trim() !== 'club.01aiedu.com') thr
 if (!readFileSync(join(dist, 'index.html'), 'utf8').includes('零一玩家')) throw new Error('首页品牌标识缺失。');
 
 const version = JSON.parse(readFileSync(join(dist, 'version.json'), 'utf8'));
-if (!/^[a-f0-9]{40}$/.test(version.commit)) throw new Error('version.json 的提交 SHA 无效。');
+const snapshot = version.source === 'working-tree-snapshot';
+if (!(snapshot && version.commit === null) && !/^[a-f0-9]{40}$/.test(version.commit)) throw new Error('version.json 的提交 SHA 无效。');
 if (Number.isNaN(Date.parse(version.builtAt))) throw new Error('version.json 的构建时间无效。');
 
 const listed = new Set();
@@ -42,4 +43,4 @@ for (const line of readFileSync(join(dist, 'SHA256SUMS'), 'utf8').trim().split('
 }
 if (listed.size !== actual.size - 1) throw new Error('构建产物存在未列入校验清单的文件。');
 
-console.log(`已验证 ${listed.size} 个静态文件，提交 ${version.commit.slice(0, 12)}。`);
+console.log(`已验证 ${listed.size} 个静态文件，${snapshot ? '工作区快照' : '提交 ' + version.commit.slice(0, 12)}。`);

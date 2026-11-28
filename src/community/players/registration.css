@@ -1,0 +1,114 @@
+.web-registration { width: min(100%, 720px); margin: 16px auto 0; }
+.web-registration--receipt { width: min(100%, 460px); }
+.web-registration > h1, .registration-list-heading h1, .registration-form-heading h1 { font-size: clamp(26px, 3vw, 38px); margin: 22px 0 10px; line-height: 1.3; }
+.registration-form-fields { display: grid; gap: 20px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.registration-question { min-width: 0; margin: 0; padding: 0; border: 0; }
+.registration-question legend { margin-bottom: 8px; font-weight: 600; }
+.registration-question > :is(input, textarea, select) { width: 100%; min-height: 44px; padding: 12px; border: 1px solid var(--community-border); border-radius: 9px; color: inherit; background: var(--site-background); font: inherit; }
+.registration-options { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+.registration-options label { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.registration-options input { width: 18px; height: 18px; accent-color: var(--site-ink); }
+.registration-ticket { width: min(100%, 460px); overflow: hidden; margin: 24px auto 16px; border-radius: 16px; background: #f5f5f3; color: #181818; }
+html[data-theme='light'] .registration-ticket { background: #fff; box-shadow: 0 3px 8px #00000012; }
+.registration-ticket-imprint { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 64px; padding: 15px 24px; border-bottom: 1px solid #1818182b; font-size: 13px; }
+.registration-ticket .club-logo { width: 128px; height: auto; fill: #181818; }
+.registration-ticket-result { padding: 24px; }
+.registration-ticket-seal { display: grid; place-items: center; width: 36px; height: 36px; margin: 0; color: #fff; background: #181818; }
+.registration-ticket-seal svg { width: 24px; height: 24px; }
+.registration-ticket-result h2 { font-size: 32px; line-height: 1.2; margin: 0; letter-spacing: -.025em; }
+.registration-ticket-result p { margin: 0; color: #5b5b5b; font-size: 14px; line-height: 1.7; }
+.registration-ticket-stub { position: relative; padding: 24px; border-top: 1px dashed #18181860; }
+.registration-ticket-stub::before, .registration-ticket-stub::after { content: ''; position: absolute; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--site-background); }
+.registration-ticket-stub::before { left: -8px; }
+.registration-ticket-stub::after { right: -8px; }
+.registration-ticket-stub h3 { margin: 0 0 8px; font-size: 21px; line-height: 1.4; overflow-wrap: anywhere; }
+.registration-ticket-stub p { margin: 4px 0; color: #5b5b5b; font-size: 14px; line-height: 1.6; }
+.registration-ticket-reference-label { display: block; margin: 22px 0 5px; color: #5b5b5b; font-size: 12px; }
+.registration-ticket-reference { display: block; overflow-wrap: anywhere; font: 13px/1.6 ui-monospace, monospace; }
+.registration-ticket-invite { display: grid; justify-items: center; gap: 8px; margin: 20px 0 0; }
+.registration-ticket-invite figcaption { font-size: 14px; font-weight: 600; }
+.registration-ticket-invite img {
+  display: block;
+  width: min(144px, 100%);
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: #fff;
+  padding: 6px;
+}
+.registration-receipt-status { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+.registration-receipt-status p { margin: 0; color: var(--community-muted); font-size: 13px; line-height: 1.7; }
+.registration-records { display: grid; gap: 14px; margin-block: 24px; }
+.registration-record > .border-glow-content { position: relative; padding: 20px 48px 20px 20px; }
+.registration-record span { font-size: 13px; color: var(--community-muted); }
+.registration-record h2 { margin: 6px 0; font-size: 20px; }
+.registration-record p { margin: 0; color: var(--community-muted); overflow-wrap: anywhere; font-size: 13px; }
+.registration-record svg { position: absolute; right: 20px; top: 24px; }
+
+.registration-submit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.registration-submit-row > .specular-button { width: auto; margin: 0; }
+.registration-submit-row > .specular-button:first-child { flex: 1; }
+.registration-submit-row > .discovery-detail-back { flex: none; }
+.registration-return { margin-top: 20px; }
+
+.registration-ticket-status { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 10px; }
+.registration-ticket-seal { flex: none; }
+.registration-ticket-result .registration-ticket-salutation { margin: 0 0 8px; color: #181818; font-size: 17px; font-weight: 600; overflow-wrap: anywhere; }
+.registration-ticket-result .registration-ticket-welcome { margin: 0 0 24px; }
+.registration-event-facts { display: grid; gap: 9px; margin: 16px 0; }
+.registration-event-facts > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; font-size: 14px; line-height: 1.6; }
+.registration-event-facts dt { color: var(--community-muted); }
+.registration-event-facts dd { margin: 0; overflow-wrap: anywhere; }
+.registration-ticket .registration-event-facts dt { color: #5b5b5b; }
+
+.registration-receipt-updated { margin: 0; color: var(--community-muted); font-size: 12px; line-height: 1.7; }
+@media (min-width: 761px) {
+  .web-registration--receipt { width: min(100%,552px); }
+  .registration-ticket { width: min(100%,552px); border-radius: 19.2px; margin-top: 28.8px; margin-bottom: 19.2px; }
+  .registration-ticket-imprint { gap: 21.6px; min-height: 76.8px; padding: 18px 28.8px; font-size: 15.6px; }
+  .registration-ticket .club-logo { width: 153.6px; }
+  .registration-ticket-result { padding: 28.8px; }
+  .registration-ticket-seal { width: 43.2px; height: 43.2px; }
+  .registration-ticket-seal svg { width: 28.8px; height: 28.8px; }
+  .registration-ticket-result h2 { font-size: 38.4px; }
+  .registration-ticket-result p { font-size: 16.8px; }
+  .registration-ticket-result .registration-ticket-salutation { font-size: 20.4px; margin-bottom: 9.6px; }
+  .registration-ticket-result .registration-ticket-welcome { margin-bottom: 28.8px; }
+  .registration-ticket-status { gap: 14.4px; margin-bottom: 12px; }
+  .registration-ticket-stub { padding: 28.8px; }
+  .registration-ticket-stub::before,.registration-ticket-stub::after { top: -9.6px; width: 19.2px; height: 19.2px; }
+  .registration-ticket-stub::before { left: -9.6px; }
+  .registration-ticket-stub::after { right: -9.6px; }
+  .registration-ticket-stub h3 { margin-bottom: 9.6px; font-size: 25.2px; }
+  .registration-ticket-reference-label { margin: 26.4px 0 6px; font-size: 14.4px; }
+  .registration-ticket-reference { font-size: 15.6px; }
+  .registration-ticket .registration-event-facts { gap: 10.8px; margin: 19.2px 0; }
+  .registration-ticket .registration-event-facts > div { grid-template-columns: 76.8px minmax(0,1fr); gap: 12px; font-size: 16.8px; }
+}
+
+.registration-receipt-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.registration-receipt-status > .discovery-detail-back { margin-left: auto; }
+.registration-record-heading { display: flex; align-items: center; gap: 12px; }
+.registration-record-heading .registration-record-order { font: 500 22px/1 ui-monospace,monospace; color: var(--site-ink); }
+.registration-return { display: flex; justify-content: flex-end; }
+@media(max-width:380px) { .registration-receipt-status { gap: 6px; } .registration-receipt-tools { gap: 6px; } .registration-receipt-status .specular-button { padding-inline: 10px; } }
+
+.community-page .registration-receipt-status .specular-button { min-height: 48px; }
+
+.registration-list-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 22px 0 10px; }
+.registration-list-heading h1 { margin: 0; }
+.registration-list-heading > .discovery-detail-back { flex: none; }
+
+.registration-form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin: 22px 0 10px; }
+.registration-form-heading h1 { flex: 1; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.registration-form-heading > .discovery-detail-back { flex: none; }
+
+.registration-ticket-footer { margin-top: 22px; }
+.registration-ticket-footer .registration-ticket-reference-label { margin: 0 0 5px; }
+.registration-ticket-footer--with-qr { --ticket-qr-size: 136px; display: grid; grid-template-columns: minmax(0,1fr) var(--ticket-qr-size); align-items: center; gap: 20px; padding-top: 20px; border-top: 1px solid #18181824; }
+.registration-ticket-reference-group { min-width: 0; }
+.registration-ticket-footer .registration-ticket-invite { margin: 0; gap: 10px; }
+.registration-ticket-qr { width: 100%; padding: 8px; border: 1px solid #18181812; border-radius: 8px; background: #fff; }
+.registration-ticket-footer .registration-ticket-invite img { width: 100%; padding: 0; border-radius: 0; }
+.registration-ticket-footer .registration-ticket-invite figcaption { color: #5b5b5b; font-size: 12px; line-height: 1.5; font-weight: 500; white-space: nowrap; }
+@media(min-width:761px) { .registration-ticket-footer--with-qr { --ticket-qr-size:160px; gap:24px; padding-top:24px; } .registration-ticket-footer .registration-ticket-invite figcaption { font-size:13px; } }
+@media(max-width:380px) { .registration-ticket-footer--with-qr { --ticket-qr-size:128px; gap:16px; } }

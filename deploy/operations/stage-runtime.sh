@@ -62,11 +62,14 @@ destination="$parent/$(basename -- "$destination")"
 [[ "$parent" != "$source_dir" && "$parent" != "$source_dir"/* ]] || { echo '暂存目录需位于源码外'; exit 1; }
 stage=$(mktemp -d "$parent/.01player-stage.XXXXXXXX")
 trap 'rm -rf -- "$stage"' EXIT
-mkdir -p "$stage/runtime/cms" "$stage/runtime/src/data" "$stage/runtime/src/community/account"
+mkdir -p "$stage/runtime/cms" "$stage/runtime/src/data" "$stage/runtime/src/community/account" \
+  "$stage/runtime/src/editorial" "$stage/runtime/src/time-machine"
 stage_operations deploy/operations "$stage/runtime/deploy/operations"
 cp -a package.json server dist "$stage/runtime/"
-cp -p src/data/{page-paths,traffic-pages}.js "$stage/runtime/src/data/"
-cp -p src/community/account/profile.js "$stage/runtime/src/community/account/"
+cp -p src/data/{page-paths,traffic-pages,activity-photos,competition}.js "$stage/runtime/src/data/"
+cp -p src/community/account/{profile,identity}.js "$stage/runtime/src/community/account/"
+cp -p src/editorial/content.js "$stage/runtime/src/editorial/"
+cp -p src/time-machine/photos.js "$stage/runtime/src/time-machine/"
 node --input-type=module -e 'import { pathToFileURL } from "node:url"; await import(pathToFileURL(process.argv[1]).href)' \
     "$stage/runtime/server/community-api.mjs"
 # The community API checks local /images/... against its public root.

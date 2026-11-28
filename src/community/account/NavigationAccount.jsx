@@ -55,13 +55,14 @@ export default function NavigationAccount({ user: supplied, section, fallbackSou
       size="sm"
       shineOnInteraction
       className="nav-control site-account-link"
+      data-authenticated={user ? true : undefined}
       href={href()}
       onClick={updateHref}
       onContextMenu={updateHref}
       ariaLabel={user ? label + ' · ' + user.name : label}
       title={user ? user.name : label}
     >
-      <FiUser aria-hidden="true" />
+      {!user && <FiUser aria-hidden="true" />}
       <span className="site-account-label">{user ? words[2] : words[0]}</span>
     </SpecularButton>
   );

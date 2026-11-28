@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -33,6 +33,8 @@ case "$name" in
   mv)
     case "$1" in -T|-Tf) shift; python3 -c 'import os,sys; os.replace(*sys.argv[1:])' "$@" ;; *) /bin/mv "$@" ;; esac ;;
   find)
+    # GNU find cannot restore an inaccessible working directory after a privilege switch.
+    [[ -r . && -x . ]] || exit 1
     if [[ "$*" == *-printf* ]]; then
       for file in "$1"/*; do [[ ! -f "$file" ]] || basename "$file"; done
     else /usr/bin/find "$@"; fi ;;
@@ -58,8 +60,8 @@ function fixture(t) {
     writeFileSync(join(src,name), original.replace(/\/(?:var|etc|usr\/local\/lib)\//g, prefix => dir + prefix), {mode:0o755});
   }
   for (const name of ['nginx','systemctl','id','getent','install','certbot','flock','mv','find','curl']) writeFileSync(join(bin,name), shim, {mode:0o755});
-  const run = (script,args=[],input='') => spawnSync('bash',[script,...args],{
-    input,encoding:'utf8',timeout:15000,env:{...process.env,PATH:bin+':'+process.env.PATH,SSH_ORIGINAL_COMMAND:'publish'},
+  const run = (script,args=[],input='',cwd) => spawnSync('bash',[script,...args],{
+    input,cwd,encoding:'utf8',timeout:15000,env:{...process.env,PATH:bin+':'+process.env.PATH,SSH_ORIGINAL_COMMAND:'publish'},
   });
   const boot = mode => run(join(src,'bootstrap.sh'),[mode]);
   const calls = () => readFileSync(join(dir,'calls'),'utf8').trim().split('\n').map(line => line.split('\t'));
@@ -111,6 +113,43 @@ test('制品接收拒绝工作区快照，验收资源收到首页时回到先�
   assert.equal(realpathSync(join(site,'current')),original);
   ok(deliver('repaired',candidate));
   assert.equal(realpathSync(join(site,'current')),join(site,'releases',candidateId));
+  const caller = join(f.dir, 'launcher');
+  mkdirSync(caller);
+  writeFileSync(join(caller, 'release.tgz'), artifact(join(f.dir, 'relative-input'), candidate));
+  chmodSync(caller, 0o111);
+  try {
+    ok(f.run(join(f.lib, 'release.sh'), ['release.tgz'], '', caller));
+  } finally { chmodSync(caller, 0o700); }
+});
+
+test('静态制品版本区分源码副本、未提交工作区和干净提交', t => {
+  const root = mkdtempSync(join(tmpdir(), '01player-version-'));
+  t.after(() => rmSync(root, {recursive: true, force: true}));
+  mkdirSync(join(root, 'scripts'));
+  mkdirSync(join(root, 'dist'));
+  writeFileSync(join(root, '.gitignore'), 'dist/\n');
+  const script = join(root, 'scripts/finalize-build.mjs');
+  writeFileSync(script, readFileSync(new URL('../scripts/finalize-build.mjs', import.meta.url)));
+  const version = (revision = '') => {
+    execFileSync(process.execPath, [script], {env: {...process.env, BUILD_VCS_NUMBER: revision}});
+    return JSON.parse(readFileSync(join(root, 'dist/version.json'), 'utf8'));
+  };
+  const snapshot = () => {
+    const {source, commit} = version();
+    assert.equal(source, 'working-tree-snapshot');
+    assert.equal(commit, null);
+  };
+  snapshot();
+  const git = (...args) => execFileSync('git', ['-c', 'core.hooksPath=/dev/null', ...args],
+    {cwd: root, encoding: 'utf8'}).trim();
+  git('init', '-q');
+  git('add', '.gitignore', 'scripts');
+  git('-c', 'user.email=fixture@localhost', '-c', 'user.name=Fixture', 'commit', '--no-gpg-sign', '-qm', 'fixture');
+  const head = git('rev-parse', 'HEAD');
+  assert.equal(version().commit, head);
+  writeFileSync(join(root, 'uncommitted.txt'), 'pending');
+  snapshot();
+  assert.equal(version(head).commit, head);
 });
 
 test('全新静态站与原纯 HTTP 站点均使用匹配的证书、备份目录与发布根升级', t => {

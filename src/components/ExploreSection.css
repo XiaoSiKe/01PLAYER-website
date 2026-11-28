@@ -217,3 +217,54 @@ html[lang='en'] .home-about-people .home-explore-link h3 { font-size: clamp(20px
   .home-explore-folder-frame .folder-root[data-variant='solid'] .folder-face-outer { background: #101013; box-shadow: inset 0 0 0 1px #ffffff66, 0 4px 0 #030304; }
   .home-explore-folder-frame .folder-root[data-variant='solid'] .folder-face-outer::before { display: none; }
 }
+
+@media (max-width: 760px) {
+  .home-explore-bento { --explore-folder-height: 158px; }
+  .home-explore-folders { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .home-explore-folder-card { flex-direction: column; align-items: center; gap: 6px; padding: 10px; }
+  .home-explore-card-heading { width: 100%; justify-content: center; }
+  .home-explore-folder-viewport { flex: 1; height: 112px; margin-block: 0; padding-block: 0; }
+  .home-explore-resources .home-explore-module-icon,
+  .home-about-people .home-explore-entry-frame:not(.home-explore-entry-frame--join) .home-explore-module-icon { display: none; }
+  .home-explore-resources .home-explore-link { display: flex; justify-content: center; padding: 10px 6px; }
+  .home-explore-resources .home-explore-media-card { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 10px 6px; }
+  .home-about-people .home-explore-entry-frame:not(.home-explore-entry-frame--join) .home-explore-link { grid-template-rows: auto; }
+  .home-about-people .home-explore-link--join { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; }
+  .home-about-people .home-explore-link--join .home-explore-module-icon { position: static; flex: none; width: 24px; height: 24px; }
+}
+
+@media (max-width: 760px) {
+  .home-about-people { grid-auto-rows: auto; gap: 8px; }
+  .home-about-people .home-explore-link { min-height: 54px; padding: 8px 4px; }
+  .home-about-people .home-explore-link--join { min-height: 48px; padding: 6px 8px; }
+}
+
+@media(max-width:760px) {
+  .home-explore-resources { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 76px; grid-template-rows: repeat(2,minmax(76px,auto)); gap: 8px; }
+  .home-explore-resources > .home-explore-entry-frame--compass { grid-area: 1 / 1; }
+  .home-explore-resources > .home-explore-entry-frame--knowledge { grid-area: 1 / 2; }
+  .home-explore-resources > .home-explore-entry-frame--architecture { grid-area: 2 / 1; }
+  .home-explore-resources > .home-explore-entry-frame--archive { grid-area: 2 / 2; }
+  .home-explore-resources > .home-explore-entry-frame--media { grid-area: 1 / 3 / 3 / 4; }
+  .home-explore-resources .home-explore-link { align-items: center; justify-content: center; padding: 8px 6px; text-align: center; }
+  .home-how-section .home-explore-resources .home-explore-link h3 { justify-content: center; font-size: 14px; line-height: 1.3; }
+  .home-explore-resources .home-explore-media-card { display: grid; grid-template-columns: minmax(0,1fr) 28px; grid-template-rows: 1fr; align-items: center; justify-items: center; gap: 4px; padding: 10px 6px; }
+  .home-how-section .home-explore-media-card h3 { grid-area: 1 / 1; align-self: center; font-size: 14px; writing-mode: vertical-rl; text-orientation: mixed; letter-spacing: .06em; }
+  .home-explore-media-card h3 > span { writing-mode: inherit; }
+  .home-explore-media-card .home-explore-socials { grid-area: 1 / 2; flex-direction: column; align-self: center; justify-self: end; width: auto; gap: 4px; }
+  .home-explore-social { min-width: 28px; min-height: 36px; }
+  .home-explore-social > svg { width: 24px; height: 24px; }
+}
+
+.home-explore-resources { --explore-entry-height: 128px; --explore-resource-icon-size: 40px; }
+.home-explore-resources .home-explore-link { align-items: center; justify-content: center; gap: 8px; text-align: center; padding-block: 12px; }
+.home-explore-resources .home-explore-link > .home-explore-module-icon { position: static; flex: none; align-self: center; }
+.home-explore-resources :is(.home-explore-link,.home-explore-media-card) h3 { justify-content: center; text-align: center; }
+.home-explore-card-heading h3 { text-align: center; }
+@media(max-width:760px) {
+  .home-explore-resources { grid-template-rows: repeat(2,minmax(68px,auto)); }
+  .home-explore-resources .home-explore-link { padding-block: 6px; }
+}
+.home-explore-bento { --explore-folder-height: 172px; }
+@media(max-width:760px) { .home-explore-bento { --explore-folder-height: 150px; } }
+.home-explore-resources .home-explore-entry-frame .home-explore-link-copy { align-self: center; width: 100%; }

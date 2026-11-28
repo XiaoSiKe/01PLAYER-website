@@ -1,71 +1,78 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { FiArrowRight, FiFileText, FiMinus, FiPlus } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight, FiFolder, FiMinus, FiPlus } from 'react-icons/fi';
 import './guide-folders.css';
 
-const coverSpring = { type: 'spring', stiffness: 280, damping: 30, mass: 0.9 };
-const easeOut = [.23, 1, .32, 1];
+// Keep the folder fixed; only its papers fan out using the supplied spring.
+const paperSpring = { type: 'spring', stiffness: 320, damping: 28, mass: 0.85 };
 
 function GuideFolder({ group, index }) {
   const [open, setOpen] = useState(false);
-  const trigger = useRef(null);
+  const [active, setActive] = useState(null);
+  const [sheetPage, setSheetPage] = useState(0);
   const reduce = useReducedMotion();
+  const pageCount = Math.max(1, Math.ceil(group.chapters.length / 3));
+  const currentPage = Math.min(sheetPage, pageCount - 1);
+  const preview = group.chapters.slice(currentPage * 3, currentPage * 3 + 3);
   const panelId = group.id + '-papers';
-  const controls = panelId + ' ' + panelId + '-cover';
+  const controls = panelId;
+  const instant = { duration: 0 };
+  const toggle = () => { setOpen(current => !current); setActive(null); setSheetPage(0); };
 
-  function toggle() {
-    setOpen(current => !current);
-    trigger.current.focus({ preventScroll: true });
-  }
-
-  return <motion.section className="guide-folder" data-open={open || undefined} aria-labelledby={group.id}
-    initial={reduce ? false : { transform: 'translateY(22px)', opacity: .65 }}
-    whileInView={{ transform: 'translateY(0px)', opacity: 1 }}
-    viewport={{ once: true, amount: .15 }}
-    transition={{ duration: reduce ? 0 : .48, delay: reduce ? 0 : Math.min(index, 5) * .07, ease: easeOut }}
+  return <motion.section className="guide-folder"
+    initial={reduce ? false : { y: 20, opacity: .6 }} whileInView={{ y: 0, opacity: 1 }}
+    viewport={{ once: true, amount: .15 }} transition={{ duration: reduce ? 0 : .45, delay: Math.min(index, 5) * .07 }} data-open={open || undefined} aria-labelledby={group.id}
     onKeyDown={event => {
       if (event.key === 'Escape' && open) {
         setOpen(false);
-        trigger.current.focus();
+        event.currentTarget.querySelector('.guide-folder-sleeve').focus();
       }
     }}>
-    <h3 className="guide-folder-heading">
-      <button ref={trigger} type="button" className="guide-folder-toggle" onClick={toggle}
-        aria-expanded={open} aria-controls={controls} aria-label={`${open ? '收起' : '打开'}「${group.title}」文件夹`}>
-        <span className="guide-folder-title" id={group.id} tabIndex={-1}>{group.title}</span>
-        <span className="guide-folder-count">{group.chapters.length} 篇</span>
-        <span className="guide-folder-toggle-icon">{open ? <FiMinus aria-hidden="true" /> : <FiPlus aria-hidden="true" />}</span>
-      </button>
-    </h3>
     <div className="guide-folder-stage">
-      <div className="guide-folder-back" aria-hidden="true" />
-      <div className="guide-folder-stack" aria-hidden="true">
-        {group.chapters.slice(0, 2).map(chapter => <span key={chapter.id} />)}
+      <div className="guide-folder-tray">
+        <div id={panelId} className="guide-folder-papers" aria-hidden={!open} inert={!open}>
+          {preview.map((chapter, index) => {
+            const offset = index - (preview.length - 1) / 2;
+            const lifted = open && active === chapter.id;
+            const transform = reduce ? `translate(${open ? offset * 66 : 0}%, ${open ? -42 : 0}px)` : open
+              ? `translate(${offset * 66}%, ${lifted ? -54 : -42 + Math.abs(offset) * 5}px) rotate(${lifted ? 0 : offset * 6.5}deg) scale(${lifted ? 1.06 : 1})`
+              : `translate(${offset * 28}%, 12px) rotate(${offset * 2}deg) scale(.9)`;
+            return <motion.a key={chapter.id} href={`#${chapter.id}`} title={chapter.title} className="guide-folder-paper"
+              initial={false} animate={{ transform }} transition={reduce ? instant : paperSpring}
+              style={{ zIndex: lifted ? 5 : index + 1 }}
+              tabIndex={open ? 0 : -1} onFocus={() => setActive(chapter.id)} onBlur={() => setActive(null)}
+              onPointerEnter={event => { if (event.pointerType === 'mouse' && open) setActive(chapter.id); }}
+              onPointerLeave={() => setActive(null)}>
+              <span className="guide-folder-paper-text">{chapter.title}</span>
+              <span className="guide-folder-paper-lines" aria-hidden="true"><i /><i /><i /></span>
+              <FiArrowRight aria-hidden="true" />
+            </motion.a>;
+          })}
+        </div>
+        <svg className="guide-folder-pocket" viewBox="0 0 292 84" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 0 H122 A24 22 0 0 0 170 0 H292 V70 A14 14 0 0 1 278 84 H14 A14 14 0 0 1 0 70 Z" />
+        </svg>
+        <button className="guide-folder-tab" type="button" aria-label={`${open ? '收起' : '打开'}「${group.title}」文件夹`}
+          aria-expanded={open} aria-controls={controls} onClick={toggle}>
+          {open ? <FiMinus aria-hidden="true" /> : <FiPlus aria-hidden="true" />}
+        </button>
       </div>
-      <ul id={panelId} className="guide-folder-papers" aria-hidden={!open} inert={!open}>
-        {group.chapters.map((chapter, position) => <motion.li key={chapter.id} initial={false}
-          animate={{ transform: open ? 'translateY(0px)' : 'translateY(18px)', opacity: open ? 1 : 0 }}
-          transition={{ duration: reduce ? 0 : .26, delay: open && !reduce ? Math.min(position, 5) * .035 : 0, ease: easeOut }}>
-          <a href={`#${chapter.id}`} className="guide-folder-paper" tabIndex={open ? 0 : -1}>
-            <FiFileText className="guide-folder-paper-icon" aria-hidden="true" />
-            <span className="guide-folder-paper-text">{chapter.title}</span>
-            <FiArrowRight className="guide-folder-paper-arrow" aria-hidden="true" />
-          </a>
-        </motion.li>)}
-      </ul>
-      <motion.button id={panelId + '-cover'} className="guide-folder-sleeve" type="button" initial={false}
-        animate={{
-          transform: open && !reduce ? 'perspective(900px) translateY(30px) rotateX(-12deg)' : 'perspective(900px) translateY(0px) rotateX(0deg)',
-          opacity: open ? 0 : 1,
-        }}
-        transition={reduce ? { duration: 0 } : coverSpring}
-        onClick={toggle} aria-expanded={open} aria-controls={panelId}
-        aria-label={`打开「${group.title}」文件夹，${group.chapters.length} 篇文章`}
-        aria-hidden={open} inert={open} tabIndex={open ? -1 : 0}>
-        <span className="guide-folder-cover-mark" aria-hidden="true"><span /></span>
-        <span className="guide-folder-cover-label">展开文章<FiArrowRight aria-hidden="true" /></span>
-      </motion.button>
+      <button className="guide-folder-sleeve" type="button" onClick={toggle} aria-expanded={open} aria-controls={controls}
+        aria-label={`${open ? '收起' : '打开'}「${group.title}」文件夹，${group.chapters.length} 篇文章`}
+      >
+        <FiFolder className="guide-folder-icon" aria-hidden="true" />
+        <span className="guide-folder-title" id={group.id} tabIndex={-1} role="heading" aria-level={3}>{group.title}</span>
+        <span className="guide-folder-caption">{group.chapters.length} 篇文章<FiArrowRight aria-hidden="true" /></span>
+      </button>
     </div>
+    {pageCount > 1 && <nav className="guide-folder-pagination" aria-hidden={!open} inert={!open} style={{visibility:open ? 'visible' : 'hidden'}} aria-label={`「${group.title}」文件翻页`}>
+      <button type="button" aria-label={`「${group.title}」上一页文章`} disabled={currentPage === 0}
+        onClick={() => { setSheetPage(currentPage - 1); setActive(null); }}><FiArrowLeft aria-hidden="true" /></button>
+      <span role="status">{currentPage + 1} / {pageCount}</span>
+      <button type="button" aria-label={`「${group.title}」下一页文章`} disabled={currentPage === pageCount - 1}
+        onClick={() => { setSheetPage(currentPage + 1); setActive(null); }}><FiArrowRight aria-hidden="true" /></button>
+    </nav>}
+
   </motion.section>;
 }
 

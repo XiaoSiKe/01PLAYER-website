@@ -15,7 +15,7 @@ export default function ResearchPage() {
   return <main className="research-page">
     <SiteNavigation standalone />
     <div className="research-page__content">
-      <a className="research-page__back" href="./#research">{t("← 返回零一科研")}</a>
+      <a className="research-page__back" href="./#research">{t("返回")}</a>
       <header><h1>{t("零一科研")}</h1><p>{t("从一个问题出发，向未知再走一步。")}</p></header>
       <div className="research-page__directions">{researchThemes.map(item => <section key={item.title}>
         <span>{t(item.verb)}</span><div><h2>{t(item.title)}</h2><p>{t(item.text)}</p></div>

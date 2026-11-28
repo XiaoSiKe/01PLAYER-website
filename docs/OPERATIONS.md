@@ -1,16 +1,16 @@
-# 日新社官网运维手册
+# 零一玩家官网运维手册
 
 ## 1. 管理边界
 
-日新社官网只管理以下资源：
+零一玩家官网只管理以下资源：
 
 - 域名：`club.01aiedu.com`
 - Nginx：`/etc/nginx/conf.d/020-01aiclub.conf`
-- 内容：`/var/www/01aiclub`
+- 静态内容：从 `/etc/01PLAYER/static-root` 读取，新装默认 `/var/www/01PLAYER`，已有站点可沿用 `/var/www/01aiclub`
 - 工具：`/usr/local/lib/01aiclub`
-- 控制：`/etc/01aiclub`
+- 控制：`/etc/01PLAYER`
 - 用户：`01aiclub-deploy`
-- 日志：`/var/log/nginx/01aiclub.*.log`
+- 日志：`/var/log/nginx/01PLAYER.*.log`
 - 证书：`/etc/letsencrypt-01aiclub`
 - systemd：`01aiclub-certbot.service`、`01aiclub-certbot.timer`
 
@@ -18,7 +18,11 @@
 
 ## 2. 日常发布
 
-合并 PR 到 `main` 后，GitHub Actions 的 `Website checks` 先执行回归检查和完整构建，检查通过后经 HTTPS 自动触发云效。云效执行：
+2026-11-28 上线前验收期间，仓库变量 `CLUB_AUTO_DEPLOY=0`，自动发布已暂停。合并 PR 仍运行官网回归和后台集成检查，但不会触发云效或验收线上新版本。原生 GitHub push Webhook 保持停用。当前验收记录见[上线前检查](RELEASE-READINESS.md)。
+
+用户明确同意上线后，才可把仓库变量 `CLUB_AUTO_DEPLOY` 设为 `1` 并运行目标 main 的检查工作流。仅修改变量不会发布；重跑旧任务可能使用旧提交，必须核对提交 SHA。发布开关未设置或值不为 `1` 时，工作流和触发脚本均不发布。
+
+开关启用后，GitHub Actions 的 `Website checks` 执行回归检查和完整构建，检查通过后经 HTTPS 自动触发云效。云效执行：
 
 1. 从公共 GitHub 仓库拉取 `main`。
 2. 下载并校验固定 Node.js 24.16.0。
@@ -31,7 +35,7 @@
 
 GitHub 工作流在触发云效后会等待官网 `version.json` 返回本次 main 提交 SHA；仅收到 Webhook 的 HTTP 200 不代表发布成功。触发入口最多重试三次，同时检查云效响应的 `successful` 字段。发布只允许当前仓库 main 分支的 push 事件，PR 检查不会触发生产发布。同一分支的 GitHub 工作流串行执行。
 
-`CLUB_FLOW_WEBHOOK_URL` 保存在该 GitHub 仓库的 Actions Secret 中，必须使用 `https://flow-openapi.aliyun.com/scm/webhook/…`。不在源码、日志或配置模板中保存完整地址；云效界面返回的 HTTP 示例也必须升级为 HTTPS。此前的 GitHub 原生 push Webhook 已停用，避免与工作流重复发布。云效的代码源触发保持开启，继续使用原来的通用 Git 来源和受限 SSH 发布配置。
+`CLUB_FLOW_WEBHOOK_URL` 保存在该 GitHub 仓库的 Actions Secret 中，必须使用 `https://flow-openapi.aliyun.com/scm/webhook/…`。不在源码、日志或配置模板中保存完整地址；云效界面返回的 HTTP 示例也必须升级为 HTTPS。此前的 GitHub 原生 push Webhook（ID `672788547`）已停用，避免与工作流重复发布。云效通用 Git 来源接收工作流转发的 push，不自行轮询发布。暂停期间不得重启原生 Webhook、手动运行云效或直接执行 `ci-publish.sh`。
 
 相关入口：
 
@@ -43,11 +47,11 @@ GitHub 工作流在触发云效后会等待官网 `version.json` 返回本次 ma
 
 ## 3. 本机运维配置
 
-复制公开模板到私有目录：
+`npm run ops:check` 可直接运行。它从公网检查官网、报名接口、运营后台、CDN 证书和同机受保护站点。查询云效运行记录时，再复制公开模板到私有目录：
 
 ```bash
-install -d -m 700 ~/.local/share/01aiclub/ops
-install -m 600 deploy/ops.env.example ~/.local/share/01aiclub/ops/ops.env
+install -d -m 700 ~/.local/share/01PLAYER/ops
+install -m 600 deploy/ops.env.example ~/.local/share/01PLAYER/ops/ops.env
 ```
 
 五年只读云效 PAT 存入 macOS 钥匙串，私有配置只保存 service 名称。任何令牌、Cookie、私钥正文都不得进入项目文件或 Git。
@@ -68,7 +72,7 @@ curl -fsS https://club.01aiedu.com/version.json
 curl -fsS https://club.01aiedu.com/lingyi-logo.jpg > /dev/null
 ```
 
-CDN 接入后，检查响应头中的 `Via`、`X-Cache` 与 `Age`。带哈希的 `/assets/` 资源重复访问应命中缓存；首页和 `version.json` 应保持不缓存，并与源站当前版本一致。首屏加载的 `site:first-screen-ready` 性能标记记录 13 张图片已就绪，`scripts/probe-startup.js` 可在浏览器 CDP 中检查。
+CDN 接入后，检查响应头中的 `Via`、`X-Cache` 与 `Age`。重复访问带哈希的 `/assets/` 资源应命中缓存。首页和 `version.json` 应保持不缓存，并与源站当前版本一致。首屏的 `site:first-screen-ready` 性能标记记录 16 张隧道照片已就绪，可在浏览器 CDP 中用 `scripts/probe-startup.js` 检查。
 
 服务器内部可绕过公网 DNS 验证当前 Nginx：
 
@@ -80,8 +84,8 @@ curl --resolve club.01aiedu.com:443:127.0.0.1 \
 ## 5. 日志
 
 ```bash
-tail -n 200 /var/log/nginx/01aiclub.access.log
-tail -n 200 /var/log/nginx/01aiclub.error.log
+tail -n 200 /var/log/nginx/01PLAYER.access.log
+tail -n 200 /var/log/nginx/01PLAYER.error.log
 journalctl -u 01aiclub-certbot.service --since '7 days ago'
 systemctl list-timers 01aiclub-certbot.timer
 ```
@@ -93,7 +97,8 @@ systemctl list-timers 01aiclub-certbot.timer
 查看可回滚版本：
 
 ```bash
-find /var/www/01aiclub/shared/successful -maxdepth 1 -type f -printf '%f\n' | sort -r
+static_root=$(cat /etc/01PLAYER/static-root)
+find "$static_root/shared/successful" -maxdepth 1 -type f -printf '%f\n' | sort -r
 ```
 
 以专属用户回滚：
@@ -114,7 +119,9 @@ certbot certificates --config-dir /etc/letsencrypt-01aiclub
 
 定时器每天检查两次。续期成功后自动执行 `nginx -t` 并重载。
 
-该定时器只更新 ECS。CDN 当前使用手动导入的 `club-01aiedu-com-20261028` 证书，截止北京时间 2026-11-29 23:44:14，必须在到期前将已续期证书安全导入 CDN 并验证 HTTPS；不能仅根据 ECS 定时器正常就判断 CDN 证书已更新。导入后清除本地临时私钥副本。
+2026-11-26 用 DNS-01 续期，源站与阿里云 CDN 的证书指纹一致，有效期至北京时间 2027-02-24 18:34:07。源站 HTTP 和 HTTPS 均配置了 ACME 验证路径，原有 HTTP 自动续期已通过 Certbot 模拟签发。
+
+官网 ECS 的续期服务使用 [CDN 同步配置](../deploy/01aiclub-certbot-cdn.conf) 和 [同步脚本](../deploy/sync-cdn-certificate.py)。每次成功运行续期检查后比较公网与源站的证书指纹，指纹不同时用该 ECS 的 RAM 实例角色同步证书。脚本安装于 `/usr/local/lib/01aiclub/sync-cdn-certificate.py`，续期服务配置安装于 `/etc/systemd/system/01aiclub-certbot.service.d/10-cdn.conf`。运行日志可用 `journalctl -u 01aiclub-certbot.service` 查看。
 
 ## 8. 密钥与令牌轮换
 
@@ -138,7 +145,7 @@ certbot certificates --config-dir /etc/letsencrypt-01aiclub
 ### 502/503/404
 
 1. `nginx -t`。
-2. 检查 `/var/www/01aiclub/current` 是否指向 `releases/` 内版本。
+2. 核对 `/etc/01PLAYER/static-root` 对应目录的 `current` 是否指向 `releases/` 内版本。
 3. 检查错误日志。
 4. 通过 `--resolve` 在服务器本机复现。
 5. 必要时回滚，不直接修改构建产物。
@@ -201,7 +208,7 @@ kbdinteractiveauthentication no
 permitemptypasswords no
 ```
 
-日新社受限密钥的连通性可用非发布命令验证；预期结果是成功建立 SSH 后由强制命令主动拒绝，且不上传任何制品：
+零一玩家受限密钥的连通性可用非发布命令验证；预期结果是成功建立 SSH 后由强制命令主动拒绝，且不上传任何制品：
 
 ```bash
 ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
@@ -210,7 +217,7 @@ ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
   01aiclub-deploy@47.106.14.254 noop
 ```
 
-预期输出为“此密钥仅允许日新社官网制品发布。”且退出码非零。不要使用真实 `publish` 命令做空载测试。
+预期输出为“此密钥仅允许零一玩家官网制品发布。”且退出码非零。不要使用真实 `publish` 命令做空载测试。
 
 云安全中心的“使用 SSH 密钥对登录”检查只识别 ECS 控制台绑定的密钥对。本实例使用手工维护的 `authorized_keys`，已基于实际配置做实例级例外；不得改成全局加白。公网 IP 同样只做当前实例的风险接受，因为该 ECS 承载三个公网网站。
 
@@ -221,7 +228,7 @@ ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
 - C++ 云监控 Agent：`argusagent 4.0.0`，服务为 `cloudmonitor.service`。
 - 主机指标采集：`loongcollector 3.3.2`，服务为 `loongcollectord.service`。
 - 云监控服务关联角色：`AliyunServiceRoleForCloudMonitor`。
-- 报警联系组：`日新社ECS免费告警`；只配置邮件联系人，不配置手机、短信或电话。
+- 报警联系组：`零一玩家ECS免费告警`；只配置邮件联系人，不配置手机、短信或电话。
 - CPU 使用率：连续 5 分钟达到 `80%` 为警告，达到 `90%` 为严重。
 - 内存使用率：连续 5 分钟达到 `80%` 为警告，达到 `90%` 为严重。
 - 磁盘使用率：连续 5 分钟达到 `80%` 为警告，达到 `90%` 为严重。

@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SiGithub, SiX } from 'react-icons/si';
+import MobileLineBreak from './components/MobileLineBreak';
 import SiteBackground from './components/SiteBackground';
 import ViewportMount from './components/ViewportMount';
 import ResponsiveImage from './components/ResponsiveImage';
@@ -19,6 +20,7 @@ import { BRAND_ECHO_PROPS } from './components/EchoText/brandEchoProps';
 import SpecularButton from './SpecularButton';
 import SiteNavigation from './components/SiteNavigation';
 import ClubLogo from './components/ClubLogo';
+import ShadowWordmark from './components/ShadowWordmark';
 import BorderGlow, { SITE_BORDER_GLOW } from './BorderGlow';
 import LogoLoop from './LogoLoop';
 import ExploreSection from './components/ExploreSection';
@@ -339,13 +341,13 @@ export default function App() {
               </div>
 
               <div className="hero-proof">
-                <p className="hero-proof-meta"><strong>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」")}</strong></p>
+                <p className="hero-proof-meta"><strong><MobileLineBreak after={/群[体體]/}>{t("一个以大学生为主要群体、面向全社会开放的「AI 共创社区」")}</MobileLineBreak></strong></p>
               </div>
 
               <div className="hero-actions">
                 {HERO_ENTRIES.map(({ id, title, href }) => (
-                  <div className="hero-entry" key={id}>
-                    <SpecularButton className="hero-button" href={href}>{t(title)}</SpecularButton>
+                  <div className="hero-entry" data-entry={id} key={id}>
+                    <SpecularButton className="hero-button" href={href} ariaLabel={id === 'shadow' ? t(title) : undefined}>{id === 'shadow' ? <ShadowWordmark className="hero-shadow-mark" aria-hidden="true" /> : t(title)}</SpecularButton>
                   </div>
                 ))}
               </div>
@@ -384,7 +386,7 @@ export default function App() {
                     </li>
 
                     <li className="home-about-block">
-                      <p className="home-about-lead"><strong>{t("「零一玩家」成立于 2026.9.1，我是社长，")}<span className="home-about-signature"><a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看社长零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>{locale === 'en' ? '.' : '！'}</span></strong></p>
+                      <p className="home-about-lead"><strong><MobileLineBreak after={/2026\.9\.1/}>{t("「零一玩家」成立于 2026.9.1，我是社长，")}</MobileLineBreak><span className="home-about-signature"><a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看社长零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>{locale === 'en' ? '.' : '！'}</span></strong></p>
                       <blockquote className="home-about-quote">
                         <p><strong>{t("不当牢玩家！不做NPC！")}<wbr />{t(COMMUNITY_SLOGAN)}</strong></p>
                       </blockquote>
@@ -399,7 +401,7 @@ export default function App() {
             <section className="home-core-section" id="work" aria-labelledby="work-title" tabIndex={-1}>
               <header className="home-section-heading">
                 <h2 className="home-flow-title" id="work-title">{t("我们在做什么")}</h2>
-                <p>{t("那些疯狂到相信自己能够改变世界的人，正是改变世界的人！")}</p>
+                <p><MobileLineBreak after={/能[够夠]改[变變]世界的人/}>{t("那些疯狂到相信自己能够改变世界的人，正是改变世界的人！")}</MobileLineBreak></p>
               </header>
               <WorkShowcase borderGlowProps={borderGlowProps} />
             </section>
@@ -514,14 +516,14 @@ export default function App() {
                   </div>
                 </BorderGlow>
                 </button>
-                <figcaption>{t("官方合作联系：零小一")}</figcaption>
+                <figcaption><span className="home-contact-full">{t("官方合作联系：零小一")}</span><span className="home-contact-mobile">{t("官方：零小一")}</span></figcaption>
               </figure>
             </div>
             {qrError && <p role="alert">{t(qrError)}</p>}
 
             <section className="home-recruitment" id="recruitment" aria-labelledby="recruitment-title" tabIndex="-1">
               <h3 className="home-recruitment-title" id="recruitment-title">
-                {t("零一团队招募：")}<strong>{t("充满热情的人，能够让世界变得更好。")}</strong>
+                <span className="home-recruitment-label">{t("零一团队招募：")}</span><strong>{t("充满热情的人，能够让世界变得更好。")}</strong>
               </h3>
               <ul className="home-recruitment-departments" role="list">
                 {RECRUITMENT_DEPARTMENTS.map(({ name, mark }) => (
@@ -568,10 +570,6 @@ export default function App() {
         <div className="home-footer-copyright">
           <span>{t("版权所有 © 2026 零一玩家")}</span>
           <span className="home-footer-credit">{t("官网设计与制作：")}<a className="home-about-president" href={PRESIDENT ? memberPageLink(PRESIDENT.id) : undefined} aria-label={t("查看官网设计与制作者零一扬的头号玩家介绍")}><ResponsiveImage src={PRESIDENT?.photo} alt="" width="28" height="28" fit="cover" /><span>{t(PRESIDENT?.name || '零一扬')}</span></a>
-          </span>
-          <span>
-            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">{t("地图数据 © OpenStreetMap 贡献者")}</a>
-            {' · '}<a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a>
           </span>
           <a href={siteDestination('icp')} target="_blank" rel="noopener noreferrer">{t("ICP备案号：闽ICP备2026024313号-3")}</a>
           <a href={siteDestination('police')} target="_blank" rel="noopener noreferrer">{t("闽公网安备35011102351280号")}</a>

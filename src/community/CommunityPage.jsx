@@ -1,15 +1,18 @@
+import ProjectImageFields from './plaza/ProjectImageFields';
 import { useEffect, useRef, useState } from 'react';
-import { FiArrowUpRight, FiPlus, FiCheck } from 'react-icons/fi';
+import { FiArrowUpRight, FiCheck } from 'react-icons/fi';
+import PublicPlayer from './account/PublicPlayer';
 import SiteBackground from '../components/SiteBackground';
 import SiteNavigation from '../components/SiteNavigation';
 import { communityApi as api, communityLink as link } from './api';
 import { Button, DetailBack, Empty, Field, Form, Frame, Heading, RecruitmentInfo, Source } from './CommunityUi';
-import SignupHandoff from './players/SignupHandoff';
-import { nextRegistrationDeadline } from './players/events';
+import RegistrationForm, { RegistrationList, RegistrationReceipt } from './players/Registration';
+import { nextCalendarChange } from './players/events';
 import { AccountHeading, AccountReturn, LoginForm, PlayerProfileSettings, PlayerSpace } from './account/AccountForms';
-import { accountContinuation, accountLink, announceSessionChange, isPlayerSpaceView, pageLocation, playerSpaceTab, reactionIntent, safeSitePath } from './account/navigation';
+import { accountContinuation, accountLink, announceSessionChange, isPlayerSpaceView, pageLocation, playerSpaceTab, reactionIntent, safeSitePath, linkWithSource, returnDestination } from './account/navigation';
 import { watchSession } from './account/watchSession';
 import { listFilters } from './filters';
+import { acceptsProjectSubmissions, acceptsRecruitment } from '../../server/event-state.mjs';
 import './community.css';
 import './discovery.css';
 import './gallery-detail.css';
@@ -105,7 +108,7 @@ function PlayerSpaceRecords({ submitted, result, spaceUrl }) {
         {mine.registrations.map(row => {
           const name = eventNames.get(row.eventId);
           return <li key={row.id}>
-            <RecordItem as={name ? 'a' : 'div'} href={name ? link('players', { event: row.eventId }) : undefined}>
+            <RecordItem as="a" href={linkWithSource(link('players', { view: 'receipt', event: row.eventId, receipt: row.id }),spaceUrl)}>
               <div>
                 <div className="player-record-title">
                   <h4>{name || '历史活动'}</h4>
@@ -123,21 +126,55 @@ function PlayerSpaceRecords({ submitted, result, spaceUrl }) {
 }
 function RecruitmentFields({ value }) { return <fieldset><legend>招募信息</legend><Field label="希望招募的伙伴" name="roles" defaultValue={value?.roles} required maxLength={1500} placeholder="例如：1 位前端开发、1 位产品设计伙伴" /><Field label="参与内容" name="work" defaultValue={value?.work} multiline required maxLength={1500} /><Field label="具体要求" name="requirements" defaultValue={value?.requirements} multiline required maxLength={1500} /><Field label="公开联系方式" name="contact" defaultValue={value?.contact} required maxLength={1500} /><p className="community-muted">联系方式将公开展示，请填写你愿意公开的联系渠道。</p></fieldset>; }
 const recruitFrom = values => ({ roles: values.roles, work: values.work, requirements: values.requirements, contact: values.contact });
-function ProjectForm({ event, existing, user, onComplete, back }) {
+function ProjectForm({ event, events, existing, user, onComplete, back }) {
   const draftKey = `community-draft-${user.id}-${existing?.id || event?.id || 'independent'}`;
-  const [recruiting, setRecruiting] = useState(() => { try { const draft = JSON.parse(sessionStorage.getItem(draftKey) || 'null'); if (draft) return draft.recruiting === 'on'; } catch { /* Restore existing values when storage is unavailable. */ } return Boolean(existing?.recruitment); });
-  const description = event ? `自动关联「${event.name}」，审核通过后同时展示在本场作品与共创广场。`
-    : existing?.eventId ? '保存后会保留原有活动关联。' : '一个想法、一段实践，都可以成为共创的起点。';
-  return <div className="community-narrow"><p className="account-description">{description}</p><Frame><Form draftKey={draftKey} submit="提交审核" onSubmit={async values => { const result = await api(existing ? `edit/${existing.id}` : 'projects', { ...values, eventId: event?.id, recruitment: recruiting ? recruitFrom(values) : null },user.id); onComplete(result); }}>
+  const [draft] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem(draftKey) || 'null'); }
+    catch { return null; }
+  });
+  const [recruiting, setRecruiting] = useState(draft ? draft.recruiting === 'on' : Boolean(existing?.recruitment));
+  const [source, setSource] = useState(event ? 'event' : draft?.submissionSource ?? (draft ? 'independent' : ''));
+  const [selectedEventId, setSelectedEventId] = useState(event?.id ?? draft?.eventId ?? '');
+  const availableEvents = events.filter(item => acceptsProjectSubmissions(item));
+  const selectedEvent = existing ? event : source === 'event' ? availableEvents.find(item => item.id === selectedEventId) : null;
+  const independent = existing ? !existing.eventId : source === 'independent';
+
+  async function submitProject({ submissionSource, ...values }) {
+    if (!existing && submissionSource !== 'independent' && !selectedEvent) throw Error('请选择开放投稿的活动。');
+    const result = await api(existing ? `edit/${existing.id}` : 'projects', {
+      ...values, showcaseImages: JSON.parse(values.showcaseImages || '[]'), eventId: selectedEvent?.id, recruitment: recruiting ? recruitFrom(values) : null,
+    }, user.id);
+    onComplete(result);
+  }
+
+  return <div className="community-narrow"><Frame>
+    <div className="community-page-return"><AccountReturn href={back} /></div>
+    <Form draftKey={draftKey} submit="提交审核" onSubmit={submitProject}>
+    {!existing && <fieldset className="project-submission-source">
+      <legend>投稿类型</legend>
+      <div className="project-submission-source-options">
+        <label className="community-check"><input type="radio" name="submissionSource" data-draft-controlled value="event" checked={source === 'event'} required onChange={() => setSource('event')} />玩家计划</label>
+        <label className="community-check"><input type="radio" name="submissionSource" data-draft-controlled value="independent" checked={source === 'independent'} required onChange={() => setSource('independent')} />自主投稿</label>
+      </div>
+      {source === 'event' && <label className="community-field">
+        <span>选择活动 *</span>
+        <select name="eventId" data-draft-controlled value={selectedEvent?.id || ''} onChange={e => setSelectedEventId(e.target.value)} required>
+          <option value="">{availableEvents.length ? '请选择活动' : '暂无开放投稿的活动'}</option>
+          {availableEvents.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+      </label>}
+    </fieldset>}
     <Field label="项目名称" name="name" defaultValue={existing?.name} required maxLength={80} />
-    <Field label="一句话介绍" name="summary" defaultValue={existing?.summary} required maxLength={160} />
+    <Field label="项目简介" name="summary" defaultValue={existing?.summary} required maxLength={20} />
     <Field label="完整介绍" name="description" defaultValue={existing?.description} multiline required placeholder="想解决什么问题？已经做到了哪一步？接下来想做什么？" />
-    <div className="community-form-pair"><Field label="封面图片链接" name="imageUrl" type="url" defaultValue={existing?.imageUrl} placeholder="https://…" /><Field label="演示 / 项目链接" name="demoUrl" type="url" defaultValue={existing?.demoUrl} placeholder="https://…" /></div><p className="community-muted">图片和演示链接至少填一项。请确保链接可公开访问。</p>
-    {!event && !existing?.eventId && <Field label="外部赛事名称（选填）" name="externalSource" defaultValue={existing?.externalSource} maxLength={100} placeholder="留空即为自主投稿" />}
+    <ProjectImageFields value={draft || existing} />
+    <Field label="项目链接（选填）" name="demoUrl" type="url" defaultValue={existing?.demoUrl} placeholder="https://…" />
+    {!existing?.eventId && <div hidden={!independent}>
+      <Field label="外部活动名称（选填）" name="externalSource" defaultValue={existing?.externalSource} disabled={!independent} maxLength={100} />
+    </div>}
     <label className="community-check"><input name="recruiting" type="checkbox" checked={recruiting} onChange={e => setRecruiting(e.target.checked)} />这个项目正在招募伙伴</label>
     {recruiting && <RecruitmentFields value={existing?.recruitment} />}
-    <p className="community-muted">提交后显示「待审核」，通过后才会公开。已公开项目修改后需重新审核。</p>
-  </Form><AccountReturn href={back} /></Frame></div>;
+  </Form></Frame></div>;
 }
 
 const withAccountSession = session => ({ ...session, events: [], projects: [], recruitments: [] });
@@ -168,10 +205,20 @@ export default function CommunityPage({ section, Listing, Detail }) {
       commit(withAccountSession(session));
       return;
     }
-    // The public registration shortcut needs only this event and its WeChat handoff.
-    if (view === 'register') {
-      const event = await loadEvent(eventId);
-      commit({user:null, demo:Boolean(event?.example), events:event ? [event] : [], projects:[], recruitments:[]});
+    if (view === 'player') {
+      const [session, profile, events] = await Promise.all([
+        knownSession || api('session'),
+        api('profiles/' + encodeURIComponent(query.get('user') || '')).catch(error => { if (error.status === 404) return null; throw error; }),
+        api('events'),
+      ]);
+      commit({...session, profile, events, projects:[], recruitments:[]});
+      return;
+    }
+    // Registration and receipt pages share the existing public event and account session.
+    if (['register', 'receipt', 'tickets'].includes(view)) {
+      const [event, session, catalog] = await Promise.all([loadEvent(eventId), api('session').catch(() => ({ user: null })), view === 'tickets' ? api('events') : []]);
+      const mine = view === 'register' && session.user ? await api('mine') : null;
+      commit({ ...session, events: event ? [event] : catalog, projects: [], recruitments: [], mine });
       return;
     }
     const eventDetail = Boolean(eventId) && !view;
@@ -185,7 +232,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
       eventDetail ? api('recruitments?event=' + encodeURIComponent(eventId)) : [],
     ]);
     const events = singleEvent ? [eventData].filter(Boolean) : eventData;
-    const needsMine = session.user && ['publish', 'team'].includes(view);
+    const needsMine = session.user && (eventDetail || ['publish', 'team'].includes(view));
     const reviewing = session.user?.role === 'admin' && view === 'review';
     const [mine, review, project] = await Promise.all([
       needsMine ? api('mine') : null,
@@ -201,7 +248,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
   };
   useEffect(() => { reload(); return () => {requestVersion.current++;}; }, []);
   useEffect(() => {
-    if(view==='register' || !data)return;
+    if(!data)return;
     return watchSession(data.user,isProtected,session=>{
       setData(null);
       setError('');
@@ -226,9 +273,9 @@ export default function CommunityPage({ section, Listing, Detail }) {
   }, [requestedView, requestedTab, spaceView, tab]);
   const [calendarTime, setCalendarTime] = useState(Date.now);
   useEffect(() => {
-    if (section !== 'players' || !data) return;
+    if (!data || (section !== 'players' && view !== 'publish')) return;
     const refresh = () => setCalendarTime(Date.now());
-    const deadline = nextRegistrationDeadline(data.events, calendarTime);
+    const deadline = nextCalendarChange(data.events, calendarTime);
     const timer = Number.isFinite(deadline) ? window.setTimeout(refresh, Math.min(2147483647, Math.max(0, deadline - Date.now()))) : null;
     const visible = () => { if (!document.hidden) refresh(); };
     document.addEventListener('visibilitychange', visible);
@@ -238,20 +285,22 @@ export default function CommunityPage({ section, Listing, Detail }) {
       document.removeEventListener('visibilitychange', visible);
       window.removeEventListener('pageshow', refresh);
     };
-  }, [section, data, calendarTime]);
+  }, [section, view, data, calendarTime]);
   const event = data?.events.find(e => e.id === eventId), user = data?.user;
   const showLogin = isProtected && !user;
   const register = query.get('mode') === 'signup';
   const sectionTitle = section === 'players' ? '玩家计划' : '共创广场';
-  const headerTitle = showLogin && (data || view === 'login') ? (register ? '注册账号' : '登陆账号')
+  const registrationTitle = { register: '活动报名', receipt: '报名票根', tickets: '我的报名' }[view];
+  const headerTitle = registrationTitle || (showLogin && (data || view === 'login') ? (register ? '注册账号' : '登陆账号')
     : accountView ? '玩家空间'
     : view === 'publish' ? (query.get('edit') ? '修改项目' : eventId ? '提交本场作品' : '发布你的项目')
     : view === 'team' ? '发布组队招募'
-    : view === 'review' ? '作品审核' : sectionTitle;
+    : view === 'player' ? '玩家主页'
+    : view === 'review' ? '作品审核' : sectionTitle);
   useEffect(() => { document.title = `${headerTitle} · 零一玩家`; }, [headerTitle]);
   const defaultBack = eventId ? link('players', {event:eventId,...listFilters('players',query)})
     : projectId ? link('plaza',{project:projectId,...listFilters('plaza',query)}) : link(section,listFilters(section,query));
-  const backUrl = safeSitePath(query.get(view==='login'?'returnTo':'from'),defaultBack);
+  const backUrl = returnDestination(query.get(view === 'login' ? 'returnTo' : 'from'),defaultBack,pageLocation());
   const action = view==='login' ? reactionIntent(query,backUrl) : null;
   const continuation = view==='account' ? accountContinuation(query.get('continue'), backUrl) : null;
   const askReaction = (project, kind) => {
@@ -320,7 +369,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
     else next.searchParams.delete('mode');
     replaceAddress(next);
   }}
-    purpose={action ? `登录后将继续${action.kind==='like'?'点赞':'收藏'}这件作品。` : ({publish:'登录后可从玩家空间继续提交项目。',team:'登录后可从玩家空间继续发布本场组队招募。',review:'使用社区管理员账号查看审核任务。'})[view]}
+    purpose={action ? `登录后将继续${action.kind==='like'?'点赞':'收藏'}这件作品。` : ({publish:'登录后可从玩家空间继续提交项目。',team:'登录后可从玩家空间继续发布组队招募。',review:'使用官网头号玩家账号查看审核任务。'})[view]}
     notice={query.get('authNotice')==='password-changed'?'密码已更新，请使用新密码重新登录。':null}/>;
   else if (accountView) content = <PlayerAccount key={user.id} user={user} back={backUrl} section={section}
     onLogout={logout} continuation={continuation} action={action} onContinue={() => finishLogin(data)}
@@ -330,7 +379,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
       setNotice('玩家资料已保存。');
       announceSessionChange();
     }} />;
-  else if (eventId && !event && !['publish','team','register'].includes(view)) content = <div className="event-detail-meta">
+  else if (eventId && !event && !['publish','team','register','receipt','tickets'].includes(view)) content = <div className="event-detail-meta">
     <p>没有找到这场活动。</p><DetailBack href={link('players',listFilters('players',query))} inline>返回</DetailBack>
   </div>;
   else if (view === 'publish') {
@@ -338,16 +387,16 @@ export default function CommunityPage({ section, Listing, Detail }) {
     const projectEvent = existing ? data.events.find(item => item.id === existing.eventId) : event;
     const blocked = (query.get('edit') && !existing && '无法修改此项目。') ||
       (!existing && eventId && !event && '没有找到这场活动。') ||
-      (!existing && event && (event.status !== 'active' || !event.submissionsOpen) && '本场暂未开放作品提交。');
+      (!existing && event && !acceptsProjectSubmissions(event) && '本场暂未开放作品提交。');
     content = blocked ? <div className="community-narrow">
-      <Empty>{blocked}</Empty><AccountReturn href={backUrl} />
-    </div> : <ProjectForm key={user.id+':'+(existing?.id || event?.id || 'new')} event={projectEvent} existing={existing} user={user} back={backUrl} onComplete={project => location.assign(link(section, { view: 'account', submitted: project.id }))} />;
+      <div className="community-page-return"><AccountReturn href={backUrl} /></div><Empty>{blocked}</Empty>
+    </div> : <ProjectForm key={user.id+':'+(existing?.id || event?.id || 'new')} event={projectEvent} events={data.events} existing={existing} user={user} back={backUrl} onComplete={project => location.assign(link(section, { view: 'account', submitted: project.id }))} />;
   } else if (view === 'team') {
-    content = <div className="community-narrow">
-      {event?.status === 'active' ? <>
-        <p className="account-description">{`招募将自动关联「${event.name}」。`}</p>
+    content = <div className="community-narrow recruitment-editor">
+      {acceptsRecruitment(event) ? <>
         <Frame>
-          {data.mine.projects.length ? <Form key={user.id} submit="发布招募" onSubmit={async values => {
+          {data.mine.projects.length ? <Form key={user.id} submit="发布招募" secondaryAction={<AccountReturn href={backUrl} />}
+            onSubmit={async values => {
             await api('recruitments', { ...values, eventId, recruitment: recruitFrom(values) }, user.id);
             const filters = listFilters('players', new URL(backUrl, location.origin).searchParams);
             location.href = link('players', { event: eventId, posted: '1', ...filters });
@@ -359,19 +408,23 @@ export default function CommunityPage({ section, Listing, Detail }) {
                 {data.mine.projects.map(project => <option key={project.id} value={project.id}>{project.name} · {reviewStatuses[project.status]}</option>)}
               </select>
             </label>
-            <p className="community-muted">尚未公开的项目仅展示招募介绍，审核通过后才开放项目详情。</p>
             <Field label="招募标题" name="title" required maxLength={100} />
-            <Field label="项目想做什么" name="description" multiline required maxLength={3000} />
+            <Field label="项目简介" name="description" multiline required maxLength={30} placeholder="用不超过 30 个字介绍项目" />
             <RecruitmentFields />
-          </Form> : <Empty>先发布一个项目，再为它寻找队友。<Button href={link('plaza', { view: 'publish' })}>创建我的项目</Button></Empty>}
-          <AccountReturn href={backUrl} />
+          </Form> : <><div className="community-page-return"><AccountReturn href={backUrl} /></div><Empty>先发布一个项目，再为它寻找队友。<Button href={link('plaza', { view: 'publish' })}>创建我的项目</Button></Empty></>}
         </Frame>
-      </> : <><Empty>{eventId && !event ? '没有找到这场活动。' : '本场暂不接受组队招募。'}</Empty><AccountReturn href={backUrl} /></>}
+      </> : <><div className="community-page-return"><AccountReturn href={backUrl} /></div><Empty>{eventId && !event ? '没有找到这场活动。' : '本场暂不接受组队招募。'}</Empty></>}
     </div>;
+  } else if (view === 'player') {
+    content = <PublicPlayer profile={data.profile} events={data.events} back={backUrl} />;
   } else if (view === 'register') {
     const back = <DetailBack href={event ? backUrl : link('players', listFilters('players',query))} inline>返回</DetailBack>;
-    content = event ? <div className="registration-legacy"><Heading title={event.name}>{back}</Heading><SignupHandoff event={event} /></div>
+    content = event ? <RegistrationForm key={event.id} event={event} user={user} existing={data.mine?.registrations.find(row => row.eventId === event.id)} />
       : <div className="event-detail-meta"><p>{eventId ? '没有找到这场活动。' : '请选择想报名的活动。'}</p>{back}</div>;
+  } else if (view === 'receipt') {
+    content = <RegistrationReceipt key={query.get('receipt')} id={query.get('receipt')} event={event} user={user} />;
+  } else if (view === 'tickets') {
+    content = <RegistrationList user={user} events={data.events} />;
   } else if (view === 'review') {
     content = <>
       {user.role === 'admin' ? <>
@@ -379,7 +432,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
         <div className="account-page-actions">{accountActions}</div>
         <div className="community-stack">{data.review.length ? data.review.map(project => <ReviewCard key={project.id} project={project} user={user} events={data.events} onReviewed={load} />) : <Empty>目前没有待审核项目。</Empty>}</div>
         <ReviewRegistrations key={user.id} events={data.events} />
-      </> : <Empty>此页面仅对管理员开放。</Empty>}
+      </> : <Empty>此页面仅对官网头号玩家开放。</Empty>}
     </>;
 
   } else if (event || projectId) {
@@ -392,7 +445,8 @@ export default function CommunityPage({ section, Listing, Detail }) {
   return <div className={`community-page community-page--${section} ${showLogin ? 'community-page--account-access' : 'community-page--branded'}${isListing ? ' community-page--listing' : ''}${galleryDetail ? ' community-page--detail' : ''}`}>
     <a className="skip-link" href="#community-main">跳到主要内容</a>
     <SiteBackground />
-    <SiteNavigation standalone textOnly={showLogin} accountUser={user || null} accountSection={section} accountSource={accountView ? backUrl : undefined}
+    <SiteNavigation standalone mobileDetail textOnly={showLogin} accountUser={user || null} accountSection={section} accountSource={accountView ? backUrl : undefined}
+      headerTools={section === 'players' && !showLogin ? <Button size="sm" shineOnInteraction className="nav-control site-tickets-link" href={view === 'tickets' ? pageLocation() : linkWithSource(link('players', {view:'tickets'}))}>我的报名</Button> : undefined}
       headerBrand={showLogin ? undefined : <AccountHeading title={headerTitle} as={isProtected || isListing ? 'h1' : 'span'} />} />
     <div className="community-shell">
       <main id="community-main" tabIndex={-1}>
@@ -439,7 +493,7 @@ function ReviewRegistrations({ events }) {
       </nav>}
       {result.items.map(r => <Frame key={r.id}>
         <h3>{r.name} · {events.find(e => e.id === r.eventId)?.name || '历史活动'}</h3>
-        <p>联系方式：{r.contact}</p><p>{r.note}</p>
+        <p>{r.phone ? `电话号码：${r.phone}` : `联系方式：${r.contact}`}</p>{r.wechat && <p>微信：{r.wechat}</p>}<p>{r.note}</p>
       </Frame>)}
     </>}
   </section>;

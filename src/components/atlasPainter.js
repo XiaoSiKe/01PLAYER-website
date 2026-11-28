@@ -15,6 +15,19 @@ function compile(atlas) {
   const regionPosition = item => (item.bounds[0][0] + item.bounds[1][0]) / 2 + (item.bounds[0][1] + item.bounds[1][1]) * .55;
   [...result.china].sort((a, b) => regionPosition(a) - regionPosition(b))
     .forEach((item, order) => { item.revealOrder = order; });
+  // Imported sea tiles end at the extract boundary. Keep their coastline but
+  // feather the distant fill before it reaches that rectangular boundary.
+  const coastalDetails = result.localDetails.filter(item => item.id.startsWith('openmaptiles:'));
+  result.coastalOcean = coastalDetails.filter(item => item.kind === 'water' && item.class === 'ocean');
+  if (result.coastalOcean.length) {
+    const boxes = coastalDetails.map(item => item.bounds);
+    result.coastalBounds = [
+      [Math.min(...boxes.map(box => box[0][0])), Math.min(...boxes.map(box => box[0][1]))],
+      [Math.max(...boxes.map(box => box[1][0])), Math.max(...boxes.map(box => box[1][1]))],
+    ];
+    result.coastalPath = new Path2D();
+    result.coastalOcean.forEach(item => result.coastalPath.addPath(item.path));
+  }
   result.graticule = new Path2D(atlas.graticule);
   result.localLabels = [...(atlas.localLabels || [])].sort((a, b) => {
     const priority = { campus: 0, water: 1, station: 2, road: 3 };
@@ -28,13 +41,15 @@ function compile(atlas) {
   return result;
 }
 
-// One bounded back buffer holds the whole next frame. Only a completed image
-// is copied to the visible canvas; no live SVG layers are hidden/reinserted.
+// A full-frame back buffer and a reusable coastal-fill buffer keep each frame
+// complete before it is copied to the visible canvas.
 export function createAtlasPainter(canvas, atlas) {
   const geometry = compile(atlas);
   const back = document.createElement('canvas');
   const context = back.getContext('2d', { alpha: false });
   const display = canvas.getContext('2d', { alpha: false });
+  const coast = document.createElement('canvas');
+  const sea = coast.getContext('2d');
   let last;
   let version = 0;
 
@@ -99,8 +114,35 @@ export function createAtlasPainter(canvas, atlas) {
     if (opacity.fuzhou > .001) for (const item of [...geometry.fuzhou, ...geometry.quanzhou]) shape(item,p.bg,p.line,.65,opacity.fuzhou,1,.55);
     const contextLabels = [];
     if (opacity.local > .001) {
+      if (geometry.coastalBounds && intersects(geometry.coastalBounds, windowBounds)) {
+        if (coast.width !== pixelWidth || coast.height !== pixelHeight) {
+          coast.width = pixelWidth;
+          coast.height = pixelHeight;
+        }
+        sea.setTransform(1,0,0,1,0,0);
+        sea.clearRect(0,0,pixelWidth,pixelHeight);
+        sea.globalCompositeOperation = 'source-over';
+        sea.setTransform(scale*ratio,0,0,scale*ratio,dx*ratio,dy*ratio);
+        sea.fillStyle = p.water;
+        sea.fill(geometry.coastalPath);
+        const [[left, top], [right, bottom]] = geometry.coastalBounds;
+        const radiusX = (right-left)/2, radiusY = (bottom-top)/2;
+        sea.setTransform(radiusX*scale*ratio,0,0,radiusY*scale*ratio,
+          ((left+right)/2*scale+dx)*ratio,((top+bottom)/2*scale+dy)*ratio);
+        const feather = sea.createRadialGradient(0,0,.5,0,0,1);
+        feather.addColorStop(0, '#000');
+        feather.addColorStop(1, '#0000');
+        sea.globalCompositeOperation = 'destination-in';
+        sea.fillStyle = feather;
+        sea.fillRect(-2,-2,4,4);
+        context.save();
+        context.setTransform(1,0,0,1,0,0);
+        context.globalAlpha = opacity.local;
+        context.drawImage(coast,0,0);
+        context.restore();
+      }
       for (const item of geometry.localDetails) {
-        if (!item.area || item.kind === 'building') continue;
+        if (!item.area || item.kind === 'building' || geometry.coastalOcean.includes(item)) continue;
         const fill = item.kind === 'water' ? p.water : item.kind === 'green' ? p.green : item.kind === 'campus' ? p.campus : p.neighborhood;
         shape(item,fill,null,0,opacity.local);
       }

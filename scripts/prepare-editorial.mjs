@@ -48,6 +48,7 @@ try {
    ['/lingyi-logo.jpg','页面加载标识'], ['/images/lingyiyang-logo.jpg','零一扬标识'], ['/images/feishu-logo.png','飞书标识'], ['/images/qq-logo.png','QQ 标识'],
  ];
  sections.push({key:'siteAssets',title:'全站公共标识与二维码',path:'/#join',rows:brandAssets.map(([id,title,url=id])=>({id,title,url}))});
+ sections.push({key:'earthGuide',title:'地球生存攻略',path:'/earth',rows:JSON.parse(await readFile(resolve(root,'cms/src/content/earth-guide-seed.json'),'utf8'))});
  const file=resolve(root,'cms/src/content/catalog.json');
  await mkdir(dirname(file),{recursive:true}); await writeFile(file,JSON.stringify(sections,null,2)+'\n');
 } finally {

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "reading-campus",
+    "title": "大学生活",
+    "chapters": [
+      {
+        "id": "getting-started",
+        "title": "入学与适应",
+        "body": "刚进入大学，课程、生活和身边的人都在变化。可以先从一个正在遇到的小问题开始，用一段真实经历熟悉这本攻略。\n\n## 从一个具体问题开始\n\n把最近困扰你的事情写下来，再补充已经试过的办法和眼前的限制。例如，某门课听不懂、找不到学校提供的学习资源，或者想试一个项目却不知道第一步做什么。\n\n先选一件能在这周推进的事。完成后记下做了什么、哪里有效，以及下一次准备怎样调整。\n\n## 按需要选择下一篇\n\n- 想调整学习安排，可以继续阅读「课程与学习方法」。\n- 想了解校园内可用的支持，可以查看「校园生活与资源」。\n- 想尝试用 AI 处理一个真实任务，可以从「AI 入门」开始。\n\n目前部分章节仍在补充。页面左侧的分组和底部的 Previous / Next 可以帮助你继续阅读。点击文章上方的「大学生活」，可以回到本篇开篇。\n\n### 使用时核对学校信息\n\n课程安排、办事流程和服务入口，以所在学校当前发布的正式通知为准。涉及具体政策时，保留通知的日期和来源，方便回查。\n\n## 参与补充攻略\n\n攻略由运营团队在官网后台维护。提交内容时，请提供文章标题、Markdown 正文、公开使用的作者署名、学校和上传日期，并给需要核实的事实附上来源。",
+        "author": "",
+        "university": "",
+        "uploadedAt": "2026-11-27"
+      },
+      {
+        "id": "learning",
+        "title": "课程与学习方法",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      },
+      {
+        "id": "campus-life",
+        "title": "校园生活与资源",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      }
+    ]
+  },
+  {
+    "id": "reading-ai",
+    "title": "AI 与实践",
+    "chapters": [
+      {
+        "id": "ai-start",
+        "title": "AI 入门",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      },
+      {
+        "id": "ai-study",
+        "title": "用 AI 学专业",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      },
+      {
+        "id": "projects",
+        "title": "项目与共创",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      }
+    ]
+  },
+  {
+    "id": "reading-next",
+    "title": "下一阶段",
+    "chapters": [
+      {
+        "id": "paths",
+        "title": "升学、就业与探索",
+        "body": "本章内容待补充。",
+        "author": "",
+        "university": "",
+        "uploadedAt": ""
+      }
+    ]
+  }
+]

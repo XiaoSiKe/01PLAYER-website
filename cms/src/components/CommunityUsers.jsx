@@ -1,12 +1,14 @@
 'use client';
-import { Action, DeskTitle } from './OfficialUI';
+import { useDeskLanguage } from './DeskLanguage';
+import { Action, DeskBack, DeskTitle } from './OfficialUI';
 import React, { useEffect, useRef, useState } from 'react';
 import { Field, Form } from '../../../src/community/CommunityUi';
+import { playerIdentityForRole, playerIdentityLabels } from '../../../src/community/account/identity';
 import { desk, readDeskJson } from './desk';
+import UserActivity from './UserActivity';
 
 const directoryPath = '/admin/community-users';
 const staffPrefix = 'staff:';
-const roleLabel = { admin: '管理员', player: '玩家' };
 const statusLabel = { active: '正常', disabled: '已停用' };
 const actionLabel = { disable: '停用账号', restore: '恢复账号', 'revoke-sessions': '退出全部设备' };
 const auditLabel = {
@@ -28,9 +30,10 @@ function prettyTime(value) {
   return Number.isFinite(time) ? timeFormat.format(time) : '暂无记录';
 }
 function Status({ value }) {
+  const { t } = useDeskLanguage();
   return (
     <span className={'cu-status ' + (value === 'disabled' ? 'cu-disabled' : '')}>
-      {statusLabel[value] || '未知'}
+      {t(statusLabel[value] || '未知')}
     </span>
   );
 }
@@ -41,6 +44,7 @@ function listPath(key) {
   return directoryPath + '?' + query;
 }
 function UsersList({ filters, changeFilters, open, returnFocus }) {
+  const { t } = useDeskLanguage();
   const [input, setInput] = useState(filters.q),
     [result, setResult] = useState(null);
   const [error, setError] = useState(''),
@@ -81,28 +85,25 @@ function UsersList({ filters, changeFilters, open, returnFocus }) {
           changeFilters({ ...filters, q: input.trim(), page: 1 });
         }}
       >
-        <label className="community-field">
-          搜索账号
-          <input
+        <label className="community-field">{t("搜索账号")}<input
             type="search"
             maxLength={160}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="输入昵称、邮箱或账号 ID"
+            placeholder={t("输入昵称、邮箱或账号 ID")}
           />
         </label>
         <label className="community-field">
-          <span id="cu-role-label">角色</span>
+          <span id="cu-role-label">{t("身份")}</span>
           <select aria-labelledby="cu-role-label" value={role} onChange={(e) =>
             changeFilters({ ...filters, role: e.target.value, q: input.trim(), page: 1 })
           }>
-            <option value="all">全部角色</option>
-            <option value="admin">管理员</option>
-            <option value="player">玩家</option>
+            <option value="all">{t("全部身份")}</option>
+            {Object.entries(playerIdentityLabels).map(([value, label]) => <option key={value} value={value}>{t(label)}</option>)}
           </select>
         </label>
         <label className="community-field">
-          <span id="cu-status-label">账号状态</span>
+          <span id="cu-status-label">{t("账号状态")}</span>
           <select
             aria-labelledby="cu-status-label"
             value={status}
@@ -110,28 +111,28 @@ function UsersList({ filters, changeFilters, open, returnFocus }) {
               changeFilters({ ...filters, status: e.target.value, q: input.trim(), page: 1 })
             }
           >
-            <option value="all">全部状态</option>
-            <option value="active">正常</option>
-            <option value="disabled">已停用</option>
+            <option value="all">{t("全部状态")}</option>
+            <option value="active">{t("正常")}</option>
+            <option value="disabled">{t("已停用")}</option>
           </select>
         </label>
-        <Action type="submit">搜索</Action>
+        <Action type="submit">{t("搜索")}</Action>
       </form>
       {error ? (
         <div role="alert">
-          <p>{error}</p>
-          <Action onClick={() => setRevision((n) => n + 1)}>重试</Action>
+          <p>{t(error)}</p>
+          <Action onClick={() => setRevision((n) => n + 1)}>{t("重试")}</Action>
         </div>
       ) : !result ? (
-        <p role="status">正在读取账号…</p>
+        <p role="status">{t("正在读取账号…")}</p>
       ) : (
         <>
           <p className="cu-count" role="status">
-            共 {result.total} 个账号
+            {t('共 {0} 个账号', [result.total])}
           </p>
           {result.items.length ? (
             <ul className="cu-list">
-              {result.items.map((person) => {
+              {result.items.map((person, index) => {
                 const key = person.source === 'staff' ? staffPrefix + person.id : person.id;
                 return (
                 <li key={key}>
@@ -144,16 +145,17 @@ function UsersList({ filters, changeFilters, open, returnFocus }) {
                       open(key);
                     }}
                   >
+                    <span className="cu-sequence">{(result.page - 1) * result.pageSize + index + 1}</span>
                     <div className="cu-identity">
                       <strong>{person.name}</strong>
-                      <span>{person.source === 'staff' ? '零一运营' : person.email}</span>
+                      <span>{person.source === 'staff' ? t("零一运营") : person.email}</span>
                     </div>
                     <span className="cu-login">
                       {person.lastLoginAt
-                        ? '最近登录　' + prettyTime(person.lastLoginAt)
-                        : '尚无登录时间记录'}
+                        ? t('最近登录') + '　' + prettyTime(person.lastLoginAt)
+                        : t("尚无登录时间记录")}
                     </span>
-                    <span className="cu-role">{roleLabel[person.role] || '玩家'}</span>
+                    <span className="cu-role">{t(playerIdentityLabels[person.identity])}</span>
                     <Status value={person.status} />
                     <span aria-hidden="true" className="cu-arrow">
                       →
@@ -164,27 +166,22 @@ function UsersList({ filters, changeFilters, open, returnFocus }) {
               })}
             </ul>
           ) : (
-            <div className="op-empty">
-              没有符合条件的账号。{(q || status !== 'all' || role !== 'all') && <Action onClick={clear}>清除筛选</Action>}
+            <div className="op-empty">{t("没有符合条件的账号。")}{(q || status !== 'all' || role !== 'all') && <Action onClick={clear}>{t("清除筛选")}</Action>}
             </div>
           )}
           {(pageCount > 1 || page > 1) && (
-            <nav className="cu-pagination" aria-label="账号列表分页">
+            <nav className="cu-pagination" aria-label={t("账号列表分页")}>
               <Action
                 disabled={result.page <= 1}
                 onClick={() => changeFilters({ ...filters, page: result.page - 1 })}
-              >
-                上一页
-              </Action>
+              >{t("上一页")}</Action>
               <span>
-                第 {result.page} 页 / 共 {pageCount} 页
+                {t('第 {0} 页 / 共 {1} 页', [result.page, pageCount])}
               </span>
               <Action
                 disabled={result.page >= pageCount}
                 onClick={() => changeFilters({ ...filters, page: result.page + 1 })}
-              >
-                下一页
-              </Action>
+              >{t("下一页")}</Action>
             </nav>
           )}
         </>
@@ -193,6 +190,7 @@ function UsersList({ filters, changeFilters, open, returnFocus }) {
   );
 }
 function UserDetail({ id, isOwner }) {
+  const { t } = useDeskLanguage();
   const [person, setPerson] = useState(null),
     [revision, setRevision] = useState(0),
     [loadError, setLoadError] = useState('');
@@ -240,22 +238,20 @@ function UserDetail({ id, isOwner }) {
   if (loadError)
     return (
       <div role="alert">
-        <p>{loadError}</p>
-        <Action onClick={() => setRevision((n) => n + 1)}>重新读取</Action>
+        <p>{t(loadError)}</p>
+        <Action onClick={() => setRevision((n) => n + 1)}>{t("重新读取")}</Action>
       </div>
     );
-  if (!person) return <p role="status">正在读取用户资料…</p>;
+  if (!person) return <p role="status">{t("正在读取用户资料…")}</p>;
   const facts = [
     ['账号 ID', person.id],
-    ['角色', roleLabel[person.role] || '玩家'],
-    ['大学', person.university || '未填写'],
-    ['注册时间', prettyTime(person.createdAt)],
-    ['最近登录', prettyTime(person.lastLoginAt)],
+    ['身份', t(playerIdentityLabels[playerIdentityForRole(person.role)])],
+    ['大学', person.university || t('未填写')],
+    ['注册时间', t(prettyTime(person.createdAt))],
+    ['最近登录', t(prettyTime(person.lastLoginAt))],
     ['有效登录会话', person.activeSessions],
-    ['关联作品', person.projectCount],
-    ['账号报名', person.registrationCount],
   ];
-  if (person.status === 'disabled') facts.push(['停用时间', prettyTime(person.disabledAt)]);
+  if (person.status === 'disabled') facts.push(['停用时间', t(prettyTime(person.disabledAt))]);
   const descriptions = {
     disable: '停用后，官网和玩家系统会撤销这个账号的全部会话，阻止再次登录。已提交的内容会保留。',
     restore: '恢复后，玩家可以用原密码重新登录。之前退出的设备需要重新验证。',
@@ -270,18 +266,19 @@ function UserDetail({ id, isOwner }) {
         </div>
         <Status value={person.status} />
       </div>
-      <section aria-label="账号资料">
+      <section aria-label={t("账号资料")}>
         <dl className="cu-facts">
           {facts.map(([label, value]) => (
             <div key={label}>
-              <dt>{label}</dt>
+              <dt>{t(label)}</dt>
               <dd>{value}</dd>
             </div>
           ))}
         </dl>
       </section>
+      <UserActivity person={person} />
       <section className="cu-section">
-        <h2>账号操作</h2>
+        <h2>{t("账号操作")}</h2>
         {isOwner ? (
           <>
             {!confirm ? (
@@ -292,7 +289,7 @@ function UserDetail({ id, isOwner }) {
                     setConfirm(person.status === 'disabled' ? 'restore' : 'disable');
                   }}
                 >
-                  {person.status === 'disabled' ? '恢复账号' : '停用账号'}
+                  {person.status === 'disabled' ? t("恢复账号") : t("停用账号")}
                 </Action>
                 {person.activeSessions > 0 && (
                   <Action
@@ -300,21 +297,19 @@ function UserDetail({ id, isOwner }) {
                       setNotice(null);
                       setConfirm('revoke-sessions');
                     }}
-                  >
-                    退出全部设备
-                  </Action>
+                  >{t("退出全部设备")}</Action>
                 )}
               </div>
             ) : (
               <div className="cu-confirm">
-                <p>{descriptions[confirm]}</p>
+                <p>{t(descriptions[confirm])}</p>
                 <div className="op-line">
                   <button
                     className="discovery-action"
                     disabled={Boolean(pending) || Boolean(notice?.stale)}
                     onClick={() => perform(confirm)}
                   >
-                    {pending ? '处理中…' : '确认' + actionLabel[confirm]}
+                    {pending ? t('处理中…') : t('确认{0}', [t(actionLabel[confirm])])}
                   </button>
                   <Action
                     disabled={Boolean(pending)}
@@ -322,17 +317,15 @@ function UserDetail({ id, isOwner }) {
                       setConfirm('');
                       setNotice(null);
                     }}
-                  >
-                    取消
-                  </Action>
+                  >{t("取消")}</Action>
                 </div>
               </div>
             )}
           </>
         ) : (
-          <p>运营人员可查看用户资料。账号状态与登录设备由站点负责人管理。</p>
+          <p>{t("先锋玩家可查看用户资料。账号状态与登录设备由头号玩家管理。")}</p>
         )}
-        {notice && <p role={notice.error ? 'alert' : 'status'}>{notice.text}</p>}
+        {notice && <p role={notice.error ? 'alert' : 'status'}>{t(notice.text)}</p>}
         {notice?.stale && (
           <Action
             onClick={() => {
@@ -340,26 +333,24 @@ function UserDetail({ id, isOwner }) {
               setNotice(null);
               setRevision((n) => n + 1);
             }}
-          >
-            读取最新资料
-          </Action>
+          >{t("读取最新资料")}</Action>
         )}
       </section>
       <section className="cu-section">
-        <h2>最近管理记录</h2>
+        <h2>{t("最近管理记录")}</h2>
         {person.accountHistory?.length ? (
           <ol className="cu-history">
             {person.accountHistory.map((entry, i) => (
               <li key={entry.at + '-' + i}>
                 <span>
-                  管理员 #{entry.actorId}　{auditLabel[entry.kind] || entry.kind}
+                  {t('头号玩家')} #{entry.actorId}　{t(auditLabel[entry.kind] || entry.kind)}
                 </span>
                 <time dateTime={entry.at}>{prettyTime(entry.at)}</time>
               </li>
             ))}
           </ol>
         ) : (
-          <p>暂无管理操作记录。</p>
+          <p>{t("暂无管理操作记录。")}</p>
         )}
       </section>
     </>
@@ -367,6 +358,7 @@ function UserDetail({ id, isOwner }) {
 }
 
 function AdministratorDetail({ id, isOwner, onCreated }) {
+  const { t } = useDeskLanguage();
   const creating = id === 'new';
   const endpoint = creating ? '/cms-api/staff' : '/cms-api/staff/' + encodeURIComponent(id);
   const [account, setAccount] = useState(null);
@@ -376,26 +368,26 @@ function AdministratorDetail({ id, isOwner, onCreated }) {
     if (creating) return;
     const controller = new AbortController();
     readDeskJson(endpoint, {}, controller.signal)
-      .then(setAccount)
+      .then(data => { if (!controller.signal.aborted) setAccount(data); })
       .catch(error => { if (!controller.signal.aborted) setError(error.message); });
     return () => controller.abort();
   }, [creating, endpoint]);
-  if (creating && !isOwner) return <p role="alert">请联系站点负责人新增管理员。</p>;
-  if (error) return <p role="alert">{error}</p>;
-  if (!creating && !account) return <p role="status">正在读取管理员资料…</p>;
+  if (creating && !isOwner) return <p role="alert">{t('请联系头号玩家新增零一账号。')}</p>;
+  if (error) return <p role="alert">{t(error)}</p>;
+  if (!creating && !account) return <p role="status">{t("正在读取运营账号资料…")}</p>;
   return (
     <>
-      <div className="cu-detail-head"><h2>{creating ? '新增管理员' : account.email}</h2></div>
+      <div className="cu-detail-head"><h2>{creating ? t('新增零一账号') : account.email}</h2></div>
       {!creating && <dl className="cu-facts">
-        <div><dt>角色</dt><dd>管理员</dd></div>
-        <div><dt>账号 ID</dt><dd>{account.id}</dd></div>
-        <div><dt>创建时间</dt><dd>{prettyTime(account.createdAt)}</dd></div>
+        <div><dt>{t('身份')}</dt><dd>{t(playerIdentityLabels[playerIdentityForRole(account.role)])}</dd></div>
+        <div><dt>{t('账号 ID')}</dt><dd>{account.id}</dd></div>
+        <div><dt>{t('创建时间')}</dt><dd>{t(prettyTime(account.createdAt))}</dd></div>
       </dl>}
       {isOwner && <section className="cu-section">
-        <h2>{creating ? '账号信息' : '更新账号'}</h2>
-        <Form submit={creating ? '创建管理员' : '保存账号'} onSubmit={async ({ email, password }) => {
+        <h2>{creating ? t("账号信息") : t("更新账号")}</h2>
+        <Form submit={creating ? t('创建零一账号') : t('保存账号')} onSubmit={async ({ email, password, role }) => {
           setNotice('');
-          const data = { email: email.trim(), ...(password ? { password } : {}) };
+          const data = { email: email.trim(), ...(password ? { password } : {}), ...(role ? { role } : {}) };
           const result = await readDeskJson(endpoint, {
             method: creating ? 'POST' : 'PATCH',
             headers: { 'content-type': 'application/json' },
@@ -404,19 +396,27 @@ function AdministratorDetail({ id, isOwner, onCreated }) {
           if (creating) onCreated(staffPrefix + result.doc.id);
           else {
             setAccount(result.doc);
-            setNotice('管理员账号已更新。');
+            setNotice('运营账号已更新。');
           }
         }}>
-          <Field label="邮箱" name="email" type="email" autoComplete="off" required defaultValue={account?.email} />
-          <Field label={creating ? '密码' : '新密码（可选）'} name="password" type="password" autoComplete="new-password" required={creating} key={account?.updatedAt} />
+          <Field label={t("邮箱")} name="email" type="email" autoComplete="off" required defaultValue={account?.email} />
+          {creating && <label className="community-field">
+            <span id="cu-staff-role-label">{t("运营身份")}</span>
+            <select name="role" aria-labelledby="cu-staff-role-label" defaultValue="operator">
+              <option value="operator">{t(playerIdentityLabels.pioneer)}</option>
+              <option value="owner">{t(playerIdentityLabels.head)}</option>
+            </select>
+          </label>}
+          <Field label={creating ? t("密码") : t("新密码（可选）")} name="password" type="password" autoComplete="new-password" required={creating} key={account?.updatedAt} />
         </Form>
-        {notice && <p role="status">{notice}</p>}
+        {notice && <p role="status">{t(notice)}</p>}
       </section>}
     </>
   );
 }
 
 export default function CommunityUsers({ isOwner }) {
+  const { t } = useDeskLanguage();
   const [selected, setSelected] = useState(undefined);
   const [filters, setFilters] = useState({ q: '', status: 'all', role: 'all', page: 1 });
   const returnFocus = useRef('');
@@ -447,19 +447,19 @@ export default function CommunityUsers({ isOwner }) {
   }
   return (
     <main className="community-page op-shell cu-shell">
-      <DeskTitle title="玩家管理">
+      <DeskTitle title={t("玩家管理")}>
         {selected ? (
-          <Action href={directoryPath} onClick={back}>返回玩家管理</Action>
+          <DeskBack href={directoryPath} onClick={back} />
         ) : isOwner && selected === '' ? (
           <Action href={listPath(staffPrefix + 'new')} onClick={(e) => {
             if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             e.preventDefault();
             open(staffPrefix + 'new');
-          }}>新增管理员</Action>
+          }}>{t('新增零一账号')}</Action>
         ) : null}
       </DeskTitle>
       {selected === undefined ? (
-        <p role="status">正在读取…</p>
+        <p role="status">{t("正在读取…")}</p>
       ) : selected?.startsWith(staffPrefix) ? (
         <AdministratorDetail key={selected} id={selected.slice(staffPrefix.length)} isOwner={isOwner}
           onCreated={(key) => {

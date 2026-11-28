@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 from urllib.parse import parse_qs, urlsplit
 from urllib.request import Request, urlopen
 
@@ -16,7 +17,7 @@ from urllib.request import Request, urlopen
 CHINA_TIME = timezone(timedelta(hours=8))
 META = 'http://100.100.100.200/latest'
 PUBLIC_PAGES = {
-    'players', 'plaza', 'time-machine', 'leadership', 'mentors', 'pioneers',
+    'players', 'plaza', 'earth', 'time-machine', 'leadership', 'mentors', 'pioneers',
     'research', 'strategy', 'cooperation', 'join',
 }
 LOG_PAGE = re.compile(r'^([^ ]+) [^\[]*\[([^\]]+)\] "GET ([^ ]+) HTTP/[0-9.]+" 200 ')
@@ -141,8 +142,11 @@ def read_or_none(action):
 
 
 now = datetime.now(CHINA_TIME)
-print(json.dumps({
-    'host': read_or_none(lambda: metric_samples(now)),
-    'origin': read_or_none(lambda: request_json('http://127.0.0.1:8089/api/v1/endpoints/statuses')),
-    'traffic': read_or_none(lambda: traffic_counts(now)),
-}, separators=(',', ':')))
+mode = sys.argv[1] if len(sys.argv) > 1 else 'all'
+snapshot = {}
+if mode != 'traffic':
+    snapshot['host'] = read_or_none(lambda: metric_samples(now))
+    snapshot['origin'] = read_or_none(lambda: request_json('http://127.0.0.1:8089/api/v1/endpoints/statuses'))
+if mode != 'monitor':
+    snapshot['traffic'] = read_or_none(lambda: traffic_counts(now))
+print(json.dumps(snapshot, separators=(',', ':')))

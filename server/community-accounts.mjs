@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto';
 import { fail, positiveInteger, text } from './community-input.mjs';
 import { AVATAR_DATA_LIMIT, AVATAR_EDGE } from '../src/community/account/profile.js';
+import { projectReactionsByUser, projectsByOwner, rowsById } from './community-indexes.mjs';
+import { pageBounds } from './community-registrations.mjs';
+import { isPublished } from './event-state.mjs';
 
 function isAvatarJpeg(bytes) {
   if (bytes.length < 8 || bytes.readUInt16BE(0) !== 0xffd8 ||
@@ -23,6 +26,7 @@ export function updateAccountProfile(user, body) {
     ...user,
     name: text(body.name, '昵称', 40),
     university: text(body.university ?? '', '大学', 100, false),
+    publicContact: text(body.publicContact ?? user.publicContact ?? '', '联系方式', 200, false),
   };
   if (body.avatar === '') {
     delete profile.avatar;
@@ -89,14 +93,50 @@ function listAccounts(db, search) {
 }
 
 function accountDetail(db, user, registrations) {
+  const reactions = projectReactionsByUser(db.reactions).get(user.id);
   return {
     ...accountRow(user, sessionCounts(db)),
     university: user.university || '',
     accountRevision: user.accountRevision ?? 0,
-    projectCount: db.projects.filter(project => project.ownerId === user.id).length,
+    projectCount: projectsByOwner(db.projects).get(user.id)?.length ?? 0,
     registrationCount: registrations.countForUser(user.id),
+    savedCount: reactions?.save.size ?? 0,
+    likedCount: reactions?.like.size ?? 0,
     accountHistory: (user.accountHistory || []).slice(0, 30).map(({ kind, at, actorId }) => ({ kind, at, actorId })),
   };
+}
+
+function accountActivity(db, user, registrations, search) {
+  const kind = search.get('kind') || 'registrations';
+  if (!['registrations', 'projects', 'saved', 'liked'].includes(kind)) fail(400, '记录类型无效。');
+  const requested = { page: positiveInteger(search, 'page', 1), pageSize: 12 };
+  const events = rowsById(db.events);
+  if (kind === 'registrations') {
+    const result = registrations.pageForUser(user.id, requested);
+    return { ...result, items: result.items.map(row => {
+      const event = events.get(row.eventId);
+      return {
+        id: row.id, eventId: row.eventId, title: event?.name ?? '', status: row.status || 'approved',
+        date: row.createdAt, public: Boolean(event && isPublished(event)),
+      };
+    }) };
+  }
+
+  const own = kind === 'projects';
+  const reactions = own ? null : projectReactionsByUser(db.reactions).get(user.id);
+  const matches = own ? projectsByOwner(db.projects).get(user.id) || []
+    : Array.from(reactions?.[kind === 'saved' ? 'save' : 'like'] ?? []).reverse();
+  const result = pageBounds(matches.length, requested);
+  const offset = (result.page - 1) * result.pageSize;
+  const projects = rowsById(db.projects);
+  return { ...result, items: matches.slice(offset, offset + result.pageSize).map(item => {
+    const project = own ? item : projects.get(item);
+    return {
+      id: project?.id ?? item, title: project?.name ?? '', status: project?.status ?? '',
+      eventName: events.get(project?.eventId)?.name ?? '', summary: project?.summary ?? '',
+      date: own ? project.createdAt : null, public: project?.status === 'approved',
+    };
+  }) };
 }
 
 export function revokeAccountSessions(db, id) {
@@ -127,13 +167,14 @@ function manageAccount(db, user, kind, actorId) {
 export function handleStaffAccounts({ db, registrations, staff, get, id, action, body, search, persist, send }) {
   if (staff.role !== 'operator' && staff.role !== 'owner') fail(403, '请使用运营后台账号查看官网用户。');
   if (get && !id && !action) { send(listAccounts(db, search)); return true; }
-  if (!id || (get ? Boolean(action) : !['disable', 'restore', 'revoke-sessions'].includes(action))) {
+  if (!id || (get ? Boolean(action && action !== 'activity') : !['disable', 'restore', 'revoke-sessions'].includes(action))) {
     fail(404, '账号管理接口不存在。');
   }
-  if (!get && staff.role !== 'owner') fail(403, '仅运营负责人可以管理用户状态与会话。');
+  if (!get && staff.role !== 'owner') fail(403, '仅头号玩家可以管理用户状态与会话。');
   const index = db.users.findIndex(item => item.id === id);
   let user = db.users[index];
   if (!user) fail(404, '用户不存在。');
+  if (get && action === 'activity') { send(accountActivity(db, user, registrations, search)); return true; }
   if (!get) {
     const expected = body.expectedRevision;
     if (expected !== undefined) {

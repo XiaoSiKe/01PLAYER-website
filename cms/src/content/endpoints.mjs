@@ -1,17 +1,33 @@
-import { business, allowedRoute, ownerAction } from '../bridge.mjs';
+import { guideEndpoints, researchEndpoints } from './section-editor.mjs';
+import { business, allowedRoute, isUserActivityRoute, ownerAction } from '../bridge.mjs';
 import { manifest, mergeSection } from './model.mjs';
 import { readPlayerDirectory } from './player-directory.mjs';
-import { getSourceSnapshot } from '../ops/source-link.mjs';
+import { readSiteTraffic } from '../ops/site-traffic.mjs';
 const json = (v, status = 200) =>
   Response.json(v, { status, headers: { 'Cache-Control': 'private, no-store' } });
 const staff = (req) =>
   req.user?.collection === 'staff' && ['owner', 'operator'].includes(req.user.role);
 const queryKeys = new Map([
   ['staff/users', ['q', 'status', 'page', 'pageSize']],
-  ['staff/registrations', ['event', 'status', 'page', 'pageSize']],
+  ['staff/registrations', ['event', 'status', 'page', 'pageSize', 'summary']],
   ['staff/events', ['view']],
 ]);
 export const endpoints = [
+  ...guideEndpoints,
+  ...researchEndpoints,
+  {
+    path: '/project-media/:filename', method: 'get',
+    handler: async req => {
+      if (!staff(req)) return json({error:'请登录运营后台'},403);
+      const filename = req.routeParams?.filename;
+      if (typeof filename !== 'string' || !/^[a-f0-9]{64}\.jpg$/.test(filename)) return json({error:'图片不存在'},404);
+      try {
+        const response = await business('project-media/'+filename,{signal:req.signal});
+        if (!response.ok) return json({error:'图片不存在'},response.status);
+        return new Response(await response.arrayBuffer(),{headers:{'Content-Type':'image/jpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
+      } catch {return json({error:'暂时无法读取图片'},503);}
+    },
+  },
   {
     path: '/player-directory',
     method: 'get',
@@ -23,7 +39,7 @@ export const endpoints = [
       const role = params.get('role') || 'all';
       const page = Number(params.get('page') || 1);
       if (q.length > 160 || !['all', 'active', 'disabled'].includes(status) ||
-          !['all', 'admin', 'player'].includes(role) || !Number.isSafeInteger(page) ||
+          !['all', 'admin', 'head', 'pioneer', 'player'].includes(role) || !Number.isSafeInteger(page) ||
           page < 1 || page > Math.floor(Number.MAX_SAFE_INTEGER / 20)) {
         return json({ error: '账号筛选参数无效' }, 400);
       }
@@ -59,14 +75,8 @@ export const endpoints = [
     handler: async (req) => {
       if (!staff(req)) return json({ error: '请登录运营后台' }, 403);
       try {
-        if (process.env.OPS_SOURCE_HOST) {
-          const traffic = (await getSourceSnapshot())?.traffic;
-          if (!traffic) throw Error('源站流量统计不可用。');
-          return json(traffic);
-        }
-        const response = await business('staff/traffic', { signal: req.signal });
-        if (!response.ok) throw Error('社区服务暂时不可用');
-        return json(await response.json());
+        const { traffic } = await readSiteTraffic({ waitForRefresh: true });
+        return json(traffic);
       } catch {
         return json({ error: '暂时无法读取访问统计' }, 503);
       }
@@ -96,9 +106,9 @@ export const endpoints = [
       if (!input || !['GET', 'POST'].includes(input.method) || !allowedRoute(input.path, input.method))
         return json({ error: '未知运营操作' }, 400);
       if (ownerAction(input.path) && req.user.role !== 'owner')
-        return json({ error: '仅站点负责人可以管理官网账号状态和登录会话。' }, 403);
+        return json({ error: '仅头号玩家可以管理官网账号状态和登录会话。' }, 403);
       const qs = new URLSearchParams();
-      for (const key of queryKeys.get(input.path) ?? ['event', 'status'])
+      for (const key of isUserActivityRoute(input.path) ? ['kind', 'page'] : queryKeys.get(input.path) ?? ['event', 'status'])
         if (typeof input.query?.[key] === 'string') qs.set(key, input.query[key]);
       try {
         const r = await business(input.path, {

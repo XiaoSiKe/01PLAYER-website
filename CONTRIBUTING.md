@@ -4,6 +4,8 @@
 
 ## 开始之前
 
+查找前台、社区服务、运营后台和素材时，先看[仓库目录](docs/LOCAL-DEVELOPMENT.md#仓库目录)。
+
 1. 阅读 [PRODUCT.md](./PRODUCT.md)，确认内容符合社区定位和事实边界。
 2. 阅读 [DESIGN.md](./DESIGN.md)，确认视觉和交互不偏离现有黑白科技风格。
 3. 使用 [`.nvmrc`](./.nvmrc) 指定的 Node.js 版本，安装依赖并启动本地开发服务器。

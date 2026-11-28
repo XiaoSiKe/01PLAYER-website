@@ -11,7 +11,7 @@ const empty = representation(Buffer.from('{}'));
 const versionOf = info => [info.dev, info.ino, info.size, info.mtimeNs, info.ctimeNs].join('/');
 let cached;
 
-async function readSnapshot(file) {
+export async function readSnapshot(file) {
   try {
     const version = versionOf(await stat(file, { bigint: true }));
     if (cached?.file === file && cached.version === version) return await cached.loading;

@@ -1,10 +1,12 @@
 'use client';
+import { useDeskLanguage } from './DeskLanguage';
 import { Action } from './OfficialUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useField, useFormFields } from '@payloadcms/ui';
 import { isFixedSection, labels, listTemplates, mediaFields, options, templateFor } from '../content/rules.mjs';
 
 export function MediaPicker({ onChoose, onClose }) {
+  const { t } = useDeskLanguage();
   const [items,setItems] = useState([]), [query,setQuery] = useState(''), [page,setPage] = useState(1);
   const [more,setMore] = useState(false), [error,setError] = useState(''), [loading,setLoading] = useState(true);
   useEffect(() => {
@@ -19,16 +21,16 @@ export function MediaPicker({ onChoose, onClose }) {
       .finally(()=>{ if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [query,page]);
-  return <div className="asset-picker" role="region" aria-label="选择素材">
-    <div className="op-line"><input aria-label="搜索素材说明" placeholder="搜索素材说明" value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}} />
-      <Action type="button" onClick={onClose}>关闭</Action></div>
-    {error ? <p role="alert">{error}</p> : loading ? <p role="status">正在加载素材…</p>
+  return <div className="asset-picker" role="region" aria-label={t("选择素材")}>
+    <div className="op-line"><input aria-label={t("搜索素材说明")} placeholder={t("搜索素材说明")} value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}} />
+      <Action type="button" onClick={onClose}>{t("关闭")}</Action></div>
+    {error ? <p role="alert">{t(error)}</p> : loading ? <p role="status">{t("正在加载素材…")}</p>
       : <div className="asset-grid">{items.map(item=><Action type="button" key={item.id} onClick={()=>onChoose(item)}>
         <img src={item.sizes?.thumb?.url || item.url} alt="" /><span>{item.alt || item.filename}</span></Action>)}</div>}
-    {!loading && !error && !items.length && <p>没有匹配素材，可以先上传图片。</p>}
-    <div className="op-line"><Action type="button" disabled={page===1 || loading} onClick={()=>setPage(page-1)}>上一页</Action>
-      <Action type="button" disabled={!more || loading} onClick={()=>setPage(page+1)}>下一页</Action>
-      <a href="/admin/collections/media/create" target="_blank" rel="noreferrer">上传素材 ↗</a></div>
+    {!loading && !error && !items.length && <p>{t("没有匹配素材，可以先上传图片。")}</p>}
+    <div className="op-line"><Action type="button" disabled={page===1 || loading} onClick={()=>setPage(page-1)}>{t("上一页")}</Action>
+      <Action type="button" disabled={!more || loading} onClick={()=>setPage(page+1)}>{t("下一页")}</Action>
+      <a href="/admin/collections/media/create" target="_blank" rel="noreferrer">{t("上传素材 ↗")}</a></div>
   </div>;
 }
 
@@ -144,6 +146,7 @@ export default function RowsField({ path }) {
   const query=search.trim().toLowerCase();
   const matches=useMemo(() => rows.map((row,index)=>({row,index}))
     .filter(({row})=>!query || JSON.stringify(row).toLowerCase().includes(query)), [rows, query]);
+  if(section === 'earthGuide') return <p>攻略内容在专用编辑器内管理。<Action href="/admin/guide">编辑地球生存攻略</Action></p>;
   if(!shape) return <p>正在读取栏目…</p>;
   const fixed=isFixedSection(section);
   const pageSize=25;

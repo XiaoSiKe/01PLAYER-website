@@ -43,6 +43,9 @@ trap 'exit 130' INT
 for directory in "$ROOT" "$ROOT/releases" "$ROOT/shared" "$ROOT/shared/successful" "$ROOT/shared/archives"; do
   [[ -d "$directory" && "$(readlink -f "$directory")" == "$directory" ]] || die '零一玩家官网目录异常。'
 done
+# Privilege switches can leave the deploy user in an unreadable caller directory.
+if [[ $# == 1 && "$1" != --rollback && "$1" != /* ]]; then set -- "$PWD/$1"; fi
+cd -- "$ROOT"
 exec 9>"$ROOT/shared/deploy.lock"
 flock -w 120 9 || die '等待上一发布释放锁超时。'
 

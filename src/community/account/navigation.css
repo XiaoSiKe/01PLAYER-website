@@ -45,3 +45,8 @@
   .sm-header-actions .site-account-link { width: 44px; padding-inline: 0; }
   .site-account-label { display: none; }
 }
+
+@media (max-width: 350px) {
+  .sm-header-actions .site-account-link[data-authenticated] { width: auto; padding-inline: 8px; }
+  .site-account-link[data-authenticated] .site-account-label { display: inline; font-size: 12px; }
+}

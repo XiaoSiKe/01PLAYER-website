@@ -2,15 +2,13 @@ import { useMemo } from 'react';
 import { FiLink } from 'react-icons/fi';
 import Markdown from 'react-markdown';
 import rehypeSlug from 'rehype-slug';
-import { parseGuideArticle } from '../../server/earth-guide-document.mjs';
 
-const articles = import.meta.glob('./articles/*.md', { eager: true, query: '?raw', import: 'default' });
+
 const headingPrefix = 'guide-heading-';
 const headingPlugins = [[rehypeSlug, { prefix: headingPrefix }]];
 
-export function readArticle(id, remoteSource) {
-  const source = remoteSource ?? articles[`./articles/${id}.md`] ?? '';
-  return parseGuideArticle(source);
+export function readArticle(id, source) {
+  return source ?? {};
 }
 
 export function findArticleHeading(fragment) {

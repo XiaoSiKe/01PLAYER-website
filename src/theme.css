@@ -132,13 +132,7 @@ html[data-theme='light'] .community-eyebrow,
 html[data-theme='light'] .community-section-intro,
 html[data-theme='light'] .community-gallery-note,
 html[data-theme='light'] .community-small-label { color: var(--site-muted); }
-html[data-theme='light'] .community-wechat,
 html[data-theme='light'] .community-publications { background: var(--site-surface); border-color: var(--site-border); }
-html[data-theme='light'] .community-wechat-icon { color: #45454f; background: #20202404; border-color: #20202416; }
-html[data-theme='light'] .community-wechat h3,
-html[data-theme='light'] .community-wechat-copy,
-html[data-theme='light'] .community-wechat-pending,
-html[data-theme='light'] .community-wechat-qr span,
 html[data-theme='light'] .community-account-copy,
 html[data-theme='light'] .community-copy-status,
 html[data-theme='light'] .community-publications-heading > span,
@@ -226,7 +220,6 @@ html[data-theme='light'] .project-page :is(a,button,input,select,textarea):focus
   :root { --site-surface: #0a0a0c; }
   html[data-theme='light'] { --site-surface: #f7f7f5; }
   html[data-theme='light'] .staggered-menu-panel,
-  html[data-theme='light'] .community-wechat,
   html[data-theme='light'] .community-publications { background: #f7f7f5; }
 }
 @media (prefers-contrast: more) {

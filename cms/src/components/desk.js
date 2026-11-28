@@ -32,13 +32,30 @@ export function desk(path, data, query, signal) {
     body: JSON.stringify({ path, method: data === undefined ? 'GET' : 'POST', data, query }),
   }, signal);
 }
+export async function uploadDeskImage(file, alt) {
+  const body = new FormData();
+  body.set('file', file);
+  body.set('_payload', JSON.stringify({ alt }));
+  const { doc } = await readDeskJson('/cms-api/media', { method: 'POST', body });
+  if (!doc?.url) throw Error('上传后未取得图片地址。');
+  return doc;
+}
 export const deskTabs = {
-  events: '活动管理',
+  events: '活动列表',
   registrations: '报名审核',
   projects: '作品审核',
-  photos: '活动相册',
+  photos: '零一时光机',
   status: '零一运维',
 };
+export const deskSections = {
+  events: { label: '玩家计划', tabs: ['events', 'registrations'] },
+  projects: { label: '共创广场', tabs: ['projects'] },
+  photos: { label: deskTabs.photos, tabs: ['photos'] },
+  status: { label: deskTabs.status, tabs: ['status'] },
+};
+export const sectionForTab = tab => tab === 'registrations' ? 'events' : tab;
+export const deskHref = (tab, query = '') => '/admin/operations?tab=' + tab + query;
+export const deskCreateLabels = { events: '新建玩家计划', projects: '新建共创广场' };
 export const statuses = {
   draft: '草稿',
   published: '已发布',

@@ -1,6 +1,7 @@
 """Exercise the shipping vhosts with a disposable Nginx and three loopback upstreams."""
 import http.client
 import json
+import gzip
 import re
 import shutil
 import socket
@@ -45,6 +46,10 @@ class BusinessRouting(unittest.TestCase):
             public = root / "public"
             public.mkdir()
             (public / "index.html").write_text("website")
+            (public / "assets").mkdir()
+            atlas = b"lossless atlas fixture " * 200
+            (public / "assets/map.bin").write_bytes(atlas)
+            (public / "assets/map.bin.gz").write_bytes(gzip.compress(atlas))
             shutil.copy(OPS / "common-proxy.inc", runtime)
             ports = {}
             for label, original in [("standalone", 4173), ("player", 4186), ("cms", 4317)]:
@@ -91,14 +96,15 @@ class BusinessRouting(unittest.TestCase):
                 args = ["nginx", "-p", str(root), "-e", str(root / "error.log"), "-c", str(config)]
                 subprocess.run([*args, "-t"], check=True, capture_output=True)
                 nginx = subprocess.Popen([*args, "-g", "daemon off;"], stderr=subprocess.PIPE)
-                def request(path, method="GET"):
+                def request(path, method="GET", encoding=None):
                     client = (http.client.HTTPSConnection("127.0.0.1", port, timeout=3,
                               context=tls_context) if tls else
                               http.client.HTTPConnection("127.0.0.1", port, timeout=3))
                     try:
-                        client.request(method, path)
+                        client.request(method, path, headers={"Accept-Encoding": encoding} if encoding else {})
                         result = client.getresponse()
-                        return result.status, result.headers, result.read().decode()
+                        data = result.read()
+                        return result.status, result.headers, data if result.headers.get("Content-Encoding") == "gzip" else data.decode()
                     finally:
                         client.close()
                 try:
@@ -118,6 +124,13 @@ class BusinessRouting(unittest.TestCase):
             for template in ("nginx-http.conf", "nginx.conf"):
                 with self.subTest(template=template), serve(template) as request:
                     self.assertEqual(request("/events")[2], "website")
+                    if template == "nginx.conf":
+                        status, headers, body = request("/assets/map.bin", encoding="gzip")
+                        self.assertEqual(status, 200)
+                        self.assertEqual(headers.get("Content-Encoding"), "gzip")
+                        self.assertIn("Accept-Encoding", headers.get("Vary"))
+                        self.assertEqual(gzip.decompress(body), atlas)
+                    self.assertEqual(request("/assets/map.bin", encoding="gzip;q=0")[2], atlas.decode())
                     for path in ("/admin/login", "/api/community/health", "/cms-api/health-board",
                                  "/_next/static/a.js", "/site-content/manifest.json"):
                         status, headers, body = request(path)

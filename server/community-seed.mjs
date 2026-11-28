@@ -1,6 +1,6 @@
 // Explicitly fictional examples for acceptance testing, never claimed as club history.
 export const events = [
-  { id: 'weekend-lab', name: '零一周末造物局', subtitle: '让第一个想法，成为第一个作品。', description: '从身边的小问题出发，用一个周末做出能被真实使用的 AI 小工具。面向所有好奇的玩家，不限专业，不要求已有作品。', date: '2026.12.05 — 12.06', status: 'open', type: '共创活动', location: '线上参与', rules: ['个人或 2–4 人组队参加。', '报名后保留报名编号，活动开始前通过所填联系方式通知。', '提交原创作品，说明使用的 AI 工具与开源资源。'], submissionsOpen: false, example: true },
+  { id: 'weekend-lab', name: '零一周末造物局', subtitle: '让第一个想法，成为第一个作品。', description: '从身边的小问题出发，用一个周末做出能被真实使用的 AI 小工具。面向所有好奇的玩家，不限专业，不要求已有作品。', date: '2026.12.05 — 12.06', status: 'open', type: '合作', location: '线上参与', rules: ['个人或 2–4 人组队参加。', '报名后保留报名编号，活动开始前通过所填联系方式通知。', '提交原创作品，说明使用的 AI 工具与开源资源。'], submissionsOpen: false, example: true },
   { id: 'ai-build-sprint', name: '零一 AI 创造挑战赛', subtitle: '把「如果可以」写成「已经实现」。', description: '围绕学习、校园与日常生活，创造一个可运行的 AI 项目。这里可以找到队友、发起招募，也可以提交你的阶段作品。', date: '2026.11.09 — 11.29', status: 'active', type: '创作比赛', location: '线上 · 不限城市', rules: ['每队 1–5 人，可在本场组队招募中寻找伙伴。', '作品需有可访问的演示链接或介绍图片。', '提交后经管理员审核公开；可在截止前修改并重新提交。'], submissionsOpen: true, example: true },
   { id: 'autumn-hack', name: '零一秋日黑客松', subtitle: '比赛落幕，创作继续。', description: '48 小时，从一个想法到一次真实的展示。这里留下本场公开的作品，欢迎继续体验、交流和加入后续共创。', date: '2026.10.24 — 10.25', status: 'ended', type: '黑客松', location: '线上共创', rules: ['本场活动已结束，停止报名与新作品提交。', '以下作品均为审核后公开的活动作品。', '联系作者前，请先阅读项目介绍与招募要求。'], submissionsOpen: false, example: true },
 ];

@@ -22,10 +22,11 @@ function PosterGraphic({ art }) {
 }
 
 export default function ProjectArtwork({ project, large = false, fit = 'cover' }) {
+  const imageUrl = large ? project.bannerUrl || project.imageUrl : project.imageUrl;
   const [failed, setFailed] = useState('');
   const art = ['map','echo','orbit','lens','garden'].includes(project.art) ? project.art : 'grid';
   return <div className={`community-art community-art--${art}${large ? ' community-art--large' : ''}`}>
     <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><PosterGraphic art={art} /></svg>
-    {project.imageUrl && failed !== project.imageUrl && <ResponsiveImage key={project.imageUrl} src={project.imageUrl} alt={`${project.name}项目封面`} fit={fit} eager={large} referrerPolicy="no-referrer" onError={() => setFailed(project.imageUrl)} />}
+    {imageUrl && failed !== imageUrl && <ResponsiveImage key={imageUrl} src={imageUrl} alt={`${project.name}项目封面`} fit={fit} eager={large} referrerPolicy="no-referrer" onError={() => setFailed(imageUrl)} />}
   </div>;
 }

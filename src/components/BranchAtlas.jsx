@@ -1,3 +1,4 @@
+import FilterSearch from '../community/FilterSearch';
 import { siteDestination } from '../data/destinations';
 import { memberPageLink } from '../data/people-navigation';
 import { useLanguage } from '../Language';
@@ -17,6 +18,22 @@ import useViewportReady from './useViewportReady';
 import { useTheme } from '../Theme';
 import { atlasPalettes, atlasStyles } from './atlasPalette';
 import './BranchAtlas.css';
+import atlasUrl from 'virtual:branch-atlas';
+import { decodeAtlas } from './atlasCodec';
+
+let atlasRequest;
+function loadAtlas() {
+  if (!atlasRequest) {
+    atlasRequest = fetch(atlasUrl)
+      .then(response => {
+        if (!response.ok) throw Error('Atlas unavailable');
+        return response.arrayBuffer();
+      })
+      .then(decodeAtlas)
+      .catch(error => { atlasRequest = undefined; throw error; });
+  }
+  return atlasRequest;
+}
 
 const Arrow = ({ back = false }) => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={back ? 'M19 12H5m6-6-6 6 6 6' : 'M5 12h14m-6-6 6 6-6 6'} /></svg>;
 const Chevron = () => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 4 4 4-4 4" /></svg>;
@@ -75,8 +92,8 @@ export default function BranchAtlas({ borderGlowProps }) {
     if (!dataReady) return undefined;
     let cancelled = false;
     setError(false);
-    import('../data/maps/branch-atlas.json').then(module => {
-      if (!cancelled) setAtlas(module.default);
+    loadAtlas().then(data => {
+      if (!cancelled) setAtlas(data);
     }).catch(() => { if (!cancelled) setError(true); });
     return () => { cancelled = true; };
   }, [dataReady, attempt]);
@@ -149,18 +166,14 @@ export default function BranchAtlas({ borderGlowProps }) {
           <div className="branch-atlas__map-top"><span>{t(local ? cityById[currentCity].name : view === 'fujian' ? '福建' : '中国')}</span><span className="branch-atlas__north" aria-label={t("北方")}>N <svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 0 12 16 6 12 0 16Z" /></svg></span></div>
           <div className="branch-atlas__map-bottom">
             <span id={`${id}-map-help`}>{t(local ? '点击校名，探索分社' : '点击地点，逐级探索')}</span>
-            <button type="button" className="branch-atlas__map-back" aria-label={t("地图内返回上一级")} disabled={!atlas || view === 'china'} onClick={follow(parentAtlasView(view))}><Arrow back />{t("返回上一级")}</button>
+            <button type="button" className="branch-atlas__map-back" aria-label={t("地图内返回上一级")} disabled={!atlas || view === 'china'} onClick={follow(parentAtlasView(view))}><Arrow back />{t("返回")}</button>
           </div>
+          <div className="branch-atlas__credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a><span> · </span><a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a></div>
           {!atlas && <div className="branch-atlas__loading" aria-busy={!error}>{error ? <><span>{t("地图暂时无法载入")}</span><SpecularButton {...controlProps} onClick={() => setAttempt(value => value + 1)}>{t("重新加载")}</SpecularButton></> : <UniqueLoading text={t("加载中")} />}</div>}
         </div>
 
         <aside className="branch-atlas__panel" aria-label={t("分社信息")}>
-          <form className="branch-atlas__search" role="search" onSubmit={event => { event.preventDefault(); if (searching && matches[0]) go(`school:${matches[0].id}`, true); }}>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
-            <label className="branch-atlas__sr-only" htmlFor={`${id}-search`}>{t("搜索分社或高校")}</label>
-            <input id={`${id}-search`} type="search" placeholder={t("搜索分社或高校")} autoComplete="off" value={query} onChange={event => setQuery(event.target.value)} aria-controls={`${id}-results`} onKeyDown={event => { if (event.key === 'ArrowDown' && searching) { event.preventDefault(); panelRef.current?.querySelector('.branch-atlas__school-row')?.focus(); } }} />
-            {query && <button type="button" aria-label={t("清空搜索")} className="branch-atlas__search-clear" onClick={() => setQuery('')}>×</button>}
-          </form>
+
           <div ref={panelRef} className="branch-atlas__panel-content" id={`${id}-results`}>
             {!searching && !selected && <div className="branch-atlas__intro">
               <h3 ref={titleRef} tabIndex={-1}>{t(title)}</h3>
@@ -179,6 +192,9 @@ export default function BranchAtlas({ borderGlowProps }) {
             <div className="branch-atlas__toolbar">
               <button type="button" className="branch-atlas__back" aria-label={t("返回上一级地图")} disabled={view === 'china'} onClick={follow(parentAtlasView(view))}><Arrow back /></button>
               <nav aria-label={t("分社地图层级")}><ol>{crumbs.map((crumb, i) => <li key={crumb.view}>{i > 0 && <Chevron />}<button type="button" onClick={follow(crumb.view)} aria-current={view === crumb.view ? 'location' : undefined}>{t(crumb.label)}</button></li>)}</ol></nav>
+              <FilterSearch iconOnly label={t('搜索分社或高校')} value={query} onChange={setQuery} resultsId={`${id}-results`}
+                onSearch={() => {if(searching&&matches[0])go(`school:${matches[0].id}`,true);}}
+                onResultFocus={searching&&matches.length ? () => panelRef.current?.querySelector('.branch-atlas__school-row')?.focus() : undefined} />
             </div>
             {searching ? <div className="branch-atlas__search-results">
               <div className="branch-atlas__list-label" role="status">{t('找到 {0} 所高校', [matches.length])}</div>
@@ -194,7 +210,7 @@ export default function BranchAtlas({ borderGlowProps }) {
               </LeaderProfile>}
               <BranchFlag branch={selected} />
             </div> : <>
-              <div className="branch-atlas__school-list"><div className="branch-atlas__list-label">{view === 'china' ? t('全国高校') : view === 'fujian' ? t('福建高校') : t("{0}高校", [cityById[view]?.name])}<span>{visibleBranches.length}</span></div>{visibleBranches.map(schoolButton)}</div>
+              <div className="branch-atlas__list-label">{view === 'china' ? t('全国高校') : view === 'fujian' ? t('福建高校') : t("{0}高校", [cityById[view]?.name])}<span>{visibleBranches.length}</span></div><div className="branch-atlas__school-list">{visibleBranches.map(schoolButton)}</div>
             </>}
           </div>
           <footer className="branch-atlas__panel-actions">

@@ -1,31 +1,38 @@
+import useMediaQuery from '../../components/useMediaQuery';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
 
-const lines = [
-  ['微信小程序', '01PLAYER'],
+const desktopLines = [
+  ['欢迎大家', '01PLAYER'],
   ['报名活动', '零一玩家'],
 ];
 
+const mobileLines = [['零一玩家','01PLAYER']];
+
 export default function SignupGuide() {
+  const mobile = useMediaQuery('(max-width: 760px)');
+  const lines = mobile ? mobileLines : desktopLines;
   const title = useRef(null);
-  const caption = useRef(null);
   const visible = useInView(title);
   const reduceMotion = useReducedMotion();
   const [phrase, setPhrase] = useState(0);
   const [fontSizes, setFontSizes] = useState({});
 
   useLayoutEffect(() => {
-    const captionElement = caption.current;
+    const container = title.current.closest('.calendar-signup');
+    const featured = container.closest('.calendar-highlights').querySelector('.calendar-featured');
     const samples = [...title.current.querySelectorAll('[data-signup-sample]')];
     let frame = 0;
     const fit = () => {
       frame = 0;
-      const width = captionElement.getBoundingClientRect().width;
+      const width = container.getBoundingClientRect().width;
+      const height = featured?.getBoundingClientRect().height || 192;
+      const maximum = Math.min(96, (height - 4) / (mobile ? 1.05 : 2.1));
       if (!width) return;
       const sizes = Object.fromEntries(samples.map(sample => {
         const size = Number.parseFloat(getComputedStyle(sample).fontSize);
         const measured = sample.getBoundingClientRect().width;
-        return [sample.dataset.signupSample, Math.abs(width - measured) < 0.15 ? size : width * size / measured];
+        return [sample.dataset.signupSample, Math.min(maximum, width * size / measured)];
       }));
       setFontSizes(current => samples.every(sample =>
         current[sample.dataset.signupSample] === sizes[sample.dataset.signupSample]) ? current : sizes);
@@ -34,13 +41,14 @@ export default function SignupGuide() {
     const observer = new ResizeObserver(() => {
       if (!frame) frame = requestAnimationFrame(fit);
     });
-    observer.observe(captionElement);
+    observer.observe(container);
+    if (featured) observer.observe(featured);
     samples.forEach(sample => observer.observe(sample));
     return () => {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [mobile]);
 
   useEffect(() => {
     if (!visible || reduceMotion) return;
@@ -49,7 +57,7 @@ export default function SignupGuide() {
   }, [visible, reduceMotion]);
 
   return <aside className="calendar-signup" aria-labelledby="calendar-signup-title">
-    <h2 ref={title} id="calendar-signup-title" aria-label="微信小程序报名">
+    <h2 ref={title} id="calendar-signup-title" aria-label={mobile ? '零一玩家 · 01PLAYER' : '欢迎大家报名活动'}>
       {lines.map(([first, next]) => {
         const word = phrase ? next : first;
         const lineSize = Math.max(fontSizes[first] ?? 0, fontSizes[next] ?? 0);
@@ -58,7 +66,7 @@ export default function SignupGuide() {
           <span className="calendar-signup-samples">
             {[first, next].map(sample => (
               <span key={sample} className="calendar-signup-sample" data-signup-sample={sample}
-                style={{ fontSize: fontSizes[sample] }}>
+                >
                 {Array.from(sample, (character, index) => <span key={index}>{character}</span>)}
               </span>
             ))}
@@ -68,9 +76,9 @@ export default function SignupGuide() {
               exit={{ opacity: 0 }}>
               {Array.from(word, (character, index) => (
                 <motion.span key={index}
-                  initial={{ opacity: 0, y: '.15em', filter: 'blur(3px)' }}
+                  initial={reduceMotion ? false : { opacity: 0, y: '.15em', filter: 'blur(3px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: .72, delay: index * .055, ease: [0.22, 1, 0.36, 1] }}>
+                  transition={{ duration: reduceMotion ? 0 : .72, delay: reduceMotion ? 0 : index * .055, ease: [0.22, 1, 0.36, 1] }}>
                   {character}
                 </motion.span>
               ))}
@@ -79,6 +87,6 @@ export default function SignupGuide() {
         </span>;
       })}
     </h2>
-    <p ref={caption}>微信小程序：零一玩家，<span>搜索报名活动</span></p>
+
   </aside>;
 }

@@ -58,6 +58,10 @@ export async function waitForProduction({ commit, fetchImpl = fetch, wait = paus
 }
 
 async function main() {
+  if (process.env.CLUB_AUTO_DEPLOY !== '1') {
+    console.log('自动发布已暂停；仅执行检查，不触发云效或更改线上版本。');
+    return;
+  }
   if (process.env.GITHUB_EVENT_NAME !== 'push') throw new Error('发布入口仅接受 push 事件。');
   const webhook = process.env.CLUB_FLOW_WEBHOOK_URL;
   if (!webhook) throw new Error('缺少 GitHub Secret：CLUB_FLOW_WEBHOOK_URL。');

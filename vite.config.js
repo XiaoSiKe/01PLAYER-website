@@ -4,6 +4,7 @@ import { createCommunityApi } from './server/community-api.mjs';
 import { serveEditorial } from './server/editorial-snapshot.mjs';
 import { serveEarthGuide } from './server/earth-guide.mjs';
 import { previewBridgeKey } from './server/local-bridge.mjs';
+import { atlasAsset } from './scripts/atlas-asset.mjs';
 const playerOrigin = process.env.PLAYER_ORIGIN;
 const adminTarget = process.env.CMS_INTERNAL_ORIGIN || 'http://127.0.0.1:4317';
 const proxy = {
@@ -37,6 +38,7 @@ export default defineConfig({
   preview: { proxy },
   plugins: [
     react(),
+    atlasAsset(),
     { name: 'lingyi-community-api', configureServer: attach, configurePreviewServer: attach },
   ],
 });

@@ -23,18 +23,29 @@ export async function verifyUserDirectory({ admin, site, owner, operator, email,
       page.on('pageerror', (e) => errors.push(e.message));
       await page.goto('/admin/community-users');
       await page.getByRole('heading', { name: '玩家管理' }).waitFor();
+      const identities = page.getByRole('combobox', { name: '身份', exact: true });
+      assert.deepEqual(await identities.locator('option').allTextContents(),
+        ['全部身份', '头号玩家', '先锋玩家', '零一玩家']);
+      await identities.selectOption('pioneer');
+      await page.getByText('共 1 个账号', { exact: true }).waitFor();
+      assert.ok((await page.locator('.cu-role').allTextContents()).every(identity => identity === '先锋玩家'));
+      await identities.selectOption('all');
       if (role === 'owner') {
         const administratorEmail = 'directory-' + crypto.randomUUID() + '@example.test';
         const initialPassword = crypto.randomUUID();
         const updatedPassword = crypto.randomUUID();
-        await page.getByRole('link', { name: '新增管理员' }).click();
+        await page.getByRole('link', { name: '新增零一账号' }).click();
         await page.getByLabel('邮箱').fill(administratorEmail);
         await page.getByLabel('密码', { exact: false }).fill(initialPassword);
-        await page.getByRole('button', { name: '创建管理员' }).click();
+        const staffIdentity = page.getByRole('combobox', { name: '运营身份' });
+        assert.equal(await staffIdentity.inputValue(), 'operator');
+        await staffIdentity.selectOption('owner');
+        await page.getByRole('button', { name: '创建零一账号' }).click();
         await page.getByRole('heading', { name: administratorEmail }).waitFor();
+        await page.getByText('头号玩家', { exact: true }).waitFor();
         await page.getByLabel('新密码（可选）').fill(updatedPassword);
         await page.getByRole('button', { name: '保存账号' }).click();
-        await page.getByText('管理员账号已更新。').waitFor();
+        await page.getByText('运营账号已更新。').waitFor();
         const login = await fetch(admin + '/cms-api/staff/login', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -42,15 +53,21 @@ export async function verifyUserDirectory({ admin, site, owner, operator, email,
         });
         assert.equal(login.status, 200);
         await login.body?.cancel();
-        await page.getByRole('link', { name: '返回玩家管理' }).click();
+        await page.locator('.op-head').first().getByRole('link', { name: '返回', exact: true }).click();
       } else {
-        assert.equal(await page.getByRole('link', { name: '新增管理员' }).count(), 0);
+        assert.equal(await page.getByRole('link', { name: '新增零一账号' }).count(), 0);
       }
       await page.getByLabel('搜索账号').fill(email);
       await page.getByRole('button', { name: '搜索', exact: true }).click();
       await page.getByText('共 1 个账号').waitFor();
       await page.getByRole('link', { name: new RegExp('官网联调玩家') }).click();
       await page.getByRole('heading', { name: '官网联调玩家' }).waitFor();
+      const activity = page.getByRole('group', { name: '玩家记录分类' });
+      await page.getByRole('region', { name: '报名记录' }).getByRole('link', { name: '账号联调活动' }).waitFor();
+      for (const label of ['发布项目', '收藏', '喜欢']) {
+        await activity.getByRole('button', { name: label + ' 1' }).click();
+        await page.getByRole('region', { name: label }).getByRole('link', { name: '账号关联作品' }).waitFor();
+      }
       await page.getByRole('heading', { name: '最近管理记录' }).waitFor();
       await page.getByText(/撤销了所有登录会话/).waitFor();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -64,6 +81,7 @@ export async function verifyUserDirectory({ admin, site, owner, operator, email,
         await player.locator('input[name="password"]').fill(password);
         await player.getByRole('button', { name: '欢迎加入地球Online：零一玩家' }).click();
         await player.getByRole('heading', { name: '玩家空间', exact: true }).waitFor();
+        await player.getByRole('complementary', { name: '玩家信息' }).getByText('零一玩家', { exact: true }).waitFor();
         const session = await player.request.get('/api/community/session');
         assert.equal((await session.json()).user.email, email);
         await disable.click();
@@ -105,7 +123,7 @@ export async function verifyUserDirectory({ admin, site, owner, operator, email,
         await page.getByRole('button', { name: '停用账号', exact: true }).waitFor();
         await player.close();
       }
-      await page.getByRole('link', { name: '返回玩家管理' }).click();
+      await page.locator('.op-head').first().getByRole('link', { name: '返回', exact: true }).click();
       await page.getByText('共 1 个账号').waitFor();
       assert.equal(await page.getByLabel('搜索账号').inputValue(), email);
       assert.deepEqual(errors, []);

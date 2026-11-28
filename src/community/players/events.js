@@ -1,4 +1,5 @@
 import { branches, cityById } from '../../data/branches.js';
+import { eventPhase } from '../../../server/event-state.mjs';
 
 export const eventStatuses = { open: '报名中', closed: '报名截止', active: '进行中', ended: '已结束' };
 
@@ -9,14 +10,25 @@ function registrationEnd(event) {
 }
 
 export function acceptsSignup(event, now = Date.now()) {
-  return event.status === 'open' && event.registrationOpen !== false && registrationEnd(event) > now;
+  return ['open', 'active'].includes(eventPhase(event, now)) && event.registrationOpen !== false && registrationEnd(event) > now;
 }
 
 export function nextRegistrationDeadline(events, now = Date.now()) {
   let nearest = Infinity;
   for (const event of events) {
     const time = registrationEnd(event);
-    if (event.status === 'open' && event.registrationOpen !== false && time > now && time < nearest) nearest = time;
+    if (['open', 'active'].includes(event.status) && event.registrationOpen !== false && time > now && time < nearest) nearest = time;
+  }
+  return nearest;
+}
+export function nextCalendarChange(events, now = Date.now()) {
+  let nearest = nextRegistrationDeadline(events, now);
+  for (const { status, schedule } of events) {
+    if (status === 'ended' || !schedule) continue;
+    for (const value of [status === 'open' && schedule.startsAt, schedule.endsAt]) {
+      const time = Date.parse(value);
+      if (time > now && time < nearest) nearest = time;
+    }
   }
   return nearest;
 }
@@ -52,7 +64,8 @@ export function eventLocationLabel(location) {
 }
 
 export function eventStatus(event, now = Date.now()) {
-  return event.status === 'open' && !acceptsSignup(event, now) ? 'closed' : event.status;
+  const phase = eventPhase(event, now);
+  return phase === 'open' && !acceptsSignup(event, now) ? 'closed' : phase;
 }
 
 export function sortCalendarEvents(events, now = Date.now()) {

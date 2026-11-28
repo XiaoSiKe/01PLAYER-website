@@ -1,14 +1,17 @@
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { fail, text, url } from './community-input.mjs';
-import { indexBy, rowsByEvent } from './community-indexes.mjs';
-import { eventCategories, eventCategory } from './event-categories.mjs';
+import { rowsByEvent } from './community-indexes.mjs';
+import { eventCategories, eventCategory, eventType } from './event-categories.mjs';
+import { eventAllowsAlbum, eventPhase, isPublished, usesExternalRegistration } from './event-state.mjs';
+import { homePinTag } from './home-pins.mjs';
+
+export { isPublished } from './event-state.mjs';
 
 const idFormat = /^[A-Za-z0-9_-]{1,100}$/;
 const statusTypes = ['open', 'active', 'ended'];
-export const isPublished = event => (event.publicationStatus || 'published') === 'published';
 export function acceptsRegistration(event, now = Date.now()) {
-  if (!isPublished(event) || event.status !== 'open') return false;
+  if (!isPublished(event) || !['open', 'active'].includes(eventPhase(event, now))) return false;
   if (event.registrationClosesAt && !(Date.parse(event.registrationClosesAt) > now)) return false;
   const end = eventDates(event).endsAt;
   return !end || now < Date.parse(end);
@@ -78,9 +81,6 @@ function eventDates(event) {
   if (event.startsAt || event.endsAt) return { startsAt: event.startsAt || null, endsAt: event.endsAt || null };
   return legacyDates(event.date);
 }
-export function hasEventEnded(event, now = Date.now()) {
-  return event.status === 'ended' || Date.parse(eventDates(event).endsAt) <= now;
-}
 function eventSnapshot(event) {
   const { draft, managedBy, lastEventMutation, publicationStatus, ...content } = event;
   return { ...content, publicationStatus: publicationStatus || 'published' };
@@ -90,40 +90,54 @@ function eventRevision(event) {
 }
 // The home feed needs only card and deadline data. Detail and form callers keep the full event.
 const cardFields = ['id', 'name', 'type', 'category', 'date', 'location', 'subtitle', 'coverUrl', 'example',
-  'status', 'startsAt', 'endsAt', 'registrationClosesAt', 'registrationOpen', 'miniHomePinned', 'registrationMode'];
+  'status', 'schedule', 'startsAt', 'endsAt', 'registrationClosesAt', 'registrationOpen', 'registrationMode', 'registrationDestination', 'registrationUrl'];
 export function eventCard(event, db) {
   const view = eventView(event, db);
-  return Object.fromEntries(cardFields.map(key => [key, view[key]]));
+  return { ...Object.fromEntries(cardFields.map(key => [key, view[key]])), ...homePinTag(db, 'events', event.id) };
 }
 export function eventView(event, db, staff = false) {
   const current = eventSnapshot(event);
   const draft = event.draft;
   const view = staff && draft ? { ...current, ...draft } : current;
+  const { ticketGroupQrUrl, ...visible } = view;
   // The editor round-trips this response. Only public views synthesize timestamps
   // from a display label, so a later label edit cannot persist obsolete inferred dates.
   const dates = staff ? view : eventDates(view);
-  return { ...view, miniHomePinned: isPublished(event) && db.miniHomePinnedEventId === event.id,
-    category: eventCategory(view),
+  const now = Date.now();
+  return { ...visible, ...homePinTag(db, 'events', event.id),
+    ...(staff ? {} : { status: eventPhase(view, now), schedule: { startsAt: view.startsAt || null, endsAt: view.endsAt || null } }),
+    category: eventCategory(view), type: eventType(view),
+    registrationDestination: view.registrationDestination || 'website', registrationUrl: view.registrationUrl || '',
     registrationMode: view.registrationMode || 'direct', formFields: view.formFields || [],
     startsAt: dates.startsAt || null, endsAt: dates.endsAt || null,
-    registrationClosesAt: view.registrationClosesAt || null, registrationOpen: acceptsRegistration(view),
-    hasAlbum: rowsByEvent(db.albums).has(event.id), ...(staff ? { hasDraftChanges: Boolean(draft), draftRevision: eventRevision(event) } : {}) };
+    registrationClosesAt: view.registrationClosesAt || null, registrationOpen: acceptsRegistration(view, now),
+    hasAlbum: rowsByEvent(db.albums).has(event.id) || eventAllowsAlbum(event, now),
+    ...(staff ? {
+      ticketGroupQrUrl: ticketGroupQrUrl || '',
+      // Media usage scans this staff view. Keep the live QR referenced while a draft changes it.
+      ...(draft && current.ticketGroupQrUrl ? { publishedTicketGroupQrUrl: current.ticketGroupQrUrl } : {}),
+      hasDraftChanges: Boolean(draft), draftRevision: eventRevision(event),
+    } : {}) };
 }
 function eventContent(input, previous) {
   const merged = { ...previous, ...input };
   const value = {};
-  for (const [key, label] of Object.entries({ name: '活动名称', subtitle: '副标题', description: '活动介绍', date: '活动日期', type: '活动类型', location: '活动地点' })) {
+  for (const [key, label] of Object.entries({ name: '活动名称', subtitle: '活动标语', description: '活动介绍', date: '活动日期', type: '活动类型', location: '活动地点' })) {
     value[key] = text(merged[key] ?? '', label, key === 'description' ? 12000 : 500, key === 'name');
   }
   const category = oneOf(merged.category ?? eventCategory(value), Object.keys(eventCategories), '活动分类');
   value.category = eventCategory({ category, type: value.type });
+  value.type = eventType(value);
   value.status = oneOf(merged.status ?? 'open', statusTypes, '活动状态');
+  value.registrationDestination = oneOf(merged.registrationDestination ?? 'website', ['website', 'external'], '报名入口');
+  value.registrationUrl = usesExternalRegistration(value) ? url(merged.registrationUrl || '', '外部报名链接') : '';
   value.registrationMode = oneOf(merged.registrationMode ?? 'direct', ['direct', 'review'], '报名模式');
   value.rules = list(merged.rules ?? [], '参与规则', 50, 1500);
   value.formFields = survey(merged.formFields ?? []);
   value.coverUrl = mediaUrl(merged.coverUrl);
+  value.ticketGroupQrUrl = mediaUrl(merged.ticketGroupQrUrl);
   if (merged.submissionsOpen !== undefined && typeof merged.submissionsOpen !== 'boolean') fail(400, '提交开关格式错误。');
-  value.submissionsOpen = value.status === 'active' && merged.submissionsOpen === true;
+  value.submissionsOpen = merged.submissionsOpen === true;
   for (const [key, label] of Object.entries({ startsAt: '开始时间', endsAt: '结束时间', registrationClosesAt: '报名截止时间' })) {
     value[key] = iso(merged[key], label);
   }
@@ -189,6 +203,7 @@ export function editEvent(event, input, action) {
   } else if (action === 'publish') {
     const proposed = event.draft || event;
     if (!proposed.description || (!proposed.date && !proposed.startsAt)) fail(400, '发布前请填写活动介绍和日期。');
+    if (usesExternalRegistration(proposed) && !proposed.registrationUrl) fail(400, '发布前请填写外部报名链接。');
     Object.assign(event, event.draft, { publicationStatus: 'published' });
     delete event.draft;
   } else {
@@ -203,7 +218,9 @@ export function editEvent(event, input, action) {
 export function setEventPhase(event, input) {
   const before = eventRevision(event);
   const status = oneOf(input.status, statusTypes, '活动状态');
-  const phase = { status, submissionsOpen: status === 'active' && input.submissionsOpen === true };
+  const submissionsOpen = input.submissionsOpen ?? event.submissionsOpen ?? false;
+  if (typeof submissionsOpen !== 'boolean') fail(400, '提交开关格式错误。');
+  const phase = { status, submissionsOpen };
   Object.assign(event, phase);
   if (event.draft) {
     Object.assign(event.draft, phase);
@@ -212,10 +229,6 @@ export function setEventPhase(event, input) {
   recordMutation(event, 'phase', before);
   return event;
 }
-export function sceneFor(id) {
-  return digest('01PLAYER/event/' + id).slice(0, 24);
-}
-export const eventsByScene = indexBy(event => sceneFor(event.id));
 function cleanAnswers(fields, supplied) {
   if (!supplied || typeof supplied !== 'object' || Array.isArray(supplied)) fail(400, '报名问卷格式错误。');
   if (Object.keys(supplied).some(id => !fields.some(field => field.id === id))) fail(400, '报名表已更新，请刷新并重新填写。');
@@ -242,12 +255,18 @@ export function registrationView(record) {
   const { keyDigest, requestDigest, ...row } = record;
   return { ...row, status: row.status || 'approved' };
 }
-export function receiptView(row) {
-  return { id: row.id, eventId: row.eventId, createdAt: row.createdAt, status: row.status || 'approved', ...(row.updatedAt ? { updatedAt: row.updatedAt } : {}) };
+export function receiptView(row, event) {
+  const status = row.status || 'approved';
+  return {
+    id: row.id, eventId: row.eventId, createdAt: row.createdAt, status,
+    ...(row.updatedAt ? { updatedAt: row.updatedAt } : {}),
+    ...(status === 'approved' && event?.ticketGroupQrUrl && isPublished(event)
+      ? { ticketGroupQrUrl: event.ticketGroupQrUrl } : {}),
+  };
 }
-export function participantRegistrationView(row) {
-  const result = receiptView(row);
-  for (const key of ['userId','source','name','contact','note','answers','formFields']) {
+export function participantRegistrationView(row, event) {
+  const result = receiptView(row, event);
+  for (const key of ['userId','source','name','contact','phone','wechat','note','answers','formFields']) {
     if (Object.hasOwn(row, key)) result[key] = row[key];
   }
   return result;
@@ -270,28 +289,41 @@ function matchesSavedAnswers(previous, supplied) {
     return typeof value === 'string' && value.trim() === answer;
   });
 }
-export function registerAnonymous(registrations, event, body) {
+function registrationContact(body) {
+  if (!Object.hasOwn(body, 'phone') && !Object.hasOwn(body, 'wechat'))
+    return { contact: text(body.contact, '联系方式', 250) };
+  const supplied = text(body.phone, '电话号码', 30);
+  if (!/^\+?[0-9 ()-]+$/.test(supplied)) fail(400, '请填写有效的电话号码。');
+  const phone = supplied.replace(/[ ()-]/g, '');
+  if (!/^\+?\d{6,18}$/.test(phone)) fail(400, '请填写有效的电话号码。');
+  const wechat = text(body.wechat ?? '', '微信号', 100, false);
+  return { contact: phone, phone, wechat };
+}
+export function registerAnonymous(registrations, event, body, userId) {
   const key = body.idempotencyKey;
   const keyDigest = typeof key === 'string' && /^[a-zA-Z0-9_-]{16,128}$/.test(key) ? digest(key) : null;
   const previous = keyDigest && registrations.byKey(event.id, keyDigest);
   if (!previous && !isPublished(event)) fail(404, '活动不存在。');
   if (!keyDigest) fail(400, '提交标识无效，请重新打开报名表。');
+  if (!previous && usesExternalRegistration(event)) fail(409, '本场活动通过外部链接报名。');
   if (!previous && !acceptsRegistration(event)) fail(409, '本场活动已停止报名。');
   const name = text(body.name, '姓名或称呼', 60);
-  const contact = text(body.contact, '联系方式', 250);
+  const contactFields = registrationContact(body);
+  const { contact } = contactFields;
   const note = text(body.note ?? '', '备注', 1500, false);
   // A successful request can be replayed after organizers change the live form or archive it.
   if (previous) {
-    if (previous.name !== name || previous.contact !== contact || (previous.note ?? '') !== note || !matchesSavedAnswers(previous, body.answers ?? {})) {
+    if (previous.name !== name || previous.contact !== contact || (previous.phone || '') !== (contactFields.phone || '') || (previous.wechat || '') !== (contactFields.wechat || '') || (previous.note ?? '') !== note || !matchesSavedAnswers(previous, body.answers ?? {})) {
       fail(409, '提交内容已改变，请刷新报名状态。');
     }
     return previous;
   }
+  if (userId && registrations.hasUser(event.id, userId)) fail(409, '你已经报名，可以在我的报名中查看。');
   const fields = event.formFields ?? [];
   const answers = cleanAnswers(fields, body.answers ?? {});
   if (registrations.hasContact(event.id, contact)) fail(409, '该报名信息已提交，请查看原回执或联系主办方。');
-  const row = { id: randomUUID(), eventId: event.id, name, contact, note, answers, formFields: structuredClone(fields),
-    source: 'miniprogram', status: event.registrationMode === 'review' ? 'pending' : 'approved', keyDigest, createdAt: new Date().toISOString() };
+  const row = { id: randomUUID(), eventId: event.id, name, ...contactFields, note, answers, formFields: structuredClone(fields),
+    source: 'website', ...(userId ? { userId } : {}), status: event.registrationMode === 'review' ? 'pending' : 'approved', keyDigest, createdAt: new Date().toISOString() };
   registrations.add(row);
   return row;
 }

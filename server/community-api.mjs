@@ -1,3 +1,5 @@
+import { projectImages } from './project-images.mjs';
+import { publicPlayer } from './public-player.mjs';
 import { randomBytes, randomUUID, createHash } from 'node:crypto';
 import { accessSync, constants, existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -5,27 +7,26 @@ import { events, seedProjects } from './community-seed.mjs';
 import { reconcileEventArchives, publicEventProjects, eventAlbums, publicRecruitments } from './event-links.mjs';
 import { rowsById, serializeProject } from './community-indexes.mjs';
 
-import { fail, optionalPage, sameOriginSubmission, text, url } from './community-input.mjs';
+import { fail, optionalPage, sameOriginSubmission, text } from './community-input.mjs';
+import { projectFields, recruitment } from './project-fields.mjs';
 import { accountStatus, advanceAccountRevision, revokeAccountSessions, updateAccountProfile } from './community-accounts.mjs';
 import { initialPasswordHash, passwordHash, passwordMatches, runPasswordWork } from './community-passwords.mjs';
 import { clientAddress, createAuthLimiter, createEnrollmentLimiter, createTrafficLimiter } from './community-rate-limits.mjs';
 import { createSiteTraffic } from './site-traffic.mjs';
 import { acceptsRegistration, importCatalog, isPublished, participantRegistrationView, registrationView, setEventPhase } from './player-events.mjs';
+import { acceptsProjectSubmissions, acceptsRecruitment, usesExternalRegistration } from './event-state.mjs';
+import { pruneHomePins } from './home-pins.mjs';
 import { createEventRoutes, initializeRegistrationState, isAnonymousRoute, reviewProject, trustedStaffRequest } from './player-event-routes.mjs';
 import { checkRegistrationIdentity, openRegistrations, registrationFile } from './community-registrations.mjs';
-import { savePhoto } from './event-photos.mjs';
-import { createWechatHandoff } from './wechat-handoff.mjs';
+import { historicalPhotoEdits, savePhoto } from './event-photos.mjs';
 const hash = value => createHash('sha256').update(value).digest('hex');
-function recruitment(input) {
-  if (!input) return null;
-  return Object.fromEntries([['roles', '希望招募的伙伴'], ['work', '参与内容'], ['requirements', '具体要求'], ['contact', '公开联系方式']].map(([key, label]) => [key, text(input[key], label, 1500)]));
-}
 const publicUser = user => user ? { id: user.id, name: user.name, role: user.role } : null;
 const sessionUser = user => user ? {
   ...publicUser(user),
   email: user.email,
   ...(user.loginName && { loginName: user.loginName }),
   ...(user.university && { university: user.university }),
+  ...(user.publicContact && { publicContact: user.publicContact }),
   ...(user.avatar && { avatar: `/api/community/account/avatar?v=${user.avatar.version}` }),
 } : null;
 const shortLoginName = /^[a-z0-9][a-z0-9_-]{2,31}$/;
@@ -36,8 +37,8 @@ function newPassword(value) {
 }
 
 export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE || resolve('.local/community.json'), demo = false, secure = false, adminEmail = process.env.COMMUNITY_ADMIN_EMAIL, adminPassword = process.env.COMMUNITY_ADMIN_PASSWORD, eventsFile = process.env.COMMUNITY_EVENTS_FILE, publicRoot = resolve('public'),
-  staffSecret = process.env.COMMUNITY_STAFF_BRIDGE_SECRET, wechatOptions = {}, passwordQueue = runPasswordWork } = {}) {
-  const wechat = createWechatHandoff({ ...wechatOptions, cacheDir: resolve(dirname(dataFile), 'wechat-cache'), demo });
+  staffSecret = process.env.COMMUNITY_STAFF_BRIDGE_SECRET, passwordQueue = runPasswordWork } = {}) {
+  const imageDirectory = resolve(dirname(dataFile), 'project-media');
   let state, usersById, usersByEmail, usersByLogin, sessionsByToken;
   if (existsSync(dataFile)) {
     state = JSON.parse(readFileSync(dataFile, 'utf8'));
@@ -64,6 +65,7 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
   }
   function persist(next) {
     if (next.events !== state.events) reconcileEventArchives(next);
+    if (next.events !== state.events || next.projects !== state.projects) pruneHomePins(next);
     mkdirSync(dirname(dataFile), { recursive: true, mode: 0o700 });
     writeFileSync(`${dataFile}.tmp`, JSON.stringify(next, null, 2), { mode: 0o600 });
     renameSync(`${dataFile}.tmp`, dataFile);
@@ -76,13 +78,14 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
   }
   initializeRegistrationState(initial);
   reconcileEventArchives(initial);
+  pruneHomePins(initial);
   if (Object.keys(initial).some(key => initial[key] !== state[key])) persist(initial);
   else useState(initial);
   const registrations = openRegistrations(dataFile, () => state, persist);
   const admitEnrollment = createEnrollmentLimiter();
   const traffic = createSiteTraffic(dataFile);
   const admitTraffic = createTrafficLimiter();
-  const eventRoutes = createEventRoutes({ wechat, staffSecret, secure, publicRoot, registrations, admitEnrollment });
+  const eventRoutes = createEventRoutes({ staffSecret, secure, publicRoot, imageDirectory, registrations, admitEnrollment, checkExpectedAccount });
   function identity(req) {
     const token = (req.headers.cookie || '').split(';').map(s => s.trim()).find(s => s.startsWith('lingyi_session='))?.slice(15);
     const tokenHash = token && hash(token);
@@ -94,7 +97,7 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
   const cookie = (token = '') => `lingyi_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${token ? 604800 : 0}${secure ? '; Secure' : ''}`;
   function checkExpectedAccount(req, user) {
     const expected = req.headers['x-community-account'];
-    if (expected !== undefined && expected !== user?.id) {
+    if (expected !== undefined && expected !== (user?.id || 'anonymous')) {
       fail(401, '当前登录账号已变更，请刷新页面并确认账号后重试。');
     }
   }
@@ -194,14 +197,14 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
       if (mutating) {
         const origin = req.headers.origin;
         const nativeJson = isAnonymousRoute(route) && !origin && !req.headers.cookie && req.headers['content-type']?.split(';')[0].toLowerCase() === 'application/json';
-        if (!sameOriginSubmission(req, secure) || (req.headers['x-community-request'] !== '1' && !nativeJson && !trustedStaffRequest(req, staffSecret))) fail(403, '请从本站或微信小程序提交。');
+        if (!sameOriginSubmission(req, secure) || (req.headers['x-community-request'] !== '1' && !nativeJson && !trustedStaffRequest(req, staffSecret))) fail(403, '请从本站提交。');
       }
       let body = {};
       if (mutating) {
         const chunks = []; let size = 0;
         for await (const chunk of req) {
           size += chunk.length;
-          if (size > (route === 'page-view' ? 512 : 64000)) fail(413, '提交内容过大，请缩短内容或使用图片链接。');
+          if (size > (route === 'page-view' ? 512 : /^(?:projects$|edit\/|staff\/projects(?:\/|$))/.test(route) ? 1_500_000 : 64000)) fail(413, '提交内容过大，请缩短正文或重新压缩图片。');
           chunks.push(chunk);
         }
         const raw = Buffer.concat(chunks).toString('utf8');
@@ -251,10 +254,43 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
           res.setHeader('Content-Type', 'image/jpeg');
           return res.end(Buffer.from(avatar.data, 'base64'));
         }
+        if (route.startsWith('project-media/')) {
+          const filename = route.slice('project-media/'.length);
+          if (!/^[a-f0-9]{64}\.jpg$/.test(filename) || !db.projects.some(project => (canRead(project,user) || trustedStaffRequest(req,staffSecret)) && projectImages(project).includes('/api/community/'+route))) fail(404, '图片不存在。');
+          const path = resolve(imageDirectory,filename);
+          if (!existsSync(path)) fail(404, '图片不存在。');
+          res.setHeader('Content-Type','image/jpeg');
+          return res.end(readFileSync(path));
+        }
+        if (/^profiles\/[^/]+\/avatar$/.test(route)) {
+          const id = route.split('/')[1];
+          const profile = publicPlayer(db,id), avatar = usersById.get(id)?.avatar;
+          if (!profile || !avatar || requestUrl.searchParams.get('v') !== avatar.version) fail(404,'头像不存在。');
+          res.setHeader('Content-Type','image/jpeg');
+          return res.end(Buffer.from(avatar.data,'base64'));
+        }
+        if (route.startsWith('profiles/')) {
+          const profile = publicPlayer(db, route.slice('profiles/'.length));
+          if (!profile) fail(404, '玩家主页不存在或暂无公开内容。');
+          return send(profile);
+        }
         if (route === 'projects') return send(publicEventProjects(db, requestUrl.searchParams.get('event')).map(p => serializeProject(p, user, db)));
-        if (route === 'albums') return send(eventAlbums(db));
+        if (route === 'albums') {
+          const albums = eventAlbums(db);
+          return send(requestUrl.searchParams.get('historical') === '1'
+            ? { albums, historicalPhotos: historicalPhotoEdits(db) }
+            : albums);
+        }
         if (route.startsWith('projects/')) return send(serializeProject(getProject(route.slice(9)), user, db));
-        if (route === 'mine') { requireUser(); return send({ projects: db.projects.filter(p => p.ownerId === user.id).map(p => serializeProject(p, user, db)), registrations: registrations.forUser(user.id).map(participantRegistrationView), recruitments: db.recruitments.filter(r => r.ownerId === user.id) }); }
+        if (route === 'mine') {
+          requireUser();
+          const events = rowsById(db.events);
+          return send({
+            projects: db.projects.filter(p => p.ownerId === user.id).map(p => serializeProject(p, user, db)),
+            registrations: registrations.forUser(user.id).map(row => participantRegistrationView(row, events.get(row.eventId))),
+            recruitments: db.recruitments.filter(r => r.ownerId === user.id),
+          });
+        }
         if (route === 'recruitments') return send(publicRecruitments(db, requestUrl.searchParams.get('event')));
         if (route === 'review') { requireUser(); if (user.role !== 'admin') fail(403, '仅管理员可以审核。'); return send(db.projects.filter(p => p.status === 'pending')); }
         if (route === 'registrations') {
@@ -296,25 +332,24 @@ export function createCommunityApi({ dataFile = process.env.COMMUNITY_DATA_FILE 
           const eventId = existing ? existing.eventId : (body.eventId || null);
           if (!existing && eventId) {
             const event = getEvent(eventId);
-            if (event.status !== 'active' || !event.submissionsOpen) fail(409, '本场活动暂未开放作品提交。');
+            if (!isPublished(event)) fail(404, '活动不存在。');
+            if (!acceptsProjectSubmissions(event)) fail(409, '本场活动暂未开放作品提交。');
           }
-          const imageUrl = url(body.imageUrl, '图片链接'), demoUrl = url(body.demoUrl, '演示链接');
-          if (!imageUrl && !demoUrl) fail(400, '请至少填写一个图片或演示链接。');
-          const project = { id: existing?.id || randomUUID(), ownerId: user.id, author: user.name, name: text(body.name, '项目名称', 80), summary: text(body.summary, '一句话介绍', 160), description: text(body.description, '项目介绍', 12000), imageUrl, demoUrl, eventId, externalSource: eventId ? '' : text(body.externalSource || '', '外部赛事名称', 100, false), recruitment: recruitment(body.recruitment), status: 'pending', reviewNote: '', example: demo, createdAt: existing?.createdAt || new Date().toISOString() };
+          const project = { id: existing?.id || randomUUID(), ownerId: user.id, author: user.name, ...projectFields(body, eventId, imageDirectory), status: 'pending', reviewNote: '', example: demo, createdAt: existing?.createdAt || new Date().toISOString() };
           const index = existing ? db.projects.indexOf(existing) : -1;
           db = { ...state, projects: state.projects.slice() };
           if (index >= 0) db.projects[index] = project; else db.projects.unshift(project);
           result = project;
         } else if (route === 'recruitments') {
-          const event = getEvent(body.eventId); if (event.status !== 'active') fail(409, '只有进行中的活动可以发布组队招募。');
+          const event = getEvent(body.eventId); if (!acceptsRecruitment(event)) fail(409, '本场活动暂不接受组队招募。');
           const project = getProject(body.projectId); if (project.ownerId !== user.id) fail(403, '请选择自己的项目。');
-          const item = { id: randomUUID(), eventId: event.id, projectId: project.id, ownerId: user.id, author: user.name, title: text(body.title, '招募标题', 100), description: text(body.description, '项目想法', 3000), ...recruitment(body.recruitment || {}), createdAt: new Date().toISOString() };
+          const item = { id: randomUUID(), eventId: event.id, projectId: project.id, ownerId: user.id, author: user.name, title: text(body.title, '招募标题', 100), description: text(body.description, '项目简介', 30), ...recruitment(body.recruitment || {}), createdAt: new Date().toISOString() };
           beginWrite('recruitments');
           db.recruitments.unshift(item); result = item;
         } else if (route === 'register-event') {
           admitEnrollment(clientAddress(req, secure));
-          const event = getEvent(body.eventId); if (!acceptsRegistration(event)) fail(409, '本场活动不在报名期。');
-          if (event.formFields?.length) fail(409, '请通过微信小程序填写本场报名表。');
+          const event = getEvent(body.eventId); if (usesExternalRegistration(event)) fail(409, '本场活动通过外部链接报名。'); if (!acceptsRegistration(event)) fail(409, '本场活动不在报名期。');
+          if (event.formFields?.length) fail(409, '请在活动详情中打开完整报名表。');
           const contact = text(body.contact, '联系方式', 250);
           const row = registrations.write(() => {
             if (registrations.hasUser(event.id, user.id)) fail(409, '你已经报名，可以在玩家空间中查看。');

@@ -8,10 +8,11 @@ import { AccountAccess } from './AccountAccess';
 import { AccountForm, PasswordField } from './AccountForm';
 import { accountLink, announceSessionChange, pageLocation } from './navigation';
 import { AVATAR_EDGE, prepareAvatar } from './profile';
+import { playerIdentityForRole, playerIdentityLabels } from './identity';
 export { AccountHeading } from './AccountAccess';
 
 export function AccountReturn({ href }) {
-  return <Button href={href} className="account-switch"><FiArrowLeft aria-hidden="true" />返回页面</Button>;
+  return <Button href={href} className="account-switch"><FiArrowLeft aria-hidden="true" />返回</Button>;
 }
 
 function AccountAvatar({ src }) {
@@ -96,9 +97,13 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
             <AccountAvatar src={user.avatar} />
             <div>
               <h2>{user.name}</h2>
-              {user.university && <p>{user.university}</p>}
+              <p>
+                <span>{playerIdentityLabels[playerIdentityForRole(user.role)]}</span>
+                {user.university && <> · <span>{user.university}</span></>}
+              </p>
             </div>
           </div>
+          {user.publicContact && <p className="player-space-contact">联系方式：{user.publicContact}</p>}
           <div className="hero-entry player-space-profile-entry" ref={profileEntry}>
             <SpecularButton className="hero-button" onClick={() => showTab('profile')}>
               玩家资料
@@ -134,7 +139,7 @@ export function PlayerSpace({ user, section, back, continuation, action, onConti
           ) : (
             <div className="player-space-actions">
               <Button className="player-settings-action" size="sm" shineOnInteraction onClick={() => showTab('records')}>
-                <FiArrowLeft aria-hidden="true" />返回空间
+                <FiArrowLeft aria-hidden="true" />返回
               </Button>
             </div>
           )}
@@ -226,8 +231,8 @@ function EditProfile({ user, onSaved, notice }) {
       aria-labelledby="player-profile-edit-heading">
       <h3 id="player-profile-edit-heading">头像与资料</h3>
       <AccountForm shineOnInteraction submit="保存资料" pending="正在保存…" disabled={preparing}
-        onSubmit={async ({ name, university }) => {
-          const result = await api('account/profile', { name, university, avatar }, user.id);
+        onSubmit={async ({ name, university, publicContact }) => {
+          const result = await api('account/profile', { name, university, publicContact, avatar }, user.id);
           setAvatar(undefined);
           onSaved(result.user);
         }}>
@@ -254,7 +259,9 @@ function EditProfile({ user, onSaved, notice }) {
         </div>
         {error && <p className="community-feedback" role="alert">{error}</p>}
         <Field label="昵称" name="name" defaultValue={user.name} required maxLength={40} autoComplete="nickname" />
-        <Field label="大学" name="university" defaultValue={user.university || ''} maxLength={100} />
+        <Field label="大学（选填）" name="university" defaultValue={user.university || ''} maxLength={100} />
+        <Field label="联系方式（选填）" name="publicContact" defaultValue={user.publicContact || ''} maxLength={200} placeholder="微信、邮箱或其他联系渠道" />
+        <p className="community-muted">昵称、头像、大学和填写的联系方式会展示在公开玩家主页。</p>
       </AccountForm>
       {notice && <p className="community-feedback" role="status">{notice}</p>}
     </Frame>

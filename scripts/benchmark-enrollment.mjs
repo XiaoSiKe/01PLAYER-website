@@ -10,7 +10,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
 import { createCommunityApi } from '../server/community-api.mjs';
 import { registrationFile } from '../server/community-registrations.mjs';
-import { receiptToken, sceneFor } from '../server/player-events.mjs';
+import { receiptToken } from '../server/player-events.mjs';
 import { startRegistrationProxy } from './local-registration-proxy.mjs';
 
 const eventId = 'enrollment-benchmark';
@@ -22,7 +22,7 @@ function seed(file) {
     formFields: [{ id: 'track', type: 'select', label: '方向', required: true, options: ['设计', '开发'] }] };
   const registrations = Array.from({ length: history }, (_, i) => ({
     id: 'history-' + i, eventId, name: '历史样本', contact: 'history-' + i + '@example.test', status: 'approved',
-    answers: { track: '设计' }, formFields: event.formFields, source: 'miniprogram',
+    answers: { track: '设计' }, formFields: event.formFields, source: 'website',
   }));
   writeFileSync(file, JSON.stringify({ version: 1, instanceId: randomUUID(), demo: false, users: [], sessions: [],
     events: [event], registrations, projects: [], reactions: [], recruitments: [] }), { mode: 0o600 });
@@ -193,9 +193,8 @@ async function journey(file, users) {
       return results.filter(row => row.status === 200);
     }
 
-    const scene = '/api/community/event-scenes/' + sceneFor(eventId);
     const detail = '/api/community/events/' + eventId;
-    const opened = await step('open', people, p => visit(origin, p.i % 2 === 0 ? scene : detail, p.agent));
+    const opened = await step('open', people, p => visit(origin, detail, p.agent));
     for (const { data } of opened) {
       assert.equal(data.id, eventId);
       assert.equal(data.registrationOpen, true);

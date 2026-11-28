@@ -871,7 +871,7 @@ a {
   filter: grayscale(1) contrast(2);
 }
 
-#join-contact .home-join-qr { transform: scale(1.05); }
+#join-contact .home-join-qr { transform: scale(1.0815); }
 
 .home-join-qr--inverse {
   filter: grayscale(1) invert(1) contrast(2);
@@ -1191,3 +1191,68 @@ html[data-theme='light'] .home-footer-club-mark img { filter: invert(1); }
 @media (max-width: 540px) { .hero-actions:has(.hero-entry) { gap: 16px; } .hero-entry > span { max-width: 160px; font-size: 11px; } .hero-entry .hero-button { font-size: 15px; padding: 17px 20px; } }
 
 @media (max-width: 540px) { .hero-actions:has(.hero-entry) { gap: 8px; } .hero-entry .hero-button { font-size: 13px; padding: 17px 8px; } }
+
+.home-mobile-break { display: none; }
+@media (max-width: 760px) {
+  .home-mobile-break { display: block; }
+  .home-mobile-punctuation { display: none; }
+  .hero-proof .home-mobile-rest { white-space: nowrap; }
+  .hero-proof-meta { font-size: clamp(12px, 3.55vw, 14px); }
+  .hero-actions { grid-template-columns: minmax(0,.8fr) minmax(0,1.5fr) minmax(0,.8fr); }
+  .hero-entry .hero-button { padding-inline: 6px; }
+  .home-about-quote { font-size: 14px; line-height: 1.65; }
+  .home-about-block + .home-about-block { margin-top: 24px; }
+  .home-about-block .home-about-lead { font-size: 15px; }
+  .home-core-section .home-section-heading > p { font-size: clamp(12px,3.5vw,14px); }
+  .home-recruitment-label { display: block; margin-bottom: 5px; }
+  .home-recruitment-icon { display: none; }
+  .home-recruitment-department > .border-glow-content { gap: 0; justify-content: center; }
+  .home-footer-inner { grid-template-columns: minmax(94px,.85fr) minmax(0,1.4fr); gap: 14px; align-items: center; }
+  .home-footer-brand-logo { width: min(100%,150px); }
+  .home-footer-logo-loop { width: 100%; max-width: 100%; min-height: 44px !important; overflow: hidden; }
+  .home-footer-logo-loop .logo-loop-group { gap: 20px; padding-right: 20px; }
+  .home-footer-logo-loop .logo-loop-item { height: 36px; }
+  .home-footer-logo-loop .logo-loop-item img { max-height: 30px; width: auto; }
+}
+
+.home-contact-mobile { display: none; }
+@media (max-width: 760px) {
+  .home-contact-full { display: none; }
+  .home-contact-mobile { display: inline; }
+  .home-footer-logo-loop .logo-loop { height: 48px; }
+  .home-footer-logo-loop .logo-loop-node { font-size: 32px; }
+  .home-footer-logo-loop .home-footer-brand-mark { width: 36px; height: 36px; padding: 4px; }
+}
+@media (max-width: 760px) { .home-footer-logo-loop .logo-loop-node svg { height: 32px; } }
+
+@media (max-width: 760px) {
+  .home-about-quote { font-size: 13px; line-height: 1.55; margin-top: 9px; }
+  .home-flow-title { margin-bottom: 10px; }
+  .home-section-heading .home-flow-title { margin-bottom: 6px; }
+  :is(.home-section-heading,.home-business-intro) > p, .home-cooperation-intro { line-height: 1.4; }
+}
+
+.home-about-quote, .home-about-quote p { font-weight: 700; }
+.home-sections { padding-bottom: 64px; }
+.home-footer { padding-block: 32px 24px; }
+.home-footer-inner { gap: 24px; }
+.home-footer .shutter-wordmark { margin-top: 20px; }
+.home-footer-copyright { margin-top: 20px; padding-top: 12px; gap: 6px; }
+@media(max-width:760px) {
+  .hero-actions { grid-template-columns: minmax(0,1fr); width: min(100%,360px); gap: 8px; margin-top: 16px; }
+  .hero-actions .hero-button { min-height: 48px; padding-block: 12px; font-size: 14px; }
+  .home-business-carousel { --business-placeholder-height: 300px; }
+  .home-sections { padding-bottom: 32px; }
+  .home-recruitment { margin-top: 24px; }
+  .home-footer { padding: 24px 16px 20px; }
+  .home-footer-inner { gap: 10px; }
+  .home-footer .shutter-wordmark { margin-top: 12px; }
+  .home-footer-copyright { margin-top: 12px; padding-top: 10px; gap: 4px; font-size: 11px; line-height: 1.45; }
+  .home-footer-logo-loop .logo-loop { height: 44px; }
+  .home-partners-section { gap: 20px; }
+  .home-partners-row { gap: 18px; }
+}
+
+.hero-actions .hero-shadow-mark { display: block; width: 144px; max-width: 100%; height: auto; }
+.home-about-quote { font-size: 14.4px; }
+@media(max-width:760px) { .home-about-quote { font-size: 11.7px; } }

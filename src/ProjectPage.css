@@ -90,3 +90,7 @@
   .project-page-footer { flex-wrap: wrap; font-size: 10px; margin-top: 24px; }
 }
 @media (prefers-reduced-motion: reduce) { .demo-button:active { transform: none; } }
+
+.project-page-header .project-back { order: 2; margin-left: auto; }
+
+@media (max-width: 760px) { .project-page-language .language-switcher--short { display: none; } }

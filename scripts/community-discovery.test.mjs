@@ -1,7 +1,8 @@
+import { archiveCategories, archiveModules, archivePhotoCategory, archivePhotoMatches, archiveAlbumMatches } from '../server/archive-categories.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { acceptsSignup, eventLocationLabel, eventStatus, nextRegistrationDeadline, sortCalendarEvents } from '../src/community/players/events.js';
-import { eventCategory } from '../server/event-categories.mjs';
+import { eventCategories, eventCategory, eventParticipationLabels, eventType } from '../server/event-categories.mjs';
 
 import { listFilters, matchesSearch, selectedOption } from '../src/community/filters.js';
 
@@ -26,7 +27,9 @@ test('an elapsed registration deadline disables signup even when the public resp
   const event = { status: 'open', registrationOpen: true, registrationClosesAt: new Date(today).toISOString() };
   assert.equal(acceptsSignup(event, today - 1), true);
   assert.equal(acceptsSignup(event, today), false);
-  assert.equal(acceptsSignup({ status: 'active' }, today), false);
+  assert.equal(acceptsSignup({ status: 'active' }, today), true);
+  assert.equal(acceptsSignup({ ...event, status: 'active' }, today), false);
+  assert.equal(nextRegistrationDeadline([{...event,status:'active'}],today-1),today);
 });
 
 test('salon is a category and older salon labels are recognized', () => {
@@ -73,4 +76,36 @@ test('open listings and registration links expire at the same instant', () => {
   const endsFirst = {...open, endsAt:new Date(deadline-500).toISOString()};
   assert.equal(nextRegistrationDeadline([endsFirst],today),deadline-500);
   assert.equal(acceptsSignup(endsFirst,deadline-500),false);
+});
+
+
+test('活动类型按赛事、沙龙、共创排序，旧活动编码兼容共创',()=>{
+ assert.deepEqual(Object.values(eventCategories),['赛事','沙龙','合作']);
+ assert.equal(eventParticipationLabels.activity,'参与合作');
+ assert.equal(eventCategory({type:'AI 共创活动'}),'activity');
+ assert.equal(eventCategory({category:'activity',type:'共创'}),'activity');
+ assert.equal(eventCategory({category:'activity',type:'零一沙龙'}),'salon');
+});
+
+
+test('合作类型兼容旧共创标记，团建独立归档且不增加玩家计划类型',()=>{
+ assert.equal(eventType({category:'activity',type:'共创'}),'合作');
+ assert.equal(eventType({type:'共创活动'}),'合作');
+ assert.equal(eventType({category:'salon',type:'沙龙'}),'沙龙');
+ assert.equal(eventCategories['team-building'],undefined);assert.equal(archiveCategories['team-building'],'团建');
+ const album={category:'competition',photos:[{category:'competition'},{category:'team-building'},{category:'certificate'}]};
+ assert.equal(archiveAlbumMatches(album,'team-building'),true);
+ assert.deepEqual(album.photos.filter(photo=>archivePhotoCategory(album,photo)==='team-building'),[{category:'team-building'}]);
+ assert.equal(archiveAlbumMatches({...album,photos:[]},'team-building'),false);
+ assert.equal(archivePhotoCategory({category:'team-building'},{category:'activity'}),'team-building');
+});
+
+
+test('时光机玩家计划包含三种活动，团建独立展示',()=>{
+ assert.deepEqual(Object.values(archiveModules),['全部影像','玩家计划','零一团建']);
+ for(const category of ['competition','salon','activity'])assert.equal(archiveAlbumMatches({category},'plan'),true);
+ const album={category:'competition'};
+ assert.equal(archivePhotoMatches(album,{category:'competition'},'plan'),true);
+ assert.equal(archivePhotoMatches(album,{category:'team-building'},'plan'),false);
+ assert.equal(archiveAlbumMatches({category:'team-building',photos:[{category:'activity'}]},'plan'),false);
 });

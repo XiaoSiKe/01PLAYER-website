@@ -34,6 +34,7 @@ export const StaggeredMenu = ({
   const t = useLanguage()?.t ?? identity;
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const wrapperRef = useRef(null);
   const keyboardOpenRef = useRef(false);
   const openRef = useRef(false);
   const panelRef = useRef(null);
@@ -78,6 +79,22 @@ export const StaggeredMenu = ({
     });
     return () => ctx.revert();
   }, [menuButtonColor, position]);
+
+  React.useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const header = wrapper.querySelector('.staggered-menu-header');
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      wrapper.style.setProperty('--nav-glass-opacity', String(Math.min(1, Math.max(0, window.scrollY / 96))));
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const measure = () => wrapper.style.setProperty('--sm-header-height', `${header.getBoundingClientRect().height}px`);
+    const observer = new ResizeObserver(measure);
+    observer.observe(header); measure(); update();
+    window.addEventListener('scroll', schedule, {passive:true});
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); };
+  }, []);
 
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
@@ -491,6 +508,7 @@ export const StaggeredMenu = ({
 
   return (
     <div
+      ref={wrapperRef}
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
       style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
       data-position={position}
@@ -504,6 +522,7 @@ export const StaggeredMenu = ({
           ));
         })()}
       </div>
+      <div className="sm-header-glass" aria-hidden="true" />
       <header className={`staggered-menu-header${textOnly ? ' staggered-menu-header--text-only' : ''}${headerBrand ? ' staggered-menu-header--branded' : ''}`} aria-label={t("零一玩家导航")}>
         <a className={headerBrand ? 'sm-branded-entry' : 'sm-logo'} href={logoHref} aria-label={t("返回零一玩家首页顶部")}>
           {headerBrand || <ClubLogo className="sm-logo-img" />}
@@ -523,7 +542,7 @@ export const StaggeredMenu = ({
               <span ref={textInnerRef} className="sm-toggle-textInner">
                 {textLines.map((l, i) => (
                   <span className="sm-toggle-line" key={i}>
-                    {t(l)}
+                    {l === MENU_LABEL ? <><span className="sm-menu-label-full">{t(l)}</span><span className="sm-menu-label-short">{t('导航')}</span></> : t(l)}
                   </span>
                 ))}
               </span>

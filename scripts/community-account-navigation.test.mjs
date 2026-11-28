@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { accountContinuation, accountLink, reactionIntent, safeSitePath } from '../src/community/account/navigation.js';
+import { accountContinuation, accountLink, reactionIntent, safeSitePath, linkWithSource, returnDestination } from '../src/community/account/navigation.js';
 import { pagePaths } from '../src/data/page-paths.js';
 
 test('account navigation allows only trusted site pages and strips nested authentication state', () => {
@@ -54,4 +54,25 @@ test('account landing offers only a validated protected workflow as a continuati
   assert.equal(url.searchParams.get('from'), '/players?filter=open');
   assert.equal(accountContinuation('//other.example?view=publish', '/'), null);
   assert.equal(accountContinuation('/plaza?view=profile', '/'), null);
+});
+
+
+test('公共返回记住进入来源、筛选和锚点，活动与票根之间可逐层返回',()=>{
+ const list='/players?category=competition&q=AI#calendar-heading';
+ const event=linkWithSource('/players?event=event-one',list);
+ const project=linkWithSource('/plaza?project=project-one',event);
+ const receipt=linkWithSource('/players?view=receipt&event=event-one&receipt=receipt-one',event);
+ const source=href=>new URL(href,'https://site.invalid').searchParams.get('from');
+ assert.equal(returnDestination(source(receipt),'/players?view=tickets',receipt),event);
+ assert.equal(returnDestination(source(event),'/players',event),list);
+ assert.equal(returnDestination(source(project),'/plaza',project),event);
+ const login=accountLink('login',project,'plaza');
+ assert.equal(new URL(login,'https://site.invalid').searchParams.get('returnTo'),project);
+ const mine=linkWithSource('/players?view=receipt&receipt=receipt-one','/players?view=tickets');
+ assert.equal(returnDestination(source(mine),'/players',mine),'/players?view=tickets');
+ assert.equal(returnDestination('https://other.test','/players',event),'/players');
+ assert.equal(returnDestination('//other.test','/players',event),'/players');
+ assert.equal(returnDestination('/players?event=event-one','/players',event),'/players');
+ const unsafe=linkWithSource('/plaza?project=one','/players?event=one&from=https%3A%2F%2Fother.test');
+ assert.equal(source(unsafe),'/players?event=one');
 });

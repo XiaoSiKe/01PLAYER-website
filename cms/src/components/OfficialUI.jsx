@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTheme as useAdminTheme } from '@payloadcms/ui';
 import { ThemeContext, ThemeSwitch } from '../../../src/ThemeControl';
+import { DeskLanguageProvider, useDeskLanguage } from './DeskLanguage';
 import '../app/(payload)/official-controls.scss';
 
 const storageKey = '01ai-theme';
@@ -48,7 +49,7 @@ export function OfficialTheme({ children }) {
     () => setTheme(theme === 'dark' ? 'light' : 'dark'),
     [theme, setTheme],
   );
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}><DeskLanguageProvider>{children}</DeskLanguageProvider></ThemeContext.Provider>;
 }
 
 export function Action({ children, size = 'sm', href, disabled, type = 'button', className = '', ...props }) {
@@ -69,12 +70,17 @@ export function ClubBrand() {
     <img className="op-official-logo" src={horizontalLogo.src} alt="零一玩家" width="1602" height="560" />
   );
 }
-export function DeskTitle({ title, id, children }) {
+export function DeskTitle({ title, id, heading: Heading = 'h1', children }) {
+  const { t } = useDeskLanguage();
   return (
     <header className="op-head">
-      <h1 id={id}>{title}</h1>
+      <Heading id={id}>{t(title)}</Heading>
       {children}
     </header>
   );
+}
+export function DeskBack(props) {
+  const { t } = useDeskLanguage();
+  return <Action {...props} className="op-back">{t('返回')}</Action>;
 }
 export { ThemeSwitch };

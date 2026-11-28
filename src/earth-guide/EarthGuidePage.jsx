@@ -4,12 +4,13 @@ import SiteNavigation from '../components/SiteNavigation';
 import SpecularButton from '../SpecularButton';
 import { AccountHeading } from '../community/account/AccountAccess';
 import { useLanguage } from '../Language';
-import { groups as bundledGroups } from './chapters';
 import { useGuideContent } from './useGuideContent';
+import GuideOutline from './GuideOutline';
 import GuideFolders from './GuideFolders';
 import { findArticleHeading, GuideHeading, GuideMarkdown, readArticle } from './GuideMarkdown';
 import './earth-guide.css';
 
+const emptyGroups = [];
 const title = '「零一玩家」地球生存攻略';
 const installCommand = 'npx skills add XiaoSiKe/01player-earth-survival-guide --skill 01player-earth-survival-guide';
 const repository = 'https://github.com/XiaoSiKe/01player-earth-survival-guide';
@@ -49,7 +50,7 @@ function GuideOverview({ groups }) {
     <p className="guide-lead">一本面向大学生的学习、生活与 AI 实践指南。</p>
     <section className="guide-skill" aria-labelledby="skill">
       <div className="guide-skill-heading">
-        <h2 id="skill">地球生存攻略 Skill</h2>
+        <h2 id="skill">「零一玩家」地球生存攻略 Skill</h2>
         <span className="guide-version">v0.3.2</span>
       </div>
       <p>在支持 Agent Skills 的 AI 助手里，带着一个课程问题、学习卡点或小项目开始。</p>
@@ -65,7 +66,7 @@ function GuideOverview({ groups }) {
     </section>
     <section className="guide-reading" aria-labelledby="reading">
       <h2 id="reading">章节目录</h2>
-      <GuideFolders groups={groups} />
+      {groups.length ? <GuideFolders groups={groups} /> : <p>暂无已发布文章。</p>}
     </section>
   </article>;
 }
@@ -115,7 +116,7 @@ export default function EarthGuidePage() {
   const [directoryOpen, setDirectoryOpen] = useState(false);
   const [query, setQuery] = useState('');
   const content = useGuideContent();
-  const groups = content?.groups ?? bundledGroups;
+  const groups = content?.groups ?? emptyGroups;
   const chapters = useMemo(() => groups.flatMap(group => group.chapters.map(chapter => ({ ...chapter, group }))), [groups]);
   const [chapterHash, headingHash] = hash.split('/', 2);
   const chapter = chapters.find(item => item.id === chapterHash);
@@ -197,7 +198,7 @@ export default function EarthGuidePage() {
       main.current.focus({ preventScroll: true });
       main.current.scrollIntoView();
     }}>跳到正文</a>
-    <SiteNavigation standalone headerBrand={<AccountHeading title={t('地球生存攻略')} as="span" />} />
+    <SiteNavigation standalone mobileDetail headerBrand={<AccountHeading title={t('地球生存攻略')} as="span" />} />
     <div className={chapter ? 'guide-layout guide-layout--chapter' : 'guide-layout'}>
       <aside className="guide-directory-desktop">
         <ChapterDirectory groups={groups} current={current} />
@@ -222,9 +223,9 @@ export default function EarthGuidePage() {
         </div>
         {chapter ? <GuideChapter chapter={chapter} chapters={chapters} article={article} /> : <GuideOverview groups={groups} />}
       </main>
-      {!chapter && <aside className="guide-outline" aria-label="本页目录">
+      {chapter ? <GuideOutline key={chapter.id} chapter={chapter} article={article} main={main} /> : <aside className="guide-outline" aria-label="本页目录">
         <p>本页目录</p>
-        <nav aria-label="首页小节"><a href="#skill">地球生存攻略 Skill</a><a href="#reading">章节目录</a></nav>
+        <nav aria-label="首页小节"><a href="#skill">地球生存攻略 Skill</a><a href="#reading">章节目录</a>{groups.map(group => <a key={group.id} href={`#${group.id}`} style={{'--outline-level':1}}>{group.title}</a>)}</nav>
       </aside>}
     </div>
     <dialog ref={searchDialog} className="guide-search-dialog" aria-labelledby="guide-search-title"

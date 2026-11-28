@@ -27,6 +27,8 @@ docker run -d --restart unless-stopped --name 01player-origin-monitor --network 
 
 无需 Docker 的源站可用同版本 Linux Gatus 二进制与 [systemd 单元](01player-gatus-origin.service)。该单元只为探针挂载独立 hosts 文件，将官网域名解析到源站回环地址，并把 SQLite 历史存到独立的状态目录。
 
+macOS 管理机上的公网探针使用 `cn.01player.monitor-edge` LaunchAgent 启动工作区 `.local/operations/gatus/` 中的既有 Gatus、配置和 SQLite 历史。探针随登录启动，异常退出时由 launchd 重启，状态 API 监听本机 `127.0.0.1:8088`。若运营后台的五项公网检查都提示探针未响应，先查看 `launchctl print gui/$(id -u)/cn.01player.monitor-edge`，再核对本机端口和 API 中的最新采样。
+
 ## CMS 服务端配置
 
 | 环境变量 | 用途 |
@@ -44,7 +46,7 @@ docker run -d --restart unless-stopped --name 01player-origin-monitor --network 
 | `YUNXIAO_TOKEN_KEYCHAIN_SERVICE` | macOS 预览的既有云效只读令牌服务名。提供 `YUNXIAO_TOKEN` 时优先使用环境中的值 |
 | `OPS_SOURCE_HOST`、`OPS_SOURCE_SSH_KEY`、`OPS_SOURCE_KNOWN_HOSTS` | 在管理机运行本地预览时使用已有管理员通道。指定核对后的源站、私钥绝对路径和固定主机公钥清单绝对路径 |
 
-管理机预览通过既有 SSH 通道在源站执行 [只读快照脚本](source-snapshot.py)，共享 45 秒缓存。脚本使用 ECS 实例角色读取 CloudMonitor，并读取同机 Gatus 和官网访问日志。访问看板标明「源站日志」，展示实际命中源站的页面请求和来源 IP 数，排除 Gatus 和本机回环探测。命中 CDN 缓存的请求不在源站日志统计口径内。后台页面的浏览器采集沿用站点发布时启用的采集端点。
+管理机预览通过既有 SSH 通道在源站执行 [只读快照脚本](source-snapshot.py)。流量与运维分别读取并缓存 45 秒。流量统计只读取官网访问日志，缓存到期后可先显示当天最近快照，再在后台更新。运维使用 ECS 实例角色读取 CloudMonitor，并读取同机 Gatus。访问看板标明「源站日志」，展示实际命中源站的页面请求和来源 IP 数，排除 Gatus 和本机回环探测。命中 CDN 缓存的请求不在源站日志统计口径内。后台页面的浏览器采集沿用站点发布时启用的采集端点。
 
 CloudMonitor 的 `DescribeMetricList` 接口对应 RAM 操作 `cms:QueryMetricList`。该操作需要账号级资源范围 `*`，采集目标由服务配置中的实例 ID 和设备维度决定。使用实例已有的 RAM 角色时，在其权限中补充这一只读操作。每项显示约 30 分钟的实测值，网卡是所选主机设备的总吞吐量。CPU、内存及磁盘连续 5 个一分钟采样达到 80% 时标为异常。现有阿里云邮件报警继续执行既有策略。[CloudMonitor RAM 授权](https://help.aliyun.com/en/cms/cloudmonitor-1-0/developer-reference/api-cms-2019-01-01-ram) · [主机指标](https://help.aliyun.com/zh/cms/cloudmonitor-1-0/user-guide/overview-of-basic-and-operating-system-monitoring)
 

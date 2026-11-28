@@ -1,46 +1,85 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
+import ChoiceMenu from '../components/ChoiceMenu';
 import SiteNavigation from '../components/SiteNavigation';
 import SpecularButton from '../SpecularButton';
-import ImageLightbox from '../components/ImageLightbox';
-import ResponsiveImage from '../components/ResponsiveImage';
-import { imageSource } from '../components/imageSource';
+import { imageDimensions, imageSource } from '../components/imageSource';
 import PhantomGallery from './PhantomGallery';
-import EventAlbums from './EventAlbums';
+import EventAlbumPhotoForm from './EventAlbums';
 import { communityApi } from '../community/api';
 import { AccountHeading } from '../community/account/AccountForms';
 import { useLanguage } from '../Language';
-import { timeMachinePhotos } from './photos';
+import { siteAsset } from '../editorial/content';
+import { historicalPhotoId, historicalTimeMachineAlbums, timeMachinePhotos } from './photos';
+import { archiveCategories as categories, archiveModules, archivePhotoCategory, archivePhotoMatches, archiveAlbumMatches } from '../../server/archive-categories.mjs';
+import { eventCategories } from '../../server/event-categories.mjs';
 import './time-machine.css';
 
-const categories = [
-  ['all', '全部影像'],
-  ['activity', '活动照片'],
-  ['competition', '比赛现场'],
-  ['certificate', '获奖记录'],
-];
+const archiveCategories = { ...categories, ...archiveModules };
 
 export default function TimeMachinePage() {
   const { t } = useLanguage();
   const title = t('零一时光机');
-  const [category, setCategory] = useState('all');
-  const [selected, setSelected] = useState(null);
   const [albums, setAlbums] = useState([]);
+  const [historicalEdits, setHistoricalEdits] = useState([]);
   const [admin, setAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const archive = useRef(null);
-  const [eventId, setEventId] = useState(() => new URLSearchParams(location.search).get('event') || '');
+  const archiveAnchor = useRef(null);
+  const management = useRef(null);
+  const albumRequest = useRef(null);
+  const [{ category, eventId }, setSelection] = useState(() => {
+    const search = new URLSearchParams(location.search);
+    const category = search.get('category');
+    return { category: Object.hasOwn(archiveCategories, category) ? category : 'all', eventId: search.get('event') || '' };
+  });
+  const publishedAlbum = albums.find(album => album.eventId === eventId);
+  const activeAlbum = publishedAlbum || historicalTimeMachineAlbums.find(album => album.eventId === eventId);
+  const activeCategory = activeAlbum ? category !== 'all' && archiveAlbumMatches(activeAlbum,category) ? category : archivePhotoCategory(activeAlbum) : category;
+  const planSelected = activeCategory === 'plan' || Object.hasOwn(eventCategories,activeCategory);
+  const categoryLabel = planSelected ? archiveModules.plan : activeCategory === 'all' ? null : archiveModules[activeCategory];
+  const categoryAlbums = useMemo(() => [...albums, ...historicalTimeMachineAlbums]
+    .filter(album => archiveAlbumMatches(album,activeCategory)), [albums, activeCategory]);
+  const sessionOptions = useMemo(() => [{ id: '', label: '全部场次' }, ...categoryAlbums.map(album => ({
+    id: album.eventId,
+    label: album.name + (album.example ? '（示例）' : ''),
+  }))], [categoryAlbums]);
+
+  function positionArchive() {
+    const bounds = archiveAnchor.current.getBoundingClientRect();
+    const width = Math.min(144, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(bounds.right - width, window.innerWidth - width - 8));
+    archive.current.style.width = `${width}px`;
+    archive.current.style.left = `${left}px`;
+    archive.current.style.top = `${Math.min(bounds.bottom + 6, Math.max(8, window.innerHeight - ((Object.keys(archiveModules).length + Object.keys(eventCategories).length) * 45 + 10)))}px`;
+  }
+
+  function openArchive() {
+    if (archive.current.open) return;
+    positionArchive();
+    archive.current.showModal();
+  }
 
   async function loadAlbums() {
+    albumRequest.current?.abort();
+    const request = new AbortController();
+    albumRequest.current = request;
+    communityApi('session', undefined, undefined, request.signal)
+      .then(session => { if (!request.signal.aborted) setAdmin(session.user?.role === 'admin'); })
+      .catch(() => { if (!request.signal.aborted) setAdmin(false); });
     try {
-      const [next, session] = await Promise.all([communityApi('albums'), communityApi('session')]);
+      const result = await communityApi('albums?historical=1', undefined, undefined, request.signal);
+      if (request.signal.aborted) return;
+      const { albums: next, historicalPhotos } = Array.isArray(result)
+        ? { albums: result, historicalPhotos: [] }
+        : result;
       setAlbums(previous => JSON.stringify(previous) === JSON.stringify(next) ? previous : next);
-      setAdmin(session.user?.role === 'admin');
+      setHistoricalEdits(previous => JSON.stringify(previous) === JSON.stringify(historicalPhotos) ? previous : historicalPhotos);
       setError('');
     } catch (err) {
-      setError(err.message);
+      if (!request.signal.aborted) setError(err.message);
     } finally {
-      setLoading(false);
+      if (!request.signal.aborted) setLoading(false);
     }
   }
 
@@ -50,6 +89,7 @@ export default function TimeMachinePage() {
     window.addEventListener('focus', refresh);
     document.addEventListener('visibilitychange', refresh);
     return () => {
+      albumRequest.current?.abort();
       window.removeEventListener('focus', refresh);
       document.removeEventListener('visibilitychange', refresh);
     };
@@ -58,67 +98,92 @@ export default function TimeMachinePage() {
     document.title = `${title} · 零一玩家`;
   }, [title]);
   useEffect(() => {
-    if (new URLSearchParams(location.search).get('view') === 'archive' && !archive.current.open)
-      archive.current.showModal();
+    if (new URLSearchParams(location.search).get('view') === 'archive') openArchive();
+    const reposition = () => { if (archive.current.open) positionArchive(); };
+    window.addEventListener('resize', reposition);
+    return () => window.removeEventListener('resize', reposition);
   }, []);
-
-  function selectAlbum(id) {
-    setEventId(id);
-    setCategory('all');
+  function selectGallery(nextCategory, nextEventId = '') {
+    if (archive.current.open) archive.current.close();
     const address = new URL(location.href);
-    if (id) address.searchParams.set('event', id);
+    if (nextCategory === 'all') address.searchParams.delete('category');
+    else address.searchParams.set('category', nextCategory);
+    if (nextEventId) address.searchParams.set('event', nextEventId);
     else address.searchParams.delete('event');
+    address.searchParams.delete('view');
     history.replaceState(history.state, '', address);
+    if (nextCategory !== activeCategory || nextEventId !== eventId) {
+      startTransition(() => setSelection({ category: nextCategory, eventId: nextEventId }));
+    }
   }
 
   const items = useMemo(() => {
-    const archive = albums.flatMap(album => album.photos.map(photo => ({ ...photo, organization: album.name, date: album.date })));
-    const pool = eventId ? archive.filter(photo => photo.eventId === eventId) : [...timeMachinePhotos, ...archive];
-    return pool.filter(item => category === 'all' || item.category === category);
-  }, [category, eventId, albums]);
-  const galleryItems = useMemo(() => items.map(item => ({
-    title: item.title,
-    src: imageSource(item.image, 360, 360),
-    fullSrc: item.fullImage || item.image,
-    year: (item.date || item.title).match(/(?:19|20)\d{2}(?!\d)/)?.[0] || '',
-    desc: [item.organization, item.credit].filter(Boolean).join(' · '),
-  })), [items]);
-
+    const visibleAlbums = eventId ? [activeAlbum].filter(Boolean) : categoryLabel ? categoryAlbums : albums;
+    const eventPhotos = visibleAlbums.flatMap(album => album.photos
+      .filter(photo => photo.category !== 'certificate' && (!categoryLabel || archivePhotoMatches(album,photo,activeCategory)))
+      .map(photo => ({ ...photo, organization: photo.organization || album.name, date: photo.date || album.date })));
+    return eventId || categoryLabel ? eventPhotos : [...timeMachinePhotos, ...eventPhotos];
+  }, [eventId, activeAlbum, activeCategory, categoryLabel, categoryAlbums, albums]);
+  const galleryItems = useMemo(() => {
+    const editsById = new Map(historicalEdits.map(photo => [photo.id, photo]));
+    return items.map(item => {
+      const edit = editsById.get(historicalPhotoId(item));
+      const title = edit?.title ?? item.title;
+      const originalSrc = item.fullImage || item.image;
+      const fullSrc = siteAsset(edit?.fullImage || originalSrc);
+      const { width, height } = imageDimensions(fullSrc);
+      const originalRatio = !edit || edit.fullImage === originalSrc ? item.fullAspectRatio || item.aspectRatio : undefined;
+      return {
+        title,
+        src: imageSource(fullSrc, 260),
+        fullSrc,
+        aspectRatio: width && height ? width / height : originalRatio,
+        year: (item.date || title).match(/(?:19|20)\d{2}(?!\d)/)?.[0] || '',
+        desc: [item.organization, edit?.credit ?? item.credit].filter(Boolean).join(' · '),
+      };
+    });
+  }, [items, historicalEdits]);
   return <div className="time-machine time-machine--immersive">
-    <SiteNavigation standalone headerBrand={<AccountHeading title={title} />}
-      headerTools={<SpecularButton size="sm" staticShine className="nav-control tm-catalog-toggle" aria-haspopup="dialog"
-        onClick={() => archive.current.showModal()}>影像目录</SpecularButton>} />
+    <SiteNavigation standalone mobileDetail headerBrand={<AccountHeading title={title} />}
+      headerTools={<div className="tm-catalog-controls" ref={archiveAnchor}>
+        {categoryLabel && <ChoiceMenu compact openBelow className="tm-session-select" label="选择场次" options={sessionOptions}
+          value={categoryAlbums.some(album => album.eventId === eventId) ? eventId : ''}
+          onChange={id => selectGallery(activeCategory, id)} />}
+        <SpecularButton size="sm" staticShine className="nav-control tm-catalog-toggle" aria-haspopup="dialog" title="影像目录"
+          onClick={openArchive}>{categoryLabel || '影像目录'}</SpecularButton>
+      </div>} />
     <a className="skip-link" href="#time-machine-main">跳到照片墙</a>
     <main id="time-machine-main" tabIndex={-1}>
-      {galleryItems.length > 0 ? <PhantomGallery items={galleryItems} />
-        : <p className="tm-wall-status" role="status">{loading ? '正在加载影像…' : '此分类暂无影像，可在影像目录选择其他记录。'}</p>}
+      {galleryItems.length > 0 ? <PhantomGallery items={galleryItems} tileScale={activeAlbum ? 1.3 : 1} />
+        : <p className="tm-wall-status" role="status">{loading ? '正在加载影像…' : error || (activeAlbum ? '本场暂无影像。' : '没有找到公开的活动影像。')}</p>}
+      {admin && publishedAlbum && <div className="tm-event-controls">
+        <SpecularButton size="sm" aria-haspopup="dialog"
+          onClick={() => management.current.showModal()}>添加本场照片</SpecularButton>
+      </div>}
     </main>
-    <dialog ref={archive} className="tm-directory" aria-labelledby="tm-directory-title"
+    <dialog ref={archive} className="tm-archive-menu" aria-label="影像目录"
       onClick={event => { if (event.currentTarget === event.target) archive.current.close(); }}>
+      <ul className="tm-directory-list" aria-label="影像分类">
+        {Object.entries(archiveModules).map(([id, label]) => <li key={id}>
+          <button type="button" aria-current={(id === 'plan' ? planSelected : activeCategory === id) ? 'true' : undefined}
+            onClick={() => selectGallery(id)}>{label}</button>
+          {id === 'plan' && <ul className="tm-directory-types" aria-label="玩家计划分类">
+            {Object.entries(eventCategories).map(([type,label]) => <li key={type}>
+              <button type="button" aria-current={activeCategory === type ? 'true' : undefined}
+                onClick={() => selectGallery(type)}>{label}</button>
+            </li>)}
+          </ul>}
+        </li>)}
+      </ul>
+    </dialog>
+    {admin && publishedAlbum && <dialog ref={management} className="tm-directory" aria-labelledby="tm-management-title">
       <div className="tm-directory-body">
         <header className="tm-header">
-          <h2 id="tm-directory-title">影像目录</h2>
-          <SpecularButton size="sm" onClick={() => archive.current.close()}>关闭目录</SpecularButton>
+          <h2 id="tm-management-title">添加本场照片</h2>
+          <SpecularButton size="sm" onClick={() => management.current.close()}>关闭</SpecularButton>
         </header>
-        <EventAlbums albums={albums} eventId={eventId} onSelect={selectAlbum} admin={admin}
-          onSaved={loadAlbums} loading={loading} error={error} retry={loadAlbums} />
-        <div className="tm-toolbar tm-filters" aria-label="影像分类">
-          {categories.map(([id, label]) =>
-            <button key={id} aria-pressed={category === id} onClick={() => setCategory(id)}>{label}</button>
-          )}
-        </div>
-        {items.length ? <div className="tm-catalog">
-          {items.map(item => <button key={item.id} onClick={event => setSelected({ item, opener: event.currentTarget })}>
-            <ResponsiveImage src={item.image} alt="" width={320} height={240} />
-            <span>{item.title}</span>
-            {item.organization && <small>{item.organization}</small>}
-          </button>)}
-        </div> : <div className="tm-album-empty" role="status">
-          {loading ? '正在加载影像…' : eventId ? '本专题暂无此分类的照片。' : '这个分类暂无影像。'}
-        </div>}
-        <footer className="tm-footer">{items.length} 张影像 · 零一玩家</footer>
+        <EventAlbumPhotoForm key={publishedAlbum.eventId} album={publishedAlbum} onSaved={loadAlbums} />
       </div>
-    </dialog>
-    {selected && <ImageLightbox item={selected.item} opener={selected.opener} onClose={() => setSelected(null)} />}
+    </dialog>}
   </div>;
 }

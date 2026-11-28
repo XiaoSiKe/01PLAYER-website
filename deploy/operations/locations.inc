@@ -11,7 +11,8 @@ location ^~ /_next/ { include /etc/01player-runtime/common-proxy.inc; proxy_pass
 
 location ^~ /api/community/ {
     include /etc/01player-runtime/common-proxy.inc;
-    client_max_body_size 64000;
+    # Project submissions may contain four compressed JPEGs; other routes keep their smaller API limits.
+    client_max_body_size 1500000;
     client_body_timeout 15s;
     error_page 413 = @club_community_body_too_large;
     include /etc/01player-runtime/community-upstream.inc;
@@ -35,5 +36,5 @@ location @club_runtime_busy {
 location @club_community_body_too_large {
     default_type application/json;
     add_header Cache-Control "no-store" always;
-    return 413 '{"error":"提交内容过大，请缩短内容或使用图片链接。"}';
+    return 413 '{"error":"提交内容过大，请缩短正文或重新压缩图片。"}';
 }

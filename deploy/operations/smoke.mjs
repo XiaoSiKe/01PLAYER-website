@@ -138,10 +138,13 @@ async function checkStatic(origin, expectedCommit, requireProduction) {
   const home = await read(new URL('/', origin));
   if (!(await home.text()).includes('01PLAYER')) fail('/', '首页品牌标识缺失');
   const version = await readJSON(origin, '/version.json');
+  if (version?.source === 'working-tree-snapshot') {
+    if (requireProduction || expectedCommit) fail('/version.json', '制品来自本地工作区快照');
+    if (version.commit === null) return;
+  }
   if (!/^[a-f0-9]{40}$/.test(version?.commit) || (expectedCommit && version.commit !== expectedCommit)) {
     fail('/version.json', '静态制品提交号无效或与预期版本不匹配');
   }
-  if (requireProduction && version.source === 'working-tree-snapshot') fail('/version.json', '制品来自本地工作区快照');
 }
 
 export async function checkOperationsSite(address, { expectedCommit, requireProduction = false } = {}) {

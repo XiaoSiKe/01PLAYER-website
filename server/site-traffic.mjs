@@ -12,19 +12,26 @@ export function createSiteTraffic(dataFile) {
     if (db) return;
     const DatabaseSync = process.getBuiltinModule?.('node:sqlite')?.DatabaseSync;
     if (!DatabaseSync) fail(503, '访问统计需要支持 SQLite 的运行时。');
-    db = new DatabaseSync(dataFile + '.traffic.sqlite');
-    db.exec(`
-      PRAGMA journal_mode = WAL;
-      PRAGMA synchronous = NORMAL;
-      CREATE TABLE IF NOT EXISTS views (
-        id TEXT PRIMARY KEY, day TEXT NOT NULL, page TEXT NOT NULL, visitor TEXT NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS views_day ON views(day);
-    `);
-    insert = db.prepare('INSERT OR IGNORE INTO views VALUES (?, ?, ?, ?)');
-    prune = db.prepare('DELETE FROM views WHERE day < ?');
-    daily = db.prepare('SELECT day, count(*) AS views, count(DISTINCT visitor) AS visitors FROM views WHERE day >= ? GROUP BY day ORDER BY day');
-    pages = db.prepare('SELECT page, count(*) AS views FROM views WHERE day >= ? GROUP BY page ORDER BY views DESC, page LIMIT 5');
+    const connection = new DatabaseSync(dataFile + '.traffic.sqlite');
+    try {
+      connection.exec(`
+        PRAGMA journal_mode = WAL;
+        PRAGMA synchronous = NORMAL;
+        CREATE TABLE IF NOT EXISTS views (
+          id TEXT PRIMARY KEY, day TEXT NOT NULL, page TEXT NOT NULL, visitor TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS views_day ON views(day);
+      `);
+      insert = connection.prepare('INSERT OR IGNORE INTO views VALUES (?, ?, ?, ?)');
+      prune = connection.prepare('DELETE FROM views WHERE day < ?');
+      daily = connection.prepare('SELECT day, count(*) AS views, count(DISTINCT visitor) AS visitors FROM views WHERE day >= ? GROUP BY day ORDER BY day');
+      pages = connection.prepare('SELECT page, count(*) AS views FROM views WHERE day >= ? GROUP BY page ORDER BY views DESC, page LIMIT 5');
+      db = connection;
+    } catch (error) {
+      connection.close();
+      if ([5, 6].includes(error.errcode & 255)) fail(503, '访问统计暂时繁忙，请稍后重试。');
+      throw error;
+    }
   }
   return {
     record(input, now = Date.now()) {
