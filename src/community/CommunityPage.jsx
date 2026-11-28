@@ -224,10 +224,9 @@ export default function CommunityPage({ section, Listing, Detail }) {
     }
     // Registration and receipt pages share the existing public event and account session.
     if (['register', 'receipt', 'tickets'].includes(view)) {
-      const session = loadSession(knownSession, view === 'register' ? eventId : null);
       const [event, account, catalog] = await Promise.all([
         loadEvent(eventId),
-        view === 'register' ? session : session.catch(() => ({ user: null })),
+        loadSession(knownSession, view === 'register' ? eventId : null).catch(() => ({ user: null })),
         view === 'tickets' ? api('events?view=card') : [],
       ]);
       commit({ ...account, events: event ? [event] : catalog, projects: [], recruitments: [] });

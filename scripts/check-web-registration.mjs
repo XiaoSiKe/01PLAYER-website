@@ -85,7 +85,10 @@ try {
     await heldResponse;
     await route.abort('failed').catch(() => {});
   });
+  const signupSession = '**/api/community/session?registrationEvent=web-direct';
+  await page.route(signupSession, route => route.fulfill({ status: 503, json: { error: '会话暂时不可用' } }));
   await fill(page, 'web-direct', '13800000000');
+  await page.unroute(signupSession);
   assert.equal(await page.getByText('查看我的报名',{exact:true}).count(),0);
   const submitRect=await page.getByRole('button',{name:'提交报名',exact:true}).boundingBox();
   const returnRect=await page.locator('.registration-form-heading').getByRole('link',{name:'返回',exact:true}).boundingBox();

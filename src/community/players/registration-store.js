@@ -32,7 +32,7 @@ export function localReceipts() {
       .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
   } catch { return []; }
 }
-export function saveReceipt(receipt) {
+function saveReceipt(receipt) {
   const existing = read(receiptPrefix + receipt.id);
   if (existing?.updatedAt && (!receipt.updatedAt || Date.parse(receipt.updatedAt) < Date.parse(existing.updatedAt))) return existing;
   write(receiptPrefix + receipt.id, receipt);

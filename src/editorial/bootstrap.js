@@ -20,7 +20,7 @@ async function loadContent(preview) {
 
 async function start() {
   const preview = new URLSearchParams(location.search).get('editPreview');
-  if (preview && !await loadContent(preview)) return;
+  if (preview && !(await loadContent(preview))) return;
   // Download the application shell while the live snapshot is in flight.
   // Mounting waits for content so published images and route data stay in sync.
   const [, site] = await Promise.all([preview ? null : loadContent(), import('../main.jsx')]);
