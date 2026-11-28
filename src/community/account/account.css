@@ -1,0 +1,322 @@
+.account-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+.account-page h1 {
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  margin: 20px 0 18px;
+}
+.account-brand {
+  margin: 20px 0 28px;
+  text-align: center;
+}
+.community-page--account-access .community-shell {
+  display: grid;
+  align-content: center;
+  min-height: 100dvh;
+  padding-block: 88px 44px;
+}
+.account-access.account-page {
+  padding: 0;
+}
+.account-access .account-brand {
+  margin: 0 0 24px;
+}
+.account-access .account-brand .account-title {
+  gap: clamp(8px, 2vw, 18px);
+  margin: 0;
+}
+.account-access .account-title-logo {
+  width: clamp(126px, 50%, 220px);
+}
+.account-description {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--community-muted);
+  margin: 0 0 24px;
+}
+:is(.account-page, .player-space-settings) .account-form > fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+:is(.account-page, .player-space-settings) .account-form > .specular-button,
+.player-account-actions > .specular-button,
+:is(.account-page, .community-narrow) .account-switch {
+  width: 100%;
+  white-space: normal;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.account-password {
+  position: relative;
+}
+.account-password input {
+  padding-right: 52px;
+}
+.account-eye {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  background: transparent;
+  color: var(--community-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+.account-switch {
+  margin-top: 12px;
+}
+.account-identity {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  overflow-wrap: anywhere;
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--community-border);
+  border-radius: 16px;
+  height: 84.5px;
+  width: 84.5px;
+  flex: none;
+  overflow: hidden;
+}
+.account-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.account-profile-photo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.account-profile-photo .account-avatar svg {
+  width: 1.5em;
+  height: 1.5em;
+}
+.account-avatar-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid var(--community-border);
+  border-radius: 12px;
+}
+.account-avatar-picker:focus-within {
+  outline: 2px solid var(--site-ink);
+  outline-offset: 4px;
+}
+.account-avatar-picker input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.account-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: 24px;
+}
+.account-identity h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.account-identity p {
+  color: var(--community-muted);
+  margin: 4px 0;
+  font-size: 14px;
+}
+.account-links {
+  display: grid;
+  margin-top: 20px;
+}
+.account-links > :is(a, button) {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--community-border);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 9px 0;
+  gap: 8px;
+}
+.account-links svg {
+  width: 16px;
+  height: 16px;
+}
+.player-space {
+  --player-record-surface: color-mix(in srgb, var(--site-ink) 5%, transparent);
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(0, 2.95fr);
+  align-items: start;
+  gap: clamp(16px, 2.5vw, 36px);
+  width: min(100%, 1140px);
+  margin-inline: auto;
+  padding-top: clamp(12px, 3vw, 44px);
+}
+.player-space--settings {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(100%, 1000px);
+}
+.player-space-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+.player-space-card {
+  min-width: 0;
+  margin: 0;
+}
+.player-space-card > .border-glow-content {
+  padding: clamp(14px, 1.6vw, 22px);
+}
+.player-space-profile .account-identity {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.player-space-profile .account-avatar {
+  inline-size: min(100%, clamp(148.72px, 16.9vw, 229.84px));
+  block-size: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--site-surface);
+}
+.player-space-profile .account-avatar svg { width: 34%; height: auto; }
+.player-space-profile .account-identity h2 { font-size: clamp(23px, 2.8vw, 32px); }
+.player-space-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+.player-space-toolbar h2 {
+  margin: 0;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 650;
+}
+.player-space-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+.community-page .player-settings-action {
+  min-height: 44px;
+  padding-inline: 16px;
+}
+.player-settings-action .specular-button__label { gap: 6px; }
+.player-space-profile-entry {
+  margin-top: 14px;
+}
+.player-space-records {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+.player-record-group { min-width: 0; overflow-wrap: anywhere; }
+.player-record-group h3,
+.player-profile-edit h3,
+.player-account-settings h3 {
+  font-size: 17px;
+  font-weight: 650;
+  margin: 0;
+}
+.player-record-group h3 { font-size: clamp(20px, 2vw, 24px); line-height: 1.25; }
+.player-record-group ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.player-record-group h4 { font-size: 16px; font-weight: 620; margin: 0; }
+.player-record-group p,
+.player-record-title > span {
+  color: var(--community-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 4px 0 0;
+}
+.player-record-group .player-record-empty { margin: 12px 0 0; }
+.player-record-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 9px; }
+.player-record-title > span { margin: 0; }
+.player-space .account-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.player-record-item > .border-glow-content {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+a.player-record-item > .border-glow-content {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+a.player-record-item:is(:hover, :focus-visible) > .border-glow-content {
+  background: color-mix(in srgb, var(--site-ink) 12%, transparent);
+}
+a.player-record-item:active > .border-glow-content {
+  background: color-mix(in srgb, var(--site-ink) 20%, transparent);
+}
+.player-record-item svg { font-size: 16px; color: var(--community-muted); }
+.player-space-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.player-space-settings .player-space-card h3 { margin-bottom: 14px; }
+.player-password-heading { font-size: 15px; margin: 0 0 10px; }
+.player-account-actions {
+  border-top: 1px solid var(--community-border);
+  padding-top: 14px;
+  margin-top: 16px;
+}
+@media (max-width: 660px) {
+  .player-space-settings { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .player-space { grid-template-columns: 1fr; gap: 16px; padding-top: 6px; }
+  .player-space-profile .account-identity { gap: 8px; }
+  .player-space-profile .account-avatar { inline-size: min(100%, 121.68px); }
+  .player-space-profile-entry { width: fit-content; max-width: 100%; margin-inline: auto; }
+}
+@media (max-width: 420px) {
+  .player-space-records { grid-template-columns: 1fr; gap: 12px; }
+}
+.account-username {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}

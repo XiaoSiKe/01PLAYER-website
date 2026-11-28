@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-const repository = 'XiaoSiKe/01-ai-club-website';
+const repositoryId = 1351584381;
 const production = 'https://club.01aiedu.com';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export function validatePush(event, commit) {
-  if (event.repository?.full_name !== repository || event.ref !== 'refs/heads/main'
+  if (event.repository?.id !== repositoryId || event.ref !== 'refs/heads/main'
     || event.deleted || !/^[a-f0-9]{40}$/.test(commit || '') || /^0+$/.test(commit)
     || event.after !== commit) {
     throw new Error('仅允许当前仓库 main 分支的本次推送触发发布。');
@@ -44,20 +44,24 @@ export async function triggerFlow({ webhook, event, commit, fetchImpl = fetch, w
 }
 
 export async function waitForProduction({ commit, fetchImpl = fetch, wait = pause }) {
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 120; attempt++) {
     try {
       const response = await fetchImpl(`${production}/version.json`, {
         cache: 'no-store', signal: AbortSignal.timeout(5000),
       });
       const version = await response.json();
-      if (response.ok && version.commit === commit) return;
+      if (response.ok && version.commit === commit && version.source !== 'working-tree-snapshot') return;
     } catch { /* A transient CDN/network error must not stop the next check. */ }
-    if (attempt < 29) await wait(5000);
+    if (attempt < 119) await wait(5000);
   }
   throw new Error('等待发布超时：官网版本尚未更新为本次提交，请检查云效运行记录。');
 }
 
 async function main() {
+  if (process.env.CLUB_AUTO_DEPLOY !== '1') {
+    console.log('自动发布已暂停；仅执行检查，不触发云效或更改线上版本。');
+    return;
+  }
   if (process.env.GITHUB_EVENT_NAME !== 'push') throw new Error('发布入口仅接受 push 事件。');
   const webhook = process.env.CLUB_FLOW_WEBHOOK_URL;
   if (!webhook) throw new Error('缺少 GitHub Secret：CLUB_FLOW_WEBHOOK_URL。');
@@ -70,7 +74,7 @@ async function main() {
   if (process.env.GITHUB_STEP_SUMMARY) {
     const { appendFileSync } = await import('node:fs');
     appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-      `官网已发布 [${commit.slice(0, 7)}](https://github.com/${repository}/commit/${commit})。\n\n[访问官网](${production}/)\n`);
+      `官网已发布 [${commit.slice(0, 7)}](https://github.com/${event.repository.full_name}/commit/${commit})。\n\n[访问官网](${production}/)\n`);
   }
 }
 

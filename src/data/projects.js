@@ -1,6 +1,7 @@
+import { siteRows } from '../editorial/content.js';
 // 示例项目集中维护于此。接入真实项目时，替换文案并填写 url；
 // url 留空时，卡片打开本站可独立访问的示例项目页。
-export const projects = [
+export const projects = siteRows('projects', [
   {
     id: 'knowledge',
     number: '01',
@@ -55,7 +56,7 @@ export const projects = [
   {
     id: 'tools',
     number: '04',
-    name: '日新 · 开源工具箱',
+    name: '零一 · 开源工具箱',
     english: 'SMALL TOOLS, BIG HELP',
     category: '效率工具',
     description: '从日常的小麻烦，开始一次小创造。',
@@ -69,7 +70,7 @@ export const projects = [
       ['保持可理解', '让小工具既能派上用场，也能成为学习开发的例子。'],
     ],
   },
-];
+]);
 
 export function projectHref(project) {
   return project.url || `?project=${encodeURIComponent(project.id)}`;

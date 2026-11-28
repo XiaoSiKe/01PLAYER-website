@@ -7,9 +7,9 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 1
 fi
 
-npm ci --no-audit --no-fund
-npm run build
 commit=$(git rev-parse HEAD)
+npm ci --no-audit --no-fund
+BUILD_VCS_NUMBER="$commit" npm run build
 test "$(node -p "JSON.parse(require('fs').readFileSync('dist/version.json')).commit")" = "$commit"
 mkdir -p artifacts
 archive="artifacts/01aiclub-${commit}.tgz"

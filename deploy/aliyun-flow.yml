@@ -3,8 +3,8 @@ name: 01aiclub-website-prod
 sources:
   website:
     type: git
-    name: 日新社官网公共源码
-    endpoint: https://github.com/XiaoSiKe/01-ai-club-website.git
+    name: 零一玩家官网公共源码
+    endpoint: https://github.com/XiaoSiKe/01PLAYER-website.git
     branch: main
     branchesFilter: ^main$
     triggerEvents:
@@ -20,7 +20,7 @@ stages:
     name: 检查、构建与独立发布
     jobs:
       build_job:
-        name: 云端构建与日新社官网受限 SSH 发布
+        name: 云端构建与零一玩家官网受限 SSH 发布
         runsOn:
           group: public/cn-hongkong
           container: build-steps-public-registry.cn-beijing.cr.aliyuncs.com/build-steps/alinux3:latest
@@ -33,7 +33,7 @@ stages:
             with:
               run: bash deploy/ci-build.sh
           publish_step:
-            name: 校验后发布日新社官网
+            name: 校验后发布零一玩家官网
             step: Command
             with:
               run: bash deploy/ci-publish.sh

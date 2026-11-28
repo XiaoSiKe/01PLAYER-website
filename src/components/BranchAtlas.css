@@ -100,16 +100,23 @@ a.branch-atlas__leader-profile:is(:hover, :focus-visible) strong { text-decorati
 .branch-atlas__row-end { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .branch-atlas__row-end > svg { width: 12px; height: 12px; stroke: var(--atlas-quiet); stroke-width: 1.2; }
 .branch-atlas__crest { display: block; object-fit: contain; clip-path: circle(50%); }
-.branch-atlas__school-heading { display: flex; align-items: center; gap: 20px; margin: 0 0 16px; }
-.branch-atlas__school-heading > .school-crest { position: relative; width: 75.6px; height: 75.6px; flex-shrink: 0; }
+.branch-atlas__school-heading { --campus-crest-size: 75.6px; --campus-heading-gap: 20px; display: flex; align-items: center; gap: var(--campus-heading-gap); margin: 0 0 16px; }
+.branch-atlas__school-heading > .school-crest { position: relative; width: var(--campus-crest-size); height: var(--campus-crest-size); flex-shrink: 0; }
 .school-crest > canvas, .school-crest > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .branch-atlas__school-heading > div { min-width: 0; }
 .branch-atlas__school-heading h3 { margin: 6px 0; letter-spacing: -.025em; }
+@media (min-width: 761px) {
+  .branch-atlas__school-heading[data-school='fzrjxy'] { container-type: inline-size; }
+  .branch-atlas__school-heading[data-school='fzrjxy'] h3:lang(zh) {
+    /* Ten Chinese glyphs share the space next to the crest. */
+    font-size: min(24px, calc((100cqi - var(--campus-crest-size) - var(--campus-heading-gap)) / 10));
+    white-space: nowrap;
+  }
+}
 .branch-atlas__overline { color: var(--atlas-muted); font-size: 11px; line-height: 1.5; }
 .branch-atlas__branch-name { display: flex; align-items: baseline; gap: 10px; margin: 0; color: var(--atlas-muted); font-size: 12px; line-height: 1.7; white-space: nowrap; }
 .branch-atlas__panel-actions { flex-shrink: 0; margin-top: 32px; }
-.branch-atlas__resource-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.branch-atlas__resource-link.specular-button { min-width: 0; min-height: 52px; padding: 14px 8px; font-size: 14px; white-space: nowrap; }
+.branch-atlas__resource-link.specular-button { width: 100%; min-width: 0; min-height: 52px; padding: 14px 8px; font-size: 14px; white-space: nowrap; }
 .branch-atlas__switcher { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; color: var(--atlas-muted); font-size: 11px; }
 .branch-atlas__switcher > button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
 .branch-atlas__switcher > button:hover { color: var(--atlas-ink); }
@@ -122,7 +129,7 @@ a.branch-atlas__leader-profile:is(:hover, :focus-visible) strong { text-decorati
 .branch-atlas__empty p { font-size: 13px; line-height: 1.8; color: var(--atlas-muted); }
 .branch-atlas__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 1000px) {
-  .branch-atlas__school-heading { display: grid; grid-template-columns: 75.6px minmax(0,1fr); gap: 0 20px; }
+  .branch-atlas__school-heading { display: grid; grid-template-columns: var(--campus-crest-size) minmax(0,1fr); gap: 0 var(--campus-heading-gap); }
   .branch-atlas__school-heading > .school-crest { grid-column: 1; grid-row: 1 / 3; }
   .branch-atlas__school-heading > div { display: contents; }
   .branch-atlas__school-heading .branch-atlas__overline { grid-column: 2; grid-row: 1; }
@@ -179,3 +186,58 @@ a.branch-atlas__leader-profile:is(:hover, :focus-visible) strong { text-decorati
   .branch-atlas__map { opacity: 1; }
   .branch-atlas__panel { background: var(--atlas-panel); }
 }
+
+@media (max-width: 760px) {
+  .branch-atlas__frame > .border-glow-content { padding-top: 0; }
+  .branch-atlas__panel { height: auto; padding: 16px; }
+  .branch-atlas[data-view='school'] .branch-atlas__panel { min-height: 0; }
+  .branch-atlas__panel-content { flex: none; overflow: visible; }
+  .branch-atlas__school-list, .branch-atlas__search-results { overflow: visible; }
+  .branch-atlas__search { margin-bottom: 16px; }
+  .branch-atlas__intro { margin-bottom: 10px; }
+  .branch-atlas__intro h3 { font-size: 22px; }
+  .branch-atlas__toolbar { margin-bottom: 6px; }
+  .branch-atlas__list-label { margin-bottom: 4px; }
+  .branch-atlas__school-row { min-height: 66px; gap: 9px; padding: 8px 0; border-radius: 10px; }
+  .branch-atlas__school-row > img { width: 40px; height: 40px; }
+  .branch-atlas__school-row > span:not(.branch-atlas__row-end) { gap: 4px; }
+  .branch-atlas__panel-actions { margin-top: 16px; }
+  .branch-atlas__resource-link.specular-button { min-height: 44px; padding-block: 10px; }
+  .branch-atlas__switcher { margin-top: 8px; }
+  .homepage #cooperation .home-cooperation-intro { margin-bottom: 22px; }
+}
+@media (max-width: 760px) {
+  .branch-atlas__school-list, .branch-atlas__search-results { max-height: 300px; overflow-y: auto; }
+}
+
+@media (max-width: 760px) {
+  .branch-atlas { margin-bottom: 20px; }
+  .branch-atlas__panel { padding: 14px; }
+  .branch-atlas__search { margin-bottom: 10px; }
+  .branch-atlas__intro { margin-bottom: 6px; }
+  .branch-atlas__intro h3 { margin-bottom: 6px; }
+  .branch-atlas__toolbar { margin-bottom: 4px; min-height: 36px; }
+  .branch-atlas__toolbar li button, .branch-atlas__back { min-height: 36px; }
+  .branch-atlas__school-row { min-height: 60px; padding-block: 6px; gap: 8px; }
+  .branch-atlas__school-row > img { width: 36px; height: 36px; }
+  .branch-atlas__school-list { max-height: 180px; overflow-y: auto; overscroll-behavior: contain; }
+  .branch-atlas__search-results { max-height: 204px; overscroll-behavior: contain; }
+  .branch-atlas__panel-actions { margin-top: 12px; }
+  .homepage #cooperation .home-cooperation-intro { margin-bottom: 14px; }
+}
+
+.branch-atlas__credit { position: absolute; right: 12px; bottom: 4px; z-index: 3; font-size: 9px; line-height: 1.4; color: var(--atlas-muted); }
+@media(max-width:760px) {
+  .branch-atlas__panel { padding: 12px; }
+  .branch-atlas__intro h3 { font-size: 20px; }
+  .branch-atlas__school-row strong { font-size: 14px; }
+  .branch-atlas__school-row small { font-size: 10px; }
+  .branch-atlas__list-label { font-size: 12px; }
+  .branch-atlas__panel-actions { margin-top: 8px; }
+  .branch-atlas__resource-link.specular-button { min-height: 42px; padding-block: 8px; font-size: 13px; }
+}
+
+.branch-atlas__toolbar { flex-wrap: nowrap; }
+.branch-atlas__toolbar nav { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.branch-atlas__toolbar nav::-webkit-scrollbar { display: none; }
+.branch-atlas__toolbar .community-search-toggle { width: 36px; min-width: 36px; min-height: 36px; margin-left: auto; padding: 0; }

@@ -3,9 +3,10 @@
 set -euo pipefail
 umask 077
 
-readonly ROOT=/var/www/01aiclub
-[[ "${SSH_ORIGINAL_COMMAND:-}" == publish ]] || { printf '此密钥仅允许日新社官网制品发布。\n' >&2; exit 1; }
+[[ "${SSH_ORIGINAL_COMMAND:-}" == publish ]] || { printf '此密钥仅允许零一玩家官网制品发布。\n' >&2; exit 1; }
 [[ $(id -un) == 01aiclub-deploy ]] || exit 1
+ROOT=$(python3 /usr/local/lib/01aiclub/static-site.py /etc/01PLAYER/static-root)
+readonly ROOT
 [[ $(readlink -f "$ROOT/shared/incoming") == "$ROOT/shared/incoming" ]] || exit 1
 
 incoming=$(mktemp -d "$ROOT/shared/incoming/ci.XXXXXXXX")

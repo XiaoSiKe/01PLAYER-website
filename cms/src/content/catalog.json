@@ -1,0 +1,8132 @@
+[
+  {
+    "key": "activityPhotos",
+    "title": "活动与时光机照片",
+    "path": "/?page=time-machine",
+    "rows": [
+      {
+        "id": "activity-13",
+        "src": "/images/activity-photos/activity-13-kaiwu-group.jpg",
+        "width": 540,
+        "height": 960,
+        "alt": "开物·福州高校黑客松「零一」合照",
+        "title": "开物·福州高校黑客松",
+        "organization": "零一黑客松｜「零一」合照"
+      },
+      {
+        "id": "activity-14",
+        "src": "/images/activity-photos/activity-14-kaiwu-venue.jpg",
+        "width": 720,
+        "height": 960,
+        "alt": "开物·福州高校黑客松比赛现场",
+        "title": "开物·福州高校黑客松",
+        "organization": "零一黑客松｜比赛现场"
+      },
+      {
+        "id": "activity-15",
+        "src": "/images/activity-photos/activity-15-kaiwu-speech.jpg",
+        "width": 720,
+        "height": 960,
+        "alt": "开物·福州高校黑客松社长「零一扬」演讲",
+        "title": "开物·福州高校黑客松",
+        "organization": "零一黑客松｜社长「零一扬」演讲"
+      },
+      {
+        "id": "activity-16",
+        "src": "/images/activity-photos/activity-16-kaiwu-venue.jpg",
+        "width": 720,
+        "height": 960,
+        "alt": "开物·福州高校黑客松比赛现场",
+        "title": "开物·福州高校黑客松",
+        "organization": "零一黑客松｜比赛现场"
+      },
+      {
+        "id": "activity-01",
+        "src": "/images/activity-photos/activity-01.jpg",
+        "width": 960,
+        "height": 442,
+        "alt": "零一玩家室内活动合影",
+        "organization": "零一沙龙｜AI 商业锐评会",
+        "title": "是自嗨玩具？还是商业产品？带上你的项目来锐评！"
+      },
+      {
+        "id": "activity-02",
+        "src": "/images/activity-photos/activity-02.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "室内围桌交流活动现场拼图",
+        "organization": "零一沙龙｜AI 商业锐评会",
+        "title": "是自嗨玩具？还是商业产品？带上你的项目来锐评！"
+      },
+      {
+        "id": "activity-03",
+        "src": "/images/activity-photos/activity-03.jpg",
+        "width": 960,
+        "height": 696,
+        "alt": "夜间户外交流现场",
+        "organization": "零一沙龙｜AI 科研锐评会",
+        "title": "论文是 AI 写的，科研是谁做的？"
+      },
+      {
+        "id": "activity-04",
+        "src": "/images/activity-photos/activity-04.jpg",
+        "width": 960,
+        "height": 719,
+        "alt": "教室交流活动现场拼图",
+        "organization": "零一沙龙｜AI 科研锐评会",
+        "title": "论文是 AI 写的，科研是谁做的？"
+      },
+      {
+        "id": "activity-05",
+        "src": "/images/activity-photos/activity-05.jpg",
+        "width": 960,
+        "height": 539,
+        "alt": "校园建筑前的活动合影",
+        "organization": "零一沙龙｜AI 科研锐评会",
+        "title": "论文是 AI 写的，科研是谁做的？"
+      },
+      {
+        "id": "activity-06",
+        "src": "/images/activity-photos/activity-06.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "围桌交流活动现场拼图",
+        "organization": "零一沙龙｜梦开始的地方",
+        "title": "AI时代除了成为好学生，我们还能成为谁？"
+      },
+      {
+        "id": "activity-07",
+        "src": "/images/activity-photos/activity-07.jpg",
+        "width": 960,
+        "height": 467,
+        "alt": "展示社团旗帜的户外活动合影",
+        "organization": "零一沙龙｜福州大学社团巡礼",
+        "title": "记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？"
+      },
+      {
+        "id": "activity-08",
+        "src": "/images/activity-photos/activity-08.jpg",
+        "width": 960,
+        "height": 473,
+        "alt": "教室内的社团活动合影",
+        "organization": "零一沙龙｜梦开始的地方",
+        "title": "AI时代除了成为好学生，我们还能成为谁？"
+      },
+      {
+        "id": "activity-09",
+        "src": "/images/activity-photos/activity-09.jpg",
+        "width": 913,
+        "height": 960,
+        "alt": "室内活动合影",
+        "organization": "日常活动｜「零一」首次“聚餐耍起”",
+        "title": "一群志同道合的兄弟，难得开心的一天！"
+      },
+      {
+        "id": "activity-10",
+        "src": "/images/activity-photos/activity-10.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "社团活动展位交流现场拼图",
+        "organization": "零一沙龙｜福州大学社团巡礼",
+        "title": "记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？"
+      },
+      {
+        "id": "activity-11",
+        "src": "/images/activity-photos/activity-11.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "活动展位的饮品制作与交流现场拼图",
+        "organization": "零一沙龙｜福州大学社团巡礼",
+        "title": "记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？"
+      },
+      {
+        "id": "activity-12",
+        "src": "/images/activity-photos/activity-12.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "活动展位的电脑演示与交流现场拼图",
+        "organization": "零一沙龙｜福州大学社团巡礼",
+        "title": "记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？"
+      }
+    ]
+  },
+  {
+    "key": "competitionItems",
+    "title": "科研与竞赛影像",
+    "path": "/#research",
+    "rows": [
+      {
+        "title": "2026 中国电机工程学会杯全国大学生电工数学建模竞赛 · 二等奖",
+        "participants": [
+          "戴振豪",
+          "陈品铮",
+          "陈俊祥"
+        ],
+        "id": "certificate-1",
+        "kind": "certificate",
+        "aspectRatio": 0.7070709950231028,
+        "orientation": "portrait",
+        "image": "/images/competition/certificate-01-thumb.webp",
+        "fullImage": "/images/competition/certificate-01.webp",
+        "credit": "戴振豪、陈品铮、陈俊祥"
+      },
+      {
+        "title": "第十九届高教杯 · 逆向工程与创新设计分赛道一等奖",
+        "participants": [
+          "韩慕昇",
+          "杨章勋"
+        ],
+        "id": "certificate-2",
+        "kind": "certificate",
+        "aspectRatio": 0.7070911034564675,
+        "orientation": "portrait",
+        "image": "/images/competition/certificate-02-thumb.webp",
+        "fullImage": "/images/competition/certificate-02.webp",
+        "credit": "韩慕昇、杨章勋"
+      },
+      {
+        "title": "第十九届高教杯国际赛道 · 团体一等奖",
+        "participants": [
+          "韩慕昇",
+          "杨章勋",
+          "徐敏悦",
+          "王毅",
+          "陈佳宏",
+          "齐仕选"
+        ],
+        "id": "certificate-3",
+        "kind": "certificate",
+        "aspectRatio": 1.4142449185284731,
+        "orientation": "landscape",
+        "image": "/images/competition/certificate-03-thumb.webp",
+        "fullImage": "/images/competition/certificate-03.webp",
+        "credit": "韩慕昇、杨章勋、徐敏悦、王毅、陈佳宏、齐仕选"
+      },
+      {
+        "title": "2026 机械产品数字化设计赛区域赛 · 数字孪生一等奖",
+        "participants": [
+          "韩慕昇",
+          "游诗颖",
+          "陈雨轩"
+        ],
+        "id": "certificate-4",
+        "kind": "certificate",
+        "aspectRatio": 1.7777777777777777,
+        "orientation": "landscape",
+        "image": "/images/competition/certificate-04-thumb.webp",
+        "fullImage": "/images/competition/certificate-04.webp",
+        "credit": "韩慕昇、游诗颖、陈雨轩"
+      },
+      {
+        "title": "2025 中国机器人大赛暨 RoboCup 中国赛 · 无人机自主飞行竞速三等奖",
+        "participants": [
+          "徐敏悦",
+          "蔡辰希",
+          "韩慕昇",
+          "刘志濠",
+          "陈嘉磊",
+          "关源冬"
+        ],
+        "id": "certificate-5",
+        "kind": "certificate",
+        "aspectRatio": 0.7070757462376319,
+        "orientation": "portrait",
+        "image": "/images/competition/certificate-05-thumb.webp",
+        "fullImage": "/images/competition/certificate-05.webp",
+        "credit": "徐敏悦、蔡辰希、韩慕昇、刘志濠、陈嘉磊、关源冬"
+      },
+      {
+        "title": "2025 中国大学生机械工程创新创意大赛 · 二等奖",
+        "participants": [
+          "刘东启",
+          "周心怡",
+          "韩慕昇"
+        ],
+        "id": "certificate-6",
+        "kind": "certificate",
+        "aspectRatio": 1.4151260504201681,
+        "orientation": "landscape",
+        "image": "/images/competition/certificate-06-thumb.webp",
+        "fullImage": "/images/competition/certificate-06.webp",
+        "credit": "刘东启、周心怡、韩慕昇"
+      },
+      {
+        "id": "certificate-7",
+        "kind": "certificate",
+        "title": "2026 亚洲建筑规划景观数字艺术设计竞赛 · 铜奖｜四环织心——山海环生新境",
+        "participants": [
+          "余齐文",
+          "高家莹"
+        ],
+        "aspectRatio": 1.4214229867083659,
+        "orientation": "landscape",
+        "image": "/images/competition/certificate-07-thumb.webp",
+        "fullImage": "/images/competition/certificate-07.jpg",
+        "credit": "余齐文、高家莹"
+      },
+      {
+        "id": "certificate-8",
+        "kind": "certificate",
+        "title": "2026 亚洲建筑规划景观数字艺术设计竞赛 · 铜奖｜NEO-ARK",
+        "participants": [
+          "高家莹",
+          "卢俊达",
+          "林晨昊",
+          "郑宇航",
+          "蒋旭"
+        ],
+        "aspectRatio": 1.4159499609069586,
+        "orientation": "landscape",
+        "image": "/images/competition/certificate-08-thumb.webp",
+        "fullImage": "/images/competition/certificate-08.jpg",
+        "credit": "高家莹、卢俊达、林晨昊、郑宇航、蒋旭"
+      },
+      {
+        "id": "competition-1",
+        "title": "2026 机械产品数字化设计赛全国决赛 · 备赛现场",
+        "kind": "photo",
+        "column": "center",
+        "aspectRatio": 1.5,
+        "orientation": "landscape",
+        "fullAspectRatio": 1.5019546520719311,
+        "image": "/images/competition/competition-01-thumb.webp",
+        "fullImage": "/images/competition/competition-01.webp"
+      },
+      {
+        "id": "competition-2",
+        "title": "2026 机械产品数字化设计赛全国决赛 · 数字孪生赛场",
+        "kind": "photo",
+        "column": "center",
+        "aspectRatio": 1.5,
+        "orientation": "landscape",
+        "fullAspectRatio": 1.50078125,
+        "image": "/images/competition/competition-02-thumb.webp",
+        "fullImage": "/images/competition/competition-02.webp"
+      },
+      {
+        "id": "competition-3",
+        "title": "机械产品数字化设计赛 · 机械臂调试现场",
+        "kind": "photo",
+        "column": "center",
+        "aspectRatio": 1.5,
+        "orientation": "landscape",
+        "fullAspectRatio": 1.5011727912431587,
+        "image": "/images/competition/competition-03-thumb.webp",
+        "fullImage": "/images/competition/competition-03.webp"
+      },
+      {
+        "id": "competition-4",
+        "title": "第十八届中国电机工程学会杯 · 福州大学赛场",
+        "kind": "photo",
+        "column": "center",
+        "aspectRatio": 1.5,
+        "orientation": "landscape",
+        "fullAspectRatio": 1.33359375,
+        "image": "/images/competition/competition-04-thumb.webp",
+        "fullImage": "/images/competition/competition-04.webp"
+      }
+    ]
+  },
+  {
+    "key": "researchThemes",
+    "title": "科研方向",
+    "path": "/?page=research",
+    "rows": [
+      {
+        "id": "reading",
+        "title": "论文共读",
+        "text": "读懂方法，核对假设，把值得继续追问的问题留下来。",
+        "verb": "阅读"
+      },
+      {
+        "id": "experiment",
+        "title": "实验复现",
+        "text": "循着开放资料动手尝试，让理解落到实验与记录中。",
+        "verb": "验证"
+      },
+      {
+        "id": "collaborate",
+        "title": "研究共创",
+        "text": "带着问题交流，与同伴一起明确下一步的探索方向。",
+        "verb": "共创"
+      }
+    ]
+  },
+  {
+    "key": "branches",
+    "title": "高校分社",
+    "path": "/#cooperation",
+    "rows": [
+      {
+        "id": "fzu",
+        "city": "fuzhou",
+        "school": "福州大学",
+        "shortName": "福大",
+        "name": "零一玩家",
+        "role": "总社",
+        "founded": "2026-09-01",
+        "leader": {
+          "name": "零一扬",
+          "memberId": "XiaoSiKe",
+          "title": "社长",
+          "avatar": "/images/business-members-exdrink/04-lingyiyang.jpg"
+        },
+        "coordinates": [
+          119.1933416,
+          26.0614068
+        ],
+        "osmId": 12658065,
+        "campus": "旗山校区",
+        "address": "福建省福州市大学新区学园路2号",
+        "description": "和福大的同伴一起参加活动、组队共创，在实践中完成自己的从零到一。",
+        "crest": "/images/branches/fzu-crest.png",
+        "searchTerms": "福州大学 福大 fzu 总社 零一玩家 01PLAYER 福建 福州 旗山",
+        "website": "https://www.fzu.edu.cn/",
+        "addressSource": "https://zsb.fzu.edu.cn/xxgk/xyfg/qsxy.htm",
+        "labelSide": "right",
+        "flag": "/images/branches/flags/fzu.svg"
+      },
+      {
+        "id": "fjnu",
+        "city": "fuzhou",
+        "school": "福建师范大学",
+        "shortName": "福师大",
+        "name": "福师大分社",
+        "role": "分社",
+        "founded": "2026-10-25",
+        "leader": {
+          "name": "Miracle",
+          "memberId": "miracle-fjnu",
+          "title": "分社长",
+          "avatar": "/images/business-members-exdrink/03-miracle.jpg"
+        },
+        "coordinates": [
+          119.2045602,
+          26.0327333
+        ],
+        "osmId": 12658062,
+        "campus": "旗山校区",
+        "address": "福建省福州市闽侯县上街镇乌龙江中大道18号",
+        "description": "和福师大的同伴一起，在学习、交流与实践中探索 AI。",
+        "crest": "/images/branches/fjnu-crest.svg",
+        "searchTerms": "福建师范大学 福师大 师大 fjnu 分社 福建 福州 旗山",
+        "website": "https://www.fjnu.edu.cn/",
+        "addressSource": "https://office.fjnu.edu.cn/810/list.htm",
+        "labelSide": "right",
+        "flag": "/images/branches/flags/fjnu.svg"
+      },
+      {
+        "id": "fjut",
+        "city": "fuzhou",
+        "school": "福建理工大学",
+        "shortName": "福理工",
+        "name": "福理工分社",
+        "role": "分社",
+        "founded": "2026-10-21",
+        "leader": {
+          "name": "黄铉",
+          "memberId": "huang-xuan",
+          "title": "分社长",
+          "avatar": "/images/business-members-smartbot/01-huangxuan.jpg"
+        },
+        "coordinates": [
+          119.1910378,
+          26.0383264
+        ],
+        "osmId": 12658060,
+        "campus": "旗山校区",
+        "address": "福建省福州市闽侯县上街镇学府南路69号",
+        "description": "在交流中分享新发现，在共创中尝试新可能。和福理工的同伴一起，让学习走向实践。",
+        "crest": "/images/branches/fjut-crest.svg",
+        "searchTerms": "福建理工大学 福建工程学院 福理工 福工 fjut 分社 福建 福州 旗山",
+        "website": "https://www.fjut.edu.cn/",
+        "addressSource": "https://join.fjut.edu.cn/lxwm/list.htm",
+        "labelSide": "right",
+        "flag": "/images/branches/flags/fjut.svg"
+      },
+      {
+        "id": "fuzc",
+        "city": "fuzhou",
+        "school": "福州大学至诚学院",
+        "shortName": "福大至诚",
+        "name": "福大至诚分社",
+        "role": "分社",
+        "founded": "2026-10-26",
+        "leader": {
+          "name": "郑航",
+          "memberId": "rezhoukang",
+          "title": "分社长",
+          "avatar": "/images/pioneers/zheng-hang.jpg"
+        },
+        "coordinates": [
+          119.2680121,
+          26.0786045
+        ],
+        "osmId": 717445438,
+        "campus": "杨桥西路50号",
+        "address": "福建省福州市鼓楼区杨桥西路50号",
+        "description": "和福大至诚的同伴一起，在学习、交流与实践中探索 AI。",
+        "crest": "/images/branches/fuzc-crest.png",
+        "searchTerms": "福州大学至诚学院 福大至诚 至诚 fuzc 分社 福建 福州 鼓楼 杨桥西路",
+        "website": "https://www.fdzcxy.edu.cn/",
+        "addressSource": "https://www.fdzcxy.edu.cn/xyzc/list.htm",
+        "labelSide": "right",
+        "flag": "/images/branches/flags/fuzc.svg"
+      },
+      {
+        "id": "mju",
+        "city": "fuzhou",
+        "school": "闽江大学",
+        "shortName": "闽大",
+        "name": "闽江分社",
+        "role": "分社",
+        "founded": "2026-10-22",
+        "leader": {
+          "name": "Spark",
+          "memberId": "Sparkfengtu",
+          "title": "分社长",
+          "avatar": "/images/pioneers/spark.jpg"
+        },
+        "coordinates": [
+          119.1649388,
+          26.0693679
+        ],
+        "osmId": 938005192,
+        "campus": "大学城校区",
+        "address": "福建省福州市闽侯县上街镇溪源宫路200号",
+        "description": "连接愿意学习、分享与共创的伙伴。在闽江大学，一起探索 AI 的更多可能。",
+        "crest": "/images/branches/mju-color-crest.svg",
+        "searchTerms": "闽江大学 闽江学院 闽大 闽院 mju 分社 福建 福州 大学城",
+        "website": "https://www.mju.edu.cn/",
+        "addressSource": "https://www.mju.edu.cn/",
+        "labelSide": "left",
+        "flag": "/images/branches/flags/mju.svg"
+      },
+      {
+        "id": "fit",
+        "city": "fuzhou",
+        "school": "福州理工学院",
+        "shortName": "福州理工",
+        "name": "福州理工分社",
+        "role": "分社",
+        "founded": "2026-10-26",
+        "leader": {
+          "name": "Eug",
+          "memberId": "Eug-Y",
+          "title": "分社长",
+          "avatar": "/images/pioneers/eug.jpg"
+        },
+        "coordinates": [
+          119.4655281,
+          26.2428289
+        ],
+        "osmId": 582302622,
+        "campus": "连江校区",
+        "address": "福建省福州市连江西江滨大道8号",
+        "description": "和福州理工的同伴一起，在学习、交流与实践中探索 AI。",
+        "crest": "/images/branches/fit-crest.png",
+        "crestBackground": "#fff",
+        "searchTerms": "福州理工学院 福州理工 FIT Fuzhou Institute of Technology 分社 福建 福州 连江",
+        "website": "https://www.fit.edu.cn/",
+        "addressSource": "https://www.fit.edu.cn/html/1675325920.html",
+        "labelSide": "left",
+        "flag": "/images/branches/flags/fit.svg"
+      },
+      {
+        "id": "qzoi",
+        "city": "quanzhou",
+        "school": "泉州海洋学院",
+        "shortName": "泉州海洋",
+        "name": "泉州海洋分社",
+        "role": "分社",
+        "founded": "2026-10-30",
+        "leader": {
+          "name": "郑鑫尧",
+          "memberId": "qwq2008123-star",
+          "title": "分社长",
+          "avatar": "/images/pioneers/zheng-xinyao.jpg"
+        },
+        "coordinates": [
+          118.74615565,
+          24.76465065
+        ],
+        "osmId": 621503484,
+        "campus": "石狮校区",
+        "address": "福建省泉州市石狮市祥芝镇古浮二十区1号",
+        "description": "和泉州海洋的同伴一起，在学习、交流与实践中探索 AI。",
+        "crest": "/images/branches/qzoi-crest.jpg",
+        "crestBackground": "#fff",
+        "searchTerms": "泉州海洋学院 泉州海洋职业学院 泉海 QZOI Quanzhou Ocean Institute 分社 福建 泉州 石狮 祥芝",
+        "website": "https://www.qzoi.edu.cn/",
+        "addressSource": "https://www.qzoi.edu.cn/xygk/lxwm.htm",
+        "labelSide": "right",
+        "flag": "/images/branches/flags/qzoi.svg"
+      },
+      {
+        "id": "fzrjxy",
+        "city": "fuzhou",
+        "school": "福州软件职业技术学院",
+        "shortName": "福软",
+        "name": "福软分社",
+        "role": "分社",
+        "founded": "2026-11-25",
+        "leader": {
+          "name": "许钧泓",
+          "memberId": "encoXJH",
+          "title": "分社长",
+          "avatar": "/images/pioneers/enco-xjh.jpg"
+        },
+        "coordinates": [
+          119.69825,
+          25.97278
+        ],
+        "osmId": 1310615512,
+        "campus": "文岭校区",
+        "crest": "/images/branches/fzrjxy-crest.png",
+        "crestBackground": "#fff",
+        "searchTerms": "福州软件职业技术学院 福软 fzrjxy 福州 长乐 文岭",
+        "website": "https://www.fzrjxy.com/",
+        "addressSource": "https://www.fzrjxy.com/info/1012/47061.htm",
+        "labelSide": "left",
+        "flag": "/images/branches/flags/fzrjxy.svg"
+      }
+    ]
+  },
+  {
+    "key": "businesses",
+    "title": "零一商业",
+    "path": "/#business",
+    "rows": [
+      {
+        "id": "ezcut",
+        "cutout": true,
+        "src": "/images/business-ezcut.png",
+        "alt": "零一快剪 Logo",
+        "title": "零一快剪",
+        "imageScale": 0.84,
+        "subtitle": "把交付质量立住，客户看了不烧心！",
+        "href": "https://ezcut.01aiedu.com/",
+        "members": [
+          {
+            "name": "玉华",
+            "src": "/images/business-members-ezcut/01-yuhua.webp"
+          },
+          {
+            "name": "徐裕恒",
+            "memberId": "CurvatureSoup",
+            "src": "/images/business-members-ezcut/02-xuyuheng.webp",
+            "href": "/leadership?member=CurvatureSoup"
+          },
+          {
+            "name": "吴耀辉",
+            "memberId": "wu-yaohui",
+            "src": "/images/business-members-ezcut/03-wuyaohui.webp",
+            "href": "/pioneers?member=wu-yaohui"
+          }
+        ],
+        "membersExample": false
+      },
+      {
+        "id": "exdrink",
+        "cutout": true,
+        "src": "/images/business-exdrink.png",
+        "alt": "零一拓饮 Logo",
+        "title": "零一拓饮",
+        "subtitle": "从一杯好味道，到生活的小美好！",
+        "href": "https://exdrink.01aiedu.com/",
+        "members": [
+          {
+            "name": "王云重",
+            "memberId": "Dirgerx",
+            "src": "/images/business-members-exdrink/01-wangyunzhong.jpg",
+            "href": "/leadership?member=Dirgerx"
+          },
+          {
+            "name": "San",
+            "memberId": "SadSan233",
+            "src": "/images/business-members-exdrink/02-san.jpg",
+            "href": "/pioneers?member=SadSan233"
+          },
+          {
+            "name": "Miracle",
+            "memberId": "miracle-fjnu",
+            "src": "/images/business-members-exdrink/03-miracle.jpg",
+            "href": "/leadership?member=miracle-fjnu"
+          }
+        ],
+        "membersExample": false
+      },
+      {
+        "id": "smartbot",
+        "cutout": true,
+        "src": "/images/business-smartbot.png",
+        "alt": "零一智械 Logo",
+        "title": "零一智械",
+        "subtitle": "让 AI 触手可及，让好奇得到回应！",
+        "captionCredit": "零一玩家｜福理工分社",
+        "href": "https://smartbot.01aiedu.com/",
+        "members": [
+          {
+            "name": "黄铉",
+            "memberId": "huang-xuan",
+            "src": "/images/business-members-smartbot/01-huangxuan.jpg",
+            "href": "/pioneers?member=huang-xuan"
+          },
+          {
+            "name": "王云重",
+            "memberId": "Dirgerx",
+            "src": "/images/business-members-exdrink/01-wangyunzhong.jpg",
+            "href": "/leadership?member=Dirgerx"
+          }
+        ],
+        "membersExample": false
+      },
+      {
+        "id": "timetable",
+        "cutout": true,
+        "src": "/images/business-timetable.png",
+        "alt": "零一课表 Logo",
+        "title": "零一课表",
+        "imageScale": 0.76,
+        "subtitle": "课表，本该如此简单。",
+        "href": "https://www.weiyanglab.cn",
+        "members": [
+          {
+            "name": "Spark",
+            "memberId": "Sparkfengtu",
+            "src": "/images/pioneers/spark.jpg",
+            "href": "/pioneers?member=Sparkfengtu"
+          }
+        ],
+        "membersExample": false
+      },
+      {
+        "id": "physicsos",
+        "src": "/images/business-physicsos.png",
+        "alt": "physicsOS Logo",
+        "title": "physicsOS",
+        "imageScale": 0.702,
+        "subtitle": "让物理看得见，让思考有过程！",
+        "href": "https://physics.dongsiwei.com/",
+        "members": [
+          {
+            "name": "冬思韦",
+            "memberId": "122-syf-wcy",
+            "src": "/images/pioneers/dong-siwei-upload.jpg",
+            "href": "/pioneers?member=122-syf-wcy"
+          }
+        ],
+        "membersExample": false
+      }
+    ]
+  },
+  {
+    "key": "partners",
+    "title": "合作品牌",
+    "path": "/#partners",
+    "rows": [
+      {
+        "id": "xcombinator",
+        "category": "community",
+        "name": "XCombinator",
+        "src": "/images/partners/xcombinator.png",
+        "artwork": {
+          "width": 2172,
+          "height": 724,
+          "darkInk": {
+            "x": 580
+          }
+        },
+        "width": 192,
+        "height": 64
+      },
+      {
+        "id": "huawei-cloud",
+        "category": "community",
+        "href": "https://www.huaweicloud.com/",
+        "name": "华为云",
+        "src": "/images/partners/huawei-cloud.svg",
+        "darkSrc": "/images/partners/huawei-cloud-dark.svg",
+        "width": 124,
+        "height": 43.63
+      },
+      {
+        "id": "linkathon",
+        "category": "hackathon",
+        "name": "Linkathon",
+        "src": "/images/partners/linkathon-original.jpg",
+        "width": 96,
+        "height": 60.9,
+        "artwork": {
+          "viewBox": "150 205 1135 720",
+          "width": 1400,
+          "height": 1280,
+          "cutout": true,
+          "adaptNeutral": true
+        }
+      },
+      {
+        "id": "minkesong",
+        "category": "hackathon",
+        "name": "闽客松",
+        "src": "/images/partners/minkesong-bright.png",
+        "width": 128,
+        "height": 55.52,
+        "offsetY": -5
+      },
+      {
+        "id": "shenkesong",
+        "category": "hackathon",
+        "name": "深客松",
+        "src": "/images/partners/shenkesong.png",
+        "darkBrightness": 1.15,
+        "width": 129.6,
+        "height": 46.386
+      },
+      {
+        "id": "hackflows",
+        "category": "hackathon",
+        "name": "HackFlows",
+        "src": "/images/partners/hackflows.png",
+        "darkSrc": "/images/partners/hackflows-dark.png",
+        "crop": {
+          "viewBox": "52 52 1064 118",
+          "width": 1168,
+          "height": 222
+        },
+        "width": 192,
+        "height": 21.29
+      },
+      {
+        "id": "fluxtech-nankesong",
+        "category": "hackathon",
+        "name": "FluxTech 南客松",
+        "src": "/images/partners/fluxtech-nankesong.png",
+        "darkSrc": "/images/partners/fluxtech-nankesong-dark.png",
+        "width": 210,
+        "height": 54.94
+      },
+      {
+        "id": "zhongyuan",
+        "category": "hackathon",
+        "name": "中源黑客松",
+        "src": "/images/partners/zhongyuan.svg",
+        "artwork": {
+          "viewBox": "39 231 1732 575",
+          "width": 1845,
+          "height": 1080,
+          "cutout": true,
+          "adaptNeutral": true
+        },
+        "width": 182.4,
+        "height": 60.553
+      },
+      {
+        "id": "adventure-x",
+        "category": "hackathon",
+        "href": "https://www.adventure-x.cn/zh/",
+        "name": "Adventure X",
+        "src": "/images/partners/adventure-x.png",
+        "invertOnLight": true,
+        "width": 210,
+        "height": 32.66
+      },
+      {
+        "id": "nextstep",
+        "category": "hackathon",
+        "href": "https://portal.nextstep.org.cn/",
+        "name": "NextStep",
+        "src": "/images/partners/nextstep.svg",
+        "darkSrc": "/images/partners/nextstep-white.svg",
+        "width": 210,
+        "height": 24.48
+      },
+      {
+        "id": "emerge",
+        "category": "hackathon",
+        "name": "Emerge",
+        "src": "/images/partners/emerge.svg",
+        "darkSrc": "/images/partners/emerge-white.svg",
+        "width": 144,
+        "height": 36.24
+      },
+      {
+        "id": "bayhack",
+        "category": "hackathon",
+        "href": "https://bayhack.cn/",
+        "name": "大湾区黑客松 BayHack",
+        "src": "/images/partners/bayhack.png",
+        "darkSrc": "/images/partners/bayhack-dark.png",
+        "width": 210,
+        "height": 40.27
+      },
+      {
+        "id": "codeland",
+        "category": "community",
+        "href": "https://gocodeland.cn/",
+        "name": "上岛计划 CodeLand",
+        "src": "/images/partners/codeland.svg",
+        "darkSrc": "/images/partners/codeland-dark.svg",
+        "width": 173.28,
+        "height": 28.040675
+      },
+      {
+        "id": "atomhub",
+        "category": "community",
+        "name": "原子公社 AtomHub",
+        "src": "/images/partners/atomhub.svg",
+        "invertOnDark": true,
+        "width": 157.5,
+        "height": 57.51
+      },
+      {
+        "id": "r7-community",
+        "category": "community",
+        "name": "R7社区",
+        "src": "/images/partners/r7-community.png",
+        "width": 64.638,
+        "height": 57.6
+      },
+      {
+        "id": "qutansuo",
+        "category": "community",
+        "href": "https://qutansuo.cn/",
+        "name": "去探索",
+        "src": "/images/partners/qutansuo.png",
+        "invertOnLight": true,
+        "width": 144,
+        "height": 39.73
+      },
+      {
+        "id": "yubing",
+        "category": "community",
+        "name": "语冰",
+        "src": "/images/partners/yubing.png",
+        "width": 122,
+        "height": 49.84
+      },
+      {
+        "id": "fuzhou-ai-learning",
+        "category": "community",
+        "name": "福州 AI 共学社",
+        "src": "/images/partners/fuzhou-ai-learning.svg",
+        "darkSrc": "/images/partners/fuzhou-ai-learning-dark.svg",
+        "width": 168,
+        "height": 48.14
+      },
+      {
+        "id": "jiko",
+        "category": "community",
+        "name": "JIKO",
+        "src": "/images/partners/jiko.png",
+        "invertOnDark": true,
+        "width": 150,
+        "height": 47.13
+      },
+      {
+        "id": "atomcraft",
+        "category": "community",
+        "name": "原子游创 AtomCraft",
+        "src": "/images/partners/atomcraft.svg",
+        "darkSrc": "/images/partners/atomcraft-dark.svg",
+        "width": 152,
+        "height": 54.42
+      },
+      {
+        "id": "molispark",
+        "category": "community",
+        "name": "摩力创境 Molispark",
+        "src": "/images/partners/molispark.svg",
+        "width": 136,
+        "height": 49.95,
+        "offsetY": "3pt"
+      },
+      {
+        "id": "oral-english-association",
+        "category": "university",
+        "name": "英语口语协会",
+        "src": "/images/partners/oral-english-association.png",
+        "darkSrc": "/images/partners/oral-english-association-dark.svg",
+        "width": 133.11,
+        "height": 48.492
+      },
+      {
+        "id": "fzu-lean-club",
+        "category": "university",
+        "name": "FZU薄肌俱乐部",
+        "src": "/images/partners/fzu-lean-club.svg",
+        "width": 52,
+        "height": 52,
+        "showName": true
+      },
+      {
+        "id": "wzu-open-source-club",
+        "category": "university",
+        "name": "温州大学开源社",
+        "src": "/images/partners/wzu-open-source-club.svg",
+        "width": 52,
+        "height": 52,
+        "showName": true
+      }
+    ]
+  },
+  {
+    "key": "mentors",
+    "title": "启航导师",
+    "path": "/mentors",
+    "rows": [
+      {
+        "id": "lin-dekun",
+        "name": "林德坤",
+        "role": "福州大学计算机与大数据学院副教授",
+        "image": "/images/mentors/lin-dekun.jpg",
+        "description": "中国科学院大学博士"
+      },
+      {
+        "id": "liu-yang",
+        "name": "刘洋",
+        "role": "某省政府数据智囊团成员",
+        "image": "/images/mentors/liu-yang.jpg",
+        "description": "曾就职于中科院数据部门，资深 AI 政务研讨学者。"
+      },
+      {
+        "id": "an-se",
+        "name": "安瑟",
+        "role": "Richology 教育科技公司创始人",
+        "image": "/images/mentors/an-se.jpg",
+        "description": "青少年 AI 商业化导师，\n15 年互联网产品运营与增长经验。",
+        "homepage": "https://richology.cn"
+      }
+    ]
+  },
+  {
+    "key": "leadership",
+    "title": "头号玩家",
+    "path": "/leadership",
+    "rows": [
+      {
+        "id": "XiaoSiKe",
+        "name": "零一扬",
+        "role": "社长",
+        "photo": "/images/business-members-exdrink/04-lingyiyang.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/XiaoSiKe",
+        "joinedAt": "2026-09-01",
+        "founding": {
+          "date": "2026-09-01",
+          "name": "零一玩家",
+          "href": "/cooperation?branch=fzu"
+        },
+        "university": "福州大学"
+      },
+      {
+        "id": "CurvatureSoup",
+        "name": "xyh",
+        "role": "技术开发部部长",
+        "photo": "/images/business-members-ezcut/02-xuyuheng.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/CurvatureSoup",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "university": "福州大学"
+      },
+      {
+        "id": "qwq2008123-star",
+        "name": "Keal",
+        "role": "商务拓展部部长",
+        "photo": "/images/pioneers/zheng-xinyao.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/qwq2008123-star",
+        "joinedAt": "2026-10-30",
+        "founding": {
+          "date": "2026-10-30",
+          "name": "泉州海洋分社",
+          "href": "/cooperation?branch=qzoi"
+        },
+        "university": "泉州海洋学院"
+      },
+      {
+        "id": "xy821178142gxy-web",
+        "name": "Gabi",
+        "role": "副社长",
+        "photo": "/images/pioneers/gu-xingyu.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/xy821178142gxy-web",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "university": "福州大学"
+      },
+      {
+        "id": "dh108888",
+        "name": "DH",
+        "role": "运营公关部部长",
+        "photo": "/images/pioneers/dh.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/dh108888",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "university": "福州大学"
+      },
+      {
+        "id": "miracle-fjnu",
+        "name": "Miracle",
+        "role": "人力组织部部长",
+        "photo": "/images/business-members-exdrink/03-miracle.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "joinedAt": "2026-10-25",
+        "founding": {
+          "date": "2026-10-25",
+          "name": "福师大分社",
+          "href": "/cooperation?branch=fjnu"
+        },
+        "university": "福建师范大学"
+      },
+      {
+        "id": "Dirgerx",
+        "name": "王云重",
+        "role": "副社长",
+        "photo": "/images/business-members-exdrink/01-wangyunzhong.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%",
+        "href": "https://github.com/Dirgerx",
+        "joinedAt": "2026-10-05",
+        "founding": null,
+        "university": "福州大学"
+      }
+    ]
+  },
+  {
+    "key": "pioneers",
+    "title": "先锋玩家",
+    "path": "/pioneers",
+    "rows": [
+      {
+        "id": "hanyang-yh",
+        "name": "杨晗",
+        "university": "福州大学",
+        "joinedAt": "2026-10-11",
+        "founding": null,
+        "href": "https://github.com/hanyang-yh",
+        "photo": "/images/pioneers/yang-han.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "SadSan233",
+        "name": "San",
+        "university": "韶关学院",
+        "joinedAt": "2026-10-12",
+        "founding": null,
+        "href": "https://github.com/SadSan233",
+        "photo": "/images/business-members-exdrink/02-san.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "xy821178142gxy-web",
+        "name": "顾星宇",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "href": "https://github.com/xy821178142gxy-web",
+        "photo": "/images/pioneers/gu-xingyu.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "CurvatureSoup",
+        "name": "徐裕恒",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "href": "https://github.com/CurvatureSoup",
+        "photo": "/images/business-members-ezcut/02-xuyuheng.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "KevinChen-KC",
+        "name": "KevinChen",
+        "university": "福州大学",
+        "joinedAt": "2026-10-11",
+        "founding": null,
+        "href": "https://github.com/KevinChen-KC",
+        "photo": "/images/pioneers/kevenchen.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "dh108888",
+        "name": "DH",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "href": "https://github.com/dh108888",
+        "photo": "/images/pioneers/dh.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Eug-Y",
+        "name": "Eug",
+        "university": "福州理工学院",
+        "joinedAt": "2026-09-01",
+        "founding": {
+          "date": "2026-10-26",
+          "name": "福州理工分社",
+          "href": "/cooperation?branch=fit"
+        },
+        "href": "https://github.com/Eug-Y",
+        "photo": "/images/pioneers/eug.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "sora-de-su",
+        "name": "Sora",
+        "university": "福州大学",
+        "joinedAt": "2026-10-11",
+        "founding": null,
+        "href": "https://github.com/sora-de-su",
+        "photo": "/images/pioneers/sora.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "xjtuzsq-prog",
+        "name": "zsq",
+        "university": "西安交通大学",
+        "joinedAt": "2026-10-19",
+        "founding": null,
+        "href": "https://github.com/xjtuzsq-prog",
+        "photo": "/images/pioneers/zsq.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Dirgerx",
+        "name": "王云重",
+        "university": "福州大学",
+        "joinedAt": "2026-10-05",
+        "founding": null,
+        "href": "https://github.com/Dirgerx",
+        "photo": "/images/business-members-exdrink/01-wangyunzhong.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Melon-fzu",
+        "name": "Melon",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "href": "https://github.com/Melon-fzu",
+        "photo": "/images/pioneers/melon.png",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "liuweichen2026",
+        "name": "刘韦辰",
+        "university": "福州大学",
+        "joinedAt": "2026-10-12",
+        "founding": null,
+        "href": "https://github.com/liuweichen2026",
+        "photo": "/images/pioneers/liu-weichen.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "A7man55",
+        "name": "方钰鑫",
+        "university": "福州大学",
+        "joinedAt": "2026-10-11",
+        "founding": null,
+        "href": "https://github.com/A7man55",
+        "photo": "/images/pioneers/fang-yuxin.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "XiaoSiKe",
+        "name": "零一扬",
+        "university": "福州大学",
+        "joinedAt": "2026-09-01",
+        "founding": {
+          "date": "2026-09-01",
+          "name": "零一玩家",
+          "href": "/cooperation?branch=fzu"
+        },
+        "href": "https://github.com/XiaoSiKe",
+        "photo": "/images/business-members-exdrink/04-lingyiyang.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Sparkfengtu",
+        "name": "Spark",
+        "university": "闽江大学",
+        "joinedAt": "2026-10-21",
+        "founding": {
+          "date": "2026-10-22",
+          "name": "闽江分社",
+          "href": "/cooperation?branch=mju"
+        },
+        "href": "https://github.com/Sparkfengtu",
+        "photo": "/images/pioneers/spark.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "rezhoukang",
+        "name": "郑航",
+        "university": "福大至诚",
+        "joinedAt": "2026-10-25",
+        "founding": {
+          "date": "2026-10-26",
+          "name": "福大至诚分社",
+          "href": "/cooperation?branch=fuzc"
+        },
+        "href": "https://github.com/rezhoukang",
+        "photo": "/images/pioneers/zheng-hang.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "huang-xuan",
+        "name": "黄铉",
+        "university": "福建理工大学",
+        "joinedAt": "2026-10-21",
+        "founding": {
+          "date": "2026-10-21",
+          "name": "福理工分社",
+          "href": "/cooperation?branch=fjut"
+        },
+        "photo": "/images/business-members-smartbot/01-huangxuan.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "miracle-fjnu",
+        "name": "Miracle",
+        "university": "福建师范大学",
+        "joinedAt": "2026-10-25",
+        "founding": {
+          "date": "2026-10-25",
+          "name": "福师大分社",
+          "href": "/cooperation?branch=fjnu"
+        },
+        "photo": "/images/business-members-exdrink/03-miracle.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "han-musheng",
+        "name": "韩慕昇",
+        "university": "福州大学",
+        "joinedAt": "2026-09-01",
+        "founding": null,
+        "photo": "/images/pioneers/han-musheng.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "liu-xiaoxiong",
+        "name": "刘枭雄",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "photo": "/images/pioneers/liu-xiaoxiong.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "ni-yihao",
+        "name": "倪毅豪",
+        "university": "福建理工大学",
+        "joinedAt": "2026-10-17",
+        "founding": null,
+        "photo": "/images/pioneers/ni-yihao.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "zheng-hongyi",
+        "name": "郑弘毅",
+        "university": "福州大学",
+        "joinedAt": "2026-09-18",
+        "founding": null,
+        "photo": "/images/pioneers/zheng-hongyi.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "yan-mua",
+        "name": "焱木阿",
+        "university": "福州大学",
+        "joinedAt": "2026-10-11",
+        "founding": null,
+        "photo": "/images/pioneers/yan-mua.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "huang-zengyi",
+        "name": "黄曾熠",
+        "university": "福州大学",
+        "joinedAt": "2026-10-12",
+        "founding": null,
+        "photo": "/images/pioneers/huang-zengyi.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "hong-youran",
+        "name": "洪悠然",
+        "university": "福州大学",
+        "joinedAt": "2026-10-27",
+        "founding": null,
+        "photo": "/images/pioneers/hong-youran.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "wang-jingyi",
+        "name": "王靖伊",
+        "university": "福州大学",
+        "joinedAt": "2026-10-27",
+        "founding": null,
+        "photo": "/images/pioneers/wang-jingyi.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "li-hui",
+        "name": "李慧",
+        "university": "闽江大学",
+        "joinedAt": "2026-10-25",
+        "founding": null,
+        "photo": "/images/pioneers/li-hui.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "122-syf-wcy",
+        "name": "冬思韦",
+        "university": "六盘水师范学院",
+        "joinedAt": "2026-10-27",
+        "founding": null,
+        "href": "https://github.com/122-syf-wcy",
+        "photo": "/images/pioneers/dong-siwei-upload.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Joshmax010",
+        "name": "吴浩然",
+        "university": "吉林建筑大学",
+        "joinedAt": "2026-10-29",
+        "founding": null,
+        "href": "https://github.com/Joshmax010",
+        "photo": "/images/pioneers/wu-haoran.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "likezz-rh",
+        "name": "张荣晖",
+        "university": "福州大学",
+        "joinedAt": "2026-10-29",
+        "founding": null,
+        "href": "https://github.com/likezz-rh",
+        "photo": "/images/pioneers/zhang-ronghui.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "qwq2008123-star",
+        "name": "郑鑫尧",
+        "university": "泉州海洋学院",
+        "joinedAt": "2026-10-30",
+        "founding": {
+          "date": "2026-10-30",
+          "name": "泉州海洋分社",
+          "href": "/cooperation?branch=qzoi"
+        },
+        "href": "https://github.com/qwq2008123-star",
+        "photo": "/images/pioneers/zheng-xinyao.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "wu-yaohui",
+        "name": "吴耀辉",
+        "university": "福建农林大学",
+        "joinedAt": "2026-10-30",
+        "founding": null,
+        "href": "https://github.com/1302707875wu",
+        "photo": "/images/business-members-ezcut/03-wuyaohui.webp",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "li-jinlong",
+        "name": "李金龙",
+        "university": "福州大学",
+        "joinedAt": null,
+        "founding": null,
+        "photo": "/images/pioneers/li-jinlong.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "zeng-chuqi",
+        "name": "曾楚淇",
+        "university": "福建理工大学",
+        "joinedAt": null,
+        "founding": null,
+        "photo": "/images/pioneers/zeng-chuqi.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "JIENENer",
+        "name": "王俊皓",
+        "university": "福州理工学院",
+        "joinedAt": null,
+        "founding": null,
+        "href": "https://github.com/JIENENer",
+        "photo": "/images/pioneers/wang-junhao.png",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "Zhenghan816",
+        "name": "郑瀚",
+        "university": "福州理工大学",
+        "joinedAt": null,
+        "founding": null,
+        "href": "https://github.com/Zhenghan816",
+        "photo": "/images/pioneers/zheng-han.png",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "chen-rijie",
+        "name": "陈日杰",
+        "university": "泉州海洋职业学院",
+        "joinedAt": null,
+        "founding": null,
+        "photo": "/images/pioneers/chen-rijie.png",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "midmoon-fox",
+        "name": "林含悦",
+        "university": "福州大学",
+        "joinedAt": null,
+        "founding": null,
+        "href": "https://github.com/midmoon-fox",
+        "photo": "/images/pioneers/lin-hanyue.png",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      },
+      {
+        "id": "encoXJH",
+        "name": "许钧泓",
+        "university": "福州软件职业技术学院",
+        "joinedAt": null,
+        "founding": {
+          "date": "2026-11-25",
+          "name": "福软分社",
+          "href": "/cooperation?branch=fzrjxy"
+        },
+        "href": "https://github.com/encoXJH",
+        "photo": "/images/pioneers/enco-xjh.jpg",
+        "photoPlaceholder": false,
+        "photoFit": "contain",
+        "focus": "50% 50%"
+      }
+    ]
+  },
+  {
+    "key": "projects",
+    "title": "项目介绍",
+    "path": "/?project=knowledge",
+    "rows": [
+      {
+        "id": "knowledge",
+        "number": "01",
+        "name": "智识 · AI 知识库",
+        "english": "OPEN KNOWLEDGE",
+        "category": "知识共建",
+        "description": "把走过的路，变成后来者的起点。",
+        "detail": "从第一个 AI 概念到第一次动手实践，把零散的经验整理成清晰、可检索的学习地图。",
+        "tags": [
+          "学习路径",
+          "开源共建"
+        ],
+        "url": "",
+        "demo": true,
+        "features": [
+          [
+            "从问题出发",
+            "按正在遇到的问题找到合适的入门材料。"
+          ],
+          [
+            "把经验留下",
+            "让每一次学习的笔记，成为下一位同学的路标。"
+          ],
+          [
+            "在实践中更新",
+            "用作品验证理解，再把新的发现补回知识库。"
+          ]
+        ]
+      },
+      {
+        "id": "study",
+        "number": "02",
+        "name": "共学 · 学习搭子",
+        "english": "LEARN TOGETHER",
+        "category": "社区实验",
+        "description": "一个小目标，一段一起前进的时间。",
+        "detail": "把一个模糊的学习愿望拆成今天能够完成的小任务，和同路人一起记录进展。",
+        "tags": [
+          "每日实践",
+          "同伴协作"
+        ],
+        "url": "",
+        "demo": true,
+        "features": [
+          [
+            "从小处开始",
+            "先完成一件具体的小事，让学习有清楚的起点。"
+          ],
+          [
+            "看见自己的进度",
+            "把完成的任务留下来，积累可以回看的成长记录。"
+          ],
+          [
+            "交换一个发现",
+            "用分享和提问，让一个人的学习变成彼此的启发。"
+          ]
+        ]
+      },
+      {
+        "id": "studio",
+        "number": "03",
+        "name": "灵感 · AI 创作台",
+        "english": "IDEA TO REALITY",
+        "category": "创作工具",
+        "description": "让脑海里的第一束灵感，有处落笔。",
+        "detail": "从用途、受众与表达方式出发，组织一份清楚的创作提示，把想法推进到可以开始的那一步。",
+        "tags": [
+          "创意表达",
+          "提示词实验"
+        ],
+        "url": "",
+        "demo": true,
+        "features": [
+          [
+            "先说清楚想法",
+            "把主题、目标和期待的表达写在同一张画布里。"
+          ],
+          [
+            "尝试不同角度",
+            "用不同的创作形式重新观察同一个主题。"
+          ],
+          [
+            "带走一份起点",
+            "得到可编辑的提示词，再交给自己熟悉的创作工具。"
+          ]
+        ]
+      },
+      {
+        "id": "tools",
+        "number": "04",
+        "name": "零一 · 开源工具箱",
+        "english": "SMALL TOOLS, BIG HELP",
+        "category": "效率工具",
+        "description": "从日常的小麻烦，开始一次小创造。",
+        "detail": "收集学习与开发中常用的小工具，让一次动手解决的问题，成为大家都能使用的便利。",
+        "tags": [
+          "轻量工具",
+          "动手创造"
+        ],
+        "url": "",
+        "demo": true,
+        "features": [
+          [
+            "解决具体问题",
+            "从整理数据、处理文字等真实的小需求开始。"
+          ],
+          [
+            "打开就能使用",
+            "用简单明确的输入和反馈，减少不必要的步骤。"
+          ],
+          [
+            "保持可理解",
+            "让小工具既能派上用场，也能成为学习开发的例子。"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "key": "learningFolderItems",
+    "title": "学习资源",
+    "path": "/#directions",
+    "rows": [
+      {
+        "id": "thinking",
+        "title": "零一文章",
+        "href": "https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=4716921209454706690#wechat_redirect"
+      },
+      {
+        "id": "partnerships",
+        "title": "零一合作",
+        "href": "https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=4797998250400268293#wechat_redirect"
+      }
+    ]
+  },
+  {
+    "key": "practiceFolderItems",
+    "title": "实践资源",
+    "path": "/#directions",
+    "rows": [
+      {
+        "id": "hackathon",
+        "title": "玩家计划",
+        "href": "https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=4716922803005014019#wechat_redirect"
+      },
+      {
+        "id": "plaza",
+        "title": "共创广场",
+        "href": "https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=4716921710573371394#wechat_redirect"
+      },
+      {
+        "id": "team-events",
+        "title": "零一团建",
+        "href": "https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzY5ODQ2MDMyMw==&action=getalbum&album_id=4716908909473677313#wechat_redirect"
+      }
+    ]
+  },
+  {
+    "key": "socialChannels",
+    "title": "社交渠道",
+    "path": "/#directions",
+    "rows": [
+      {
+        "id": "douyin",
+        "title": "抖音",
+        "href": "https://v.douyin.com/9F_YljWXWZI/"
+      },
+      {
+        "id": "xiaohongshu",
+        "title": "小红书",
+        "href": "https://xhslink.cn/o/3n2GfFKLJps"
+      },
+      {
+        "id": "bilibili",
+        "title": "B站",
+        "href": "https://b23.tv/MKzBvaS"
+      },
+      {
+        "id": "channels",
+        "title": "视频号",
+        "href": ""
+      }
+    ]
+  },
+  {
+    "key": "extraFooterLinks",
+    "title": "页脚链接与标识",
+    "path": "/#join",
+    "rows": [
+      {
+        "id": "telegram",
+        "title": "Telegram",
+        "href": "https://t.me/AI01YangAI",
+        "image": ""
+      },
+      {
+        "id": "club",
+        "title": "零一玩家",
+        "href": "https://club.01aiedu.com/",
+        "image": ""
+      },
+      {
+        "id": "github",
+        "title": "GitHub",
+        "href": "",
+        "image": ""
+      },
+      {
+        "id": "x",
+        "title": "X",
+        "href": "https://x.com/01yang2026?s=11",
+        "image": ""
+      },
+      {
+        "id": "feishu",
+        "title": "飞书",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/DDaiw0qKoifo7jkd2H2c9mxhnYe",
+        "image": ""
+      },
+      {
+        "id": "founder",
+        "title": "零一玩家智能科技",
+        "href": "https://www.01yang.space/",
+        "image": ""
+      },
+      {
+        "id": "qq",
+        "title": "QQ",
+        "href": "https://qun.qq.com/universal-share/share?ac=1&authKey=Y6PHDoQm%2BSNy%2Bdr0SJTyHZ7Vt2jQfwQCR6sidHUatABcMNltCtupL24cigSRxTYc&busi_data=eyJncm91cENvZGUiOiI5NjY2NTQ2MzMiLCJ0b2tlbiI6IllLUmVXNXM4WS8zMG1MRHlGeFFkUUd4M0R1ZG8wekpXMVB1a0N2dkhubVp6KzF5b2xOVjRKakxFZHQ4Q3dCRFQiLCJ1aW4iOiIxNzg1ODY3NzkyIn0%3D&data=-Yz2JZMQgTAM5BkEf9Vrw9lDLH6BkX2nFl4-tH8ska8WC6OQPqpmTcvM5f24z7x5jSg--p3b18JBNtQeMn3Tzg&svctype=4&tempid=h5_group_info",
+        "image": ""
+      }
+    ]
+  },
+  {
+    "key": "siteDestinations",
+    "title": "首页与分社服务链接",
+    "path": "/",
+    "rows": [
+      {
+        "id": "wiki",
+        "title": "零一开源知识库",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/DDaiw0qKoifo7jkd2H2c9mxhnYe"
+      },
+      {
+        "id": "partners",
+        "title": "合作生态介绍",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/X7h6wI8SCiAuZAkpYF2caNv7nTG"
+      },
+      {
+        "id": "recruitment",
+        "title": "社团招募计划",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/C06Pw29bDiA6I2kZy7ecsbcZnag"
+      },
+      {
+        "id": "wordmark",
+        "title": "页脚官网标识",
+        "href": "https://club.01aiedu.com/"
+      },
+      {
+        "id": "icp",
+        "title": "ICP备案查询",
+        "href": "https://beian.miit.gov.cn/"
+      },
+      {
+        "id": "police",
+        "title": "公安备案查询",
+        "href": "https://beian.mps.gov.cn/#/query/webSearch?code=35011102351280"
+      },
+      {
+        "id": "strategy",
+        "title": "战略、架构与发展",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/Pw4FwagW6iPaVqkzyeNc7rRSnub"
+      },
+      {
+        "id": "branch-plan",
+        "title": "分社参与计划",
+        "href": "https://scn96l2kzmbn.feishu.cn/wiki/PIqKwgPI7iIrtXkHps9cqavKn4c"
+      }
+    ]
+  },
+  {
+    "key": "menu",
+    "title": "站点导航",
+    "path": "/",
+    "rows": [
+      {
+        "id": "top",
+        "label": "首页",
+        "ariaLabel": "返回首页",
+        "link": "#top"
+      },
+      {
+        "id": "about",
+        "label": "关于我们",
+        "ariaLabel": "了解零一玩家",
+        "link": "#about"
+      },
+      {
+        "id": "work",
+        "label": "我们在做什么",
+        "ariaLabel": "我们在做什么",
+        "link": "#work"
+      },
+      {
+        "id": "directions",
+        "label": "零一玩家生态",
+        "ariaLabel": "了解社区正在开展的方向",
+        "link": "#directions"
+      },
+      {
+        "id": "business",
+        "label": "零一商业",
+        "ariaLabel": "浏览零一商业",
+        "link": "#business"
+      },
+      {
+        "id": "research",
+        "label": "零一科研与竞赛",
+        "ariaLabel": "浏览零一科研与竞赛",
+        "link": "#research"
+      },
+      {
+        "id": "partners",
+        "label": "零一合作生态",
+        "ariaLabel": "浏览合作品牌",
+        "link": "#partners"
+      },
+      {
+        "id": "cooperation",
+        "label": "零一高校分社",
+        "ariaLabel": "浏览零一高校分社地图",
+        "link": "/cooperation"
+      },
+      {
+        "id": "join",
+        "label": "欢迎加入零一",
+        "ariaLabel": "查看加入我们的说明",
+        "link": "/join"
+      }
+    ]
+  },
+  {
+    "key": "homeRegions",
+    "title": "首页栏目顺序",
+    "path": "/",
+    "rows": [
+      {
+        "id": "about",
+        "title": "关于我们"
+      },
+      {
+        "id": "directions",
+        "title": "零一玩家生态"
+      },
+      {
+        "id": "business",
+        "title": "零一商业"
+      },
+      {
+        "id": "research",
+        "title": "科研与竞赛"
+      },
+      {
+        "id": "partners",
+        "title": "合作生态"
+      },
+      {
+        "id": "cooperation",
+        "title": "高校分社"
+      },
+      {
+        "id": "join",
+        "title": "加入我们"
+      }
+    ]
+  },
+  {
+    "key": "copy-home",
+    "title": "首页与加入方式文案",
+    "path": "/",
+    "rows": [
+      {
+        "source": "零一玩家｜01PLAYER",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到主要内容",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "成立于 · 2026.09.01",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个以大学生为主要群体、面向全社会开放的「AI 共创社区」",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关于我们",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这里是「零一玩家｜01PLAYER」！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个以大学生为主要群体、面向全社会开放的「AI 共创社区」！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们把现实生活看作一个开放的世界游戏：「地球Online：零一玩家」，每个人都是自己故事的主角！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们带着「玩家」的勇气与好奇心，在实践中不断探索与成长，完成自己的从零到一！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「零一玩家」主要在做什么？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「{0}」",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「零一玩家」成立于 2026.9.1，我是社长，",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看社长零一扬的头号玩家介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "不当牢玩家！不做NPC！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们在做什么",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "那些疯狂到相信自己能够改变世界的人，正是改变世界的人！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一商业",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们是「福州零一玩家智能科技有限公司」！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一合作生态",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创造力，就是把事物连接起来。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关于零一合作生态",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一高校分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "团结一切可以团结的力量！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "欢迎加入「零一玩家」",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "放大零一玩家 QQ 社区群二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家 QQ 群二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家 QQ 社区群",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "放大零一玩家微信公众号二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家微信公众号二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「零一玩家」公众号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "放大官方合作微信二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "官方合作联系零小一的微信二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "官方合作联系：零小一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "官方：零小一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一团队招募：",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "充满热情的人，能够让世界变得更好。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一团队招募计划",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社区与社交平台",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "版权所有 © 2026 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "官网设计与制作：",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看官网设计与制作者零一扬的头号玩家介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "地图数据 © OpenStreetMap 贡献者",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "ICP备案号：闽ICP备2026024313号-3",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽公网安备35011102351280号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "启航导师",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识启航导师",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "头号玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识头号玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识先锋玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加入零一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "技术开发部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "商务拓展部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "人力组织部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "运营公关部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家微信公众号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "阅读专栏",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一公众号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家生态",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "探索入口",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "自媒体",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一自媒体平台",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}主页（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「零一玩家」地球生存攻略",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一开源知识库",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一开源知识库（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "战略、架构与发展",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "战略、架构与发展（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一时光机",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零到一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一科研与竞赛",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "99%的人在这里被打败，但100%的人会收获成长！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "科研与竞赛证书及赛场照片墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} 成立于",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}分社地图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "进入福建分社地图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "进入{0}高校地图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "1 所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} 所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在地图中查看{0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}总社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "北方",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "地图内返回上一级",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回上一级",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "地图暂时无法载入",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "重新加载",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加载中",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分社信息",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索分社或高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "清空搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回上一级地图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分社地图层级",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "找到 {0} 所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "暂时没有找到",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "试试学校名称、简称，或“福州”“总社”。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}{1}的成员介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "全国高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "参与计划",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看上一所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上一所",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看下一所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一所",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "当前查看：",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "，{0}，{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "全国",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      }
+    ]
+  },
+  {
+    "key": "copy-people",
+    "title": "成员与团队文案",
+    "path": "/team",
+    "rows": [
+      {
+        "source": "启航导师 · 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家｜Mentor",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "启航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "导师",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "导师头像",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}，{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} 的 GitHub 主页（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}详情",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创办",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加入",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关闭{0}的介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关闭",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}，第{1}排",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "清空姓名搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      }
+    ]
+  },
+  {
+    "key": "copy-archive",
+    "title": "时光机与项目页文案",
+    "path": "/?page=time-machine",
+    "rows": [
+      {
+        "source": "全部场次",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一个问题开始",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索概念、提示词、网页……",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "找到 {0} 篇入门笔记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "还没有这个主题的笔记。试试“提示词”或“网页”。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "今天，向前一点",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "今日任务进度",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这是一份可勾选的体验清单，刷新后可以重新开始。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让 AI 成为学习的小帮手",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请围绕“{0}”创作{1}。\\n\\n面向：对这个主题好奇、但还没有相关基础的大学生。\\n表达：具体、亲切、清楚，少用术语。\\n内容：从一个日常场景开始，解释核心想法，再给出一个今天就能尝试的小行动。\\n要求：区分事实与建议，不编造数据或案例；对需要核实的内容明确提示。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "你的主题",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "想尝试的形式",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一篇面向初学者的短文",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一份交流会分享提纲",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个一分钟短视频脚本",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "整理创作提示",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把这个起点带走",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "复制提示词",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "JSON 整理工具",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "整理格式",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "内容只在你的浏览器中处理。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目未找到｜零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这个项目还没来到这里。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "回到官网，了解零一玩家的探索方向。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回官网 ↗",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回官网",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "体验一下",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "访问项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先动手，试试看。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个小小的原型，",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让想法变得具体。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例体验，欢迎带着新想法来。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这个项目的体验正在准备中，欢迎先加入社群交流想法。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目构想",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一个作品，也可以从你开始。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这里展示的是项目构想与体验原型，欢迎一起把想法变成真实作品。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加入我们",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家 / 01PLAYER",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "保持好奇，持续创造。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大语言模型是什么？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "理解概念",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "写出更清楚的提示词",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "工具实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一个小网页开始",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目入门",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把笔记变成可分享的知识",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "开源共建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一科研 · 01PLAYER",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "← 返回零一科研",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一科研",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一个问题出发，向未知再走一步。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开科研专栏",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      }
+    ]
+  },
+  {
+    "key": "copy-interface",
+    "title": "全站通用文案",
+    "path": "/",
+    "rows": [
+      {
+        "source": "· 校园影像",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "· 福建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "小问题，也值得一个好答案。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "成立于",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "所高校",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "篇入门笔记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "01PLAYER 互动字标",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2025 中国大学生机械工程创新创意大赛 · 二等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2025 中国机器人大赛暨 RoboCup 中国赛 · 无人机自主飞行竞速三等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 中国电机工程学会杯全国大学生电工数学建模竞赛 · 二等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 亚洲建筑规划景观数字艺术设计竞赛 · 铜奖｜NEO-ARK",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 亚洲建筑规划景观数字艺术设计竞赛 · 铜奖｜四环织心——山海环生新境",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 机械产品数字化设计赛全国决赛 · 备赛现场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 机械产品数字化设计赛全国决赛 · 数字孪生赛场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "2026 机械产品数字化设计赛区域赛 · 数字孪生一等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "AI 生成交流场景示意图：一位同学在投影屏幕前分享，其他同学在台下聆听",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "AI 生成工作坊场景示意图：同学在笔记本电脑旁一起讨论手写草稿",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "AI 生成社团日常场景示意图：四位同学在教室窗边一起翻看笔记并交流",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "AI时代除了成为好学生，我们还能成为谁？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "B站",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "FluxTech 南客松",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "GitHub 主页",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "IDEAS INTO ACTION / 项目展廊",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "TODAY / 今天也向前一步",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}{1}旗帜",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}微信公众号二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}成员{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}，第{1}行",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我在 2026 年 9 月 1 日发起了这个社区。我是",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个小目标，一段一起前进的时间。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个小项目，也值得被认真完成。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个想法，无限可能。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个以大学生为主要参与群体、面向 AI 探索者、向全社会开放的创新共创社区。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一切从好奇开始",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一次有收获的交流，可以从“这里我还不太明白”开始。提问并不意味着准备不足，它也可能说明你已经认真尝试过。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一起动手",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上一个品牌",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上一个项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上一张照片",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一个品牌",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一个项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一张照片",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下一次分享，",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "与竞赛",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "业务系统 · 同级协作",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "两个管理系统 · 七个业务系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "中国移动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "为项目增加功能很有吸引力。可在第一个版本里，最值得认真对待的事情，是让一件小事完整地发生。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "也可用键盘左右键浏览",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "也想让你在场。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "二维码暂时无法打开，请稍后再试。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "交换一个发现",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "交流、动手，也一起度过平常的一天。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "交流不必准备完美的答案，真实的困惑也有价值。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "交流与分享",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "交流提案",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "今天的小目标，完成了。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一个小想法开始，做出可以被使用的东西。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一个小问题出发，试着把它做出来。工作坊可以记录探索过程，也可以留下还没解决的问题。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从一杯好味道，到生活的小美好！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从小处开始",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从整理数据、处理文字等真实的小需求开始。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从日常的小麻烦，开始一次小创造。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从用途、受众与表达方式出发，组织一份清楚的创作提示，把想法推进到可以开始的那一步。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从第一个 AI 概念到第一次动手实践，把零散的经验整理成清晰、可检索的学习地图。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从能运行，到能让另一个人顺利使用。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从问题出发",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零到一，一起探索。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零到一，让技术进步成为每个人的机会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零到一，让技术进步成为每个人的机会。和福大的同伴一起，把好奇心带进真实的学习与实践。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零到一，让技术进步成为每个人的机会！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "从零，",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "余齐文",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "保存{0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "保存二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "保持可理解",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "倪毅豪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "值得留下的，不只有项目完成的那一刻。一起翻看笔记，聊聊新的发现，也能让我们更了解彼此。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先完成一件具体的小事，让学习有清楚的起点。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先用一句话说明：这个项目给谁用，在什么情况下，帮他完成什么。然后把流程走一遍，从打开页面到拿到结果，看看有没有只能靠作者解释才能通过的地方。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先说清楚想法",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "公众号入口即将补充",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "六盘水师范学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "共创",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "共学 · 学习搭子",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关源冬",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "关闭社区菜单",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "内容与传播系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "写下今天的一个发现",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "冬思韦",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分享今天的发现",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分享时，先交代你想完成的事，再展示已经做过的尝试，最后说明卡住的具体位置。别人就更容易理解你的处境，也更容易给出有用的建议。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "分社长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "切换到浅色背景",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "切换到深色背景",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘东启",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘志濠",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘枭雄",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘洋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘韦辰",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创作工具",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创意表达",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加载摄像头模型",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加载遇到问题",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "动手做一个小实验",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "动手创造",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "匹配的领航先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "华为",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "协作流程",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "卢俊达",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "发起项目，带领实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "另有 {0} 位成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "吉林建筑大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "同伴协作",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "听到建议后，可以一起挑一个最容易验证的办法。把下一次尝试缩小到一个动作，交流结束后就能动手。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "吴浩然",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "吴耀辉",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "告诉工具你想完成什么、面向谁、有哪些材料和约束，再给出一个期待的输出样例。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "周心怡",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "和泉州海洋的同伴一起，在学习、交流与实践中探索 AI。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "和福大至诚的同伴一起，在学习、交流与实践中探索 AI。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "和福州理工的同伴一起，在学习、交流与实践中探索 AI。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "和福师大的同伴一起，在学习、交流与实践中探索 AI。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "商业实践系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "围桌交流活动现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在交流与实践中迈出第一步，完成属于自己的从零到一！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "如果你也认可这种长期主义，欢迎加入「零一」！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在交流中分享新发现，在共创中尝试新可能。和福理工的同伴一起，让学习走向实践。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在实践中更新",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在这里继续关注我们的学习、创造与日常。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "复制",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "夜间户外交流现场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "好奇心，有了作品的形状。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "如果愿意，把问题和过程带到交流中来。一个尚未完成的尝试，同样值得被分享。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学习 AI，可以从一个自己的问题开始。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学习手记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学习新范式 · 开源共建 · 公益教学 · 实践探索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学习路径",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "安瑟",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "完成一个 15 分钟的小实验",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "定期复盘",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "实验复现",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "室内围桌交流活动现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "室内活动合影",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "对接导师与合作伙伴，连接工具、算力和场地",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "小红书",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "尝试不同角度",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "屏幕之外，也有同路人。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "展示社团旗帜的户外活动合影",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "已复制，可以带到你常用的创作工具中。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "带着一个没想明白的问题来。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "带着问题交流，与同伴一起明确下一步的探索方向。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "带走一份起点",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "张荣晖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "当别人能顺利使用时，把入口、使用说明和已知限制一起留下。完成的标准，也就从“我的电脑能运行”向前走了一步。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "徐敏悦",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "徐裕恒",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "得到可编辑的提示词，再交给自己熟悉的创作工具。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "得物",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "循着开放资料动手尝试，让理解落到实验与记录中。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "微信公众号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "微信扫码，和我们保持联系",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "总社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "想学 AI 的时候，我们很容易先列出一长串需要掌握的名词。但真正让学习持续下去的，往往是一个和自己有关的问题。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "想法，从动手开始。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "成果归档",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "成长与先锋系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们不把绩点和考试视为大学成长的全部，而是选择在实践中不断成长，不断进步。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们在做什么？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们希望这里可以容纳半成品、不同观点和暂时没有答案的问题。持续交流的意义，也许就在于下一次仍然愿意带着新问题回来。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们成立社区的初心，是探索一种能在真实世界中落地的“大学｜学习新范式”！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "戴振豪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开就能使用",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开社区菜单",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "执行更新",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "找到",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把一个模糊的学习愿望拆成今天能够完成的小任务，和同路人一起记录进展。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把主题、目标和期待的表达写在同一张画布里。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把交付质量立住，客户看了不烧心！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把完成的任务留下来，积累可以回看的成长记录。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把庞大的技术话题，放回一个具体的小需求。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把探索写成文字，把新的相遇带到这里。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把握方向，统筹全局",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把经验留下",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把走过的路，变成后来者的起点。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "抖音",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "拆解任务",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "拆解任务、协调资源，跟进进度与验收",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "招新培训、成员互助，培养领航先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "指定验收",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "按正在遇到的问题找到合适的入门材料。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识零一团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "接着，用一个现成工具做最小的尝试。记录它做对了什么，又在哪些地方需要你检查。碰到的具体困难，会慢慢变成下一步学习的方向。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "提示词实验",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索先锋姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索领航先锋姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "收起",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "收起品牌标志",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "收集学习与开发中常用的小工具，让一次动手解决的问题，成为大家都能使用的便利。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "效率工具",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "教室交流活动现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "教室内的社团活动合影",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "Richology 教育科技公司创始人",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "个人主页",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "整理好了，结构清楚多了。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "方钰鑫",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "旗山校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "日常切片",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "日常活动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一 · 开源工具箱",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "是自嗨玩具？还是商业产品？带上你的项目来锐评！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "智识 · AI 知识库",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "曾就职于中科院数据部门，资深 AI 政务研讨学者。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "机械产品数字化设计赛 · 机械臂调试现场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "曾楚淇",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "李慧",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "李金龙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "杨晗",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "杨桥西路50号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "杨章勋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "林含悦",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "林晨昊",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "林德坤",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "中国科学院大学博士",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "架构",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "某省政府数据智囊团成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}职责",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}：{1}{2}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看官网设计与制作者零一扬的领航先锋介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看照片 {0}：{1}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看社长零一扬的领航先锋介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "校园建筑前的活动合影",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "核心团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "横向滑动，发现更多可能",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "欢迎加入零一",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "每一步都算数。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "每日实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "没有找到相关先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "泉州",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "泉州海洋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "泉州海洋分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "泉州海洋学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "泉州海洋职业学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪悠然",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动展位的电脑演示与交流现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动展位的饮品制作与交流现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动照片列表",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "深客松",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "游诗颖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "灵感 · AI 创作台",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "点选系统查看职责",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "焱木阿",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "玉华",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "王云重",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "王俊皓",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "王毅",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "王靖伊",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "理解一个新概念",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "用不同的创作形式重新观察同一个主题。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "用作品验证理解，再把新的发现补回知识库。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "用分享和提问，让一个人的学习变成彼此的启发。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "用简单明确的输入和反馈，减少不必要的步骤。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "百度搭子",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "相聚，让想法有回响。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "看见自己的进度",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "知识与技术系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "知识共建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "石狮校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "研究共创",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "确定方向、分工与授权，负责重大决策和复盘",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "确定目标",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例影像",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例手记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例手记 · 非已发布文章",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例项目 · 可交互体验",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社区实验",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社团",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社区导航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社团活动展位交流现场拼图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社团活动照片",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社团系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福大",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福大至诚",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福大至诚分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "许钧泓",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州软件职业技术学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福软",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福软分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "文岭校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州大学至诚学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州理工",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州理工分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州理工大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州理工学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州大学计算机与大数据学院副教授",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福师大",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福师大分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建农林大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建师范大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建理工大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省泉州市石狮市祥芝镇古浮二十区1号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市大学新区学园路2号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市连江西江滨大道8号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市闽侯县上街镇乌龙江中大道18号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市闽侯县上街镇学府南路69号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市鼓楼区杨桥西路50号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福理工",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福理工分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "科研实践系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "第十九届高教杯 · 逆向工程与创新设计分赛道一等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "第十九届高教杯国际赛道 · 团体一等奖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "第十八届中国电机工程学会杯 · 福州大学赛场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "管理预算、收支与公共资产，分工记账和复核",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "管理领导系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "精选项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "组织",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "组织架构",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "组织科研训练与课题研究，记录成果及贡献",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "统筹调度系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "维护知识库、网站与开源工具，沉淀实践成果",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "编写周刊与日报，负责社团内容传播",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "翻转字形 {0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "聊一个问题，分享一次尝试。让一个人的灵感，成为一群人的下一步。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "自由参与，共同成长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "蒋旭",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "蔡辰希",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西安交通大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "视频号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "解决具体问题",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让 AI 触手可及，让好奇得到回应！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让交流，继续发生。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让好奇，发生在面对面之间。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让小工具既能派上用场，也能成为学习开发的例子。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让每一次学习的笔记，成为下一位同学的路标。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让物理看得见，让思考有过程！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让脑海里的第一束灵感，有处落笔。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "记二零二六社团巡礼纳新：技术进步，如何成为每个人从零到一的机会？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "记录学习、实践与日常",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "记录问题、尝试、结果和参考来源。清楚的过程，往往比单独的结论更有帮助。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "论文共读",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "论文是 AI 写的，科研是谁做的？",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "访问{0}项目官网（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "访问项目官网",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "试着选一件每周都会重复的小事：整理课堂笔记、归纳阅读材料，或查找自己的文件。先写清楚现在怎么做、哪里最费力，以及什么结果才算有用。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "语言模型通过学习文本中的模式来生成内容。它可以辅助理解和创作，但输出仍需要核实。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请一位同学独立试用，观察他在哪里停住。记下反馈，修好最影响使用的一处，再请他试一次。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请检查网络连接，再试一次。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请选中下方文字并手动复制。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "读懂 AI。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "读懂一个新的 AI 概念",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "读懂方法，核对假设，把值得继续追问的问题留下来。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "课表，本该如此简单。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "财务与资产系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "资源与合作系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "走进项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到社团系统",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到领航先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "轻量工具",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回零一玩家首页顶部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这段 JSON 还不完整。请检查双引号、逗号和括号，再试一次。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "连江校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "退出",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "选择一个具体需求，画出最简单的页面，用 HTML 和 CSS 实现，再请一位同学实际试用。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "郑宇航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "郑弘毅",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "郑瀚",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "郑航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "郑鑫尧",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽客松",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽江大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "阅读",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈佳宏",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈俊祥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈品铮",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈嘉磊",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈日杰",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "陈雨轩",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家室内活动合影",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家导航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家｜福理工分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一快剪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一快剪 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一扬",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一拓饮",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一拓饮 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一文章",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一团建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一智械",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一智械 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜AI科研锐评会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜AI项目锐评会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一社员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一课表",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一课表 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一首次“聚餐耍起活动”，难得的开心，我不会忘记那天！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一黑客松",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "青少年 AI 商业化导师，\n15 年互联网产品运营与增长经验。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "韩慕昇",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "韶关学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目展廊，可横向滚动或使用左右方向键",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目手记、学习分享与社团动态。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目操作",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "项目笔记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "顾星宇",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航\n先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航先锋 · 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航先锋姓名搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航先锋成员肖像墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "飞书",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "飞书多维表格统一管理任务、进度与成果",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "验证",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "验证真实需求，推进产品开发、交付与运营",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高家莹",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高清图暂时无法加载，当前显示预览图。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "黄曾熠",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "黄铉",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "齐仕选",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "切换语言",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "首页",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "返回首页",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "正在准备首屏",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "二维码",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领军团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领军\n团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领军团队 · 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领军团队成员肖像墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到领军团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识领军团队",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领军团队姓名搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索领军团队成员姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索团队成员姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "匹配的领军团队成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "没有找到相关团队成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "副社长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "技术开发部部长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "商务拓展部部长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "人力组织部部长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "运营公关部部长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "我们要改变世界",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开「零一玩家」地球生存攻略（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一合作生态（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一大学指南针",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "指南针",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "开源知识库",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "开物·福州高校黑客松",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "「零一」合照",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "比赛现场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社长「零一扬」演讲",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "简单，有时比复杂更难",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "充满热情的人，能够让世界变得更好",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "站在巨人的肩膀上",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "当海盗，比加入海军更好",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大学生活与成长导航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让想法流动起来",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "团结一切可以团结的力量",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "认识领航先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开零一大学指南针（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "探索零一高校分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "文章 · 观点",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大学 · 成长",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一合作",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "合作 · 共建",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "黑客松 · 创造",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "沙龙 · 交流",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "商业 · 产品",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "科研 · 竞赛",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "日常 · 耍起",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学习与分享",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "探索与创新",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} 位项目成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}的领航先锋介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "收起成员列表",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "展开另外 {0} 位成员",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "合作生态伙伴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社区合作伙伴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "去探索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "语冰",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高校合作伙伴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "黑客松合作伙伴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} 官网（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "中国",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建：梦开始的地方",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "点击校名，探索分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "点击地点，逐级探索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}{1}的领航先锋介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}校徽",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "领航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "成长与先锋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "内容与传播",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "科研实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "商业实践",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "知识与技术",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "资源与合作",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "财务与资产",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看示例项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开项目网页",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例项目",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先看看想法的样子。标注“示例项目”的卡片为体验原型，真实作品会陆续在这里见面。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "每一个作品，都是一次从零到一的探索。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "示例影像 · 非实际活动记录",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "社团活动记录",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "图片暂不可用",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动照片",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动照片墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "校园影像",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "了解零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "了解社区正在开展的方向",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览零一商业",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览零一科研与竞赛",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览合作品牌",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览零一高校分社地图",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看加入我们的说明",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "加入我们，加入这场“从零到一”的革命！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "收起{0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "打开{0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "文件夹",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0}（新窗口）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "{0} · 示例项目｜零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请围绕“{0}”创作{1}。\n\n面向：对这个主题好奇、但还没有相关基础的大学生。\n表达：具体、亲切、清楚，少用术语。\n内容：从一个日常场景开始，解释核心想法，再给出一个今天就能尝试的小行动。\n要求：区分事实与建议，不编造数据或案例；对需要核实的内容明确提示。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "聚合社区 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "展开社区 Logo",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "（示例影像）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "AI 生成示意图与示例文案，不代表实际活动记录。真实记录将陆续更新。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "点击照片，展开活动记录。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "前往公众号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先加入社群，保持联系",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪湾",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "桔园洲",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "厚庭",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "董屿·福建师大",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "苏洋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "沙堤",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上街",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金屿",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "农林大学",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪塘",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "阵坂",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "半洲",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "建新",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽江",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "国宾大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪塘大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪山桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高岐河大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "新保路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上溪线",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "溪源江",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "梅亭路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "建新北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "国光路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "原厝路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽江大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "卢滨路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上雁路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "花溪中路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金桔路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金祥路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪湾北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上雁支路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪塘路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "园亭路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浦上大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浦上大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "滨洲支巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金山大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "桔园三路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "桔园二路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "滨洲路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "桔园一路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "橘园洲大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "群星路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "八箴路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "花溪北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "环峰路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "梅花楼路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "月光路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "麦浦路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金阵路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "上下店路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "妙高路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "石仓路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "旗山大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "淮安大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "建平路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "王庙水库",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金山路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西芹路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "同安路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "梅峰路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "荆东路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学府南路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "溪源宫路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "源江路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "明德路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "广贤路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "北环路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西环路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "东环路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "联榕路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "月泉路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "新上街",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "工贸路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "妙峰路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "横江路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪甘路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "115县道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "仓山大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "溪源路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "游艺路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "优师路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "行笃路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "知明路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "致广北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "骑行道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪湾中路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "凤凰池",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "乌龙江",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "白龙江",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "可溪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金林路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金达路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金工路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "软件大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "梁厝路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪湾南路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪湾路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金榕北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金塘路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "葛屿路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "葛屿支路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "花溪南路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "漳平路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "桃山路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "农大学生街",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下安路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "魁岐路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "将乐路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高宅路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "科技东路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "淮安路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高新大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创意路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "创新路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "莉园洲路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "金亭路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪塘支路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪塘状元街",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "阵北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "新颐路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "莲渚桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "侯官路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "316国道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "潘边路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "邱阳河",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "邱阳东路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西山支巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "流花溪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建农林大学旗山校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "惠好路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "学府北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "源通东路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "源通西路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建医科大学上街校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "喷水池",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "董屿路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "佛亭桥路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建江夏学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "思语湖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福银高速",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "榕桥村登山道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建中医药大学旗山校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "邱阳西路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "十四门桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "榕水线",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建师范大学协和学院",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "旗山湖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "星雨湖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "华南路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "苍霞湖",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西洪路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "杨桥西路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福二路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "洪山园路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西二环中路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福屿路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福一路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福屿后路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "祥屿路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "祥屿支巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "江滨西大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "乌山西路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "怡山路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西禅巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "首凤路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福沁路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "凤湖路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "石湖巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "双下路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "凤里巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "工业路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "给力坡",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "西河路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "祭酒岭路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大王里",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "文林路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "坊下巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "弯里路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "柳桥巷",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福屿人行天桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "凤凰池路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "杨桥中路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "斗池路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福三路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "工业北路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "梅峰慢行隧道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "敖江",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "保溪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "牛溪",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "潘渡大桥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "朱步隧道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "敖江休闲步道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "石狮大道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "祥宝路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "沿海大通道",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "丹东 - 东兴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "石祥路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "环村西路",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "戴振豪、陈品铮、陈俊祥",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "韩慕昇、杨章勋",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "韩慕昇、杨章勋、徐敏悦、王毅、陈佳宏、齐仕选",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "韩慕昇、游诗颖、陈雨轩",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "徐敏悦、蔡辰希、韩慕昇、刘志濠、陈嘉磊、关源冬",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "刘东启、周心怡、韩慕昇",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "余齐文、高家莹",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高家莹、卢俊达、林晨昊、郑宇航、蒋旭",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "高校分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "在这里，留下屏幕之外的零一。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "来自零一的手记",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "这张照片暂时无法加载，可以试试其他照片。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "公众号 ID 已复制，可在微信中搜索。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请在微信中搜索：{0}",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "英语口语协会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福州 AI 共学社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "FZU薄肌俱乐部",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大湾区黑客松 BayHack",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽江分社",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "闽大",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "大学城校区",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "福建省福州市闽侯县上街镇溪源宫路200号",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "连接愿意学习、分享与共创的伙伴。在闽江大学，一起探索 AI 的更多可能。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家计划",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一共创广场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "找活动、报比赛、组队，看每场活动的作品。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "逛 AI 项目、发布作品，找人一起做。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览零一活动与比赛",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览项目与寻找伙伴",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看社长零一扬的领军团队介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看官网设计与制作者零一扬的领军团队介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "查看{0}的成员介绍",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一黑客松｜「零一」合照",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一黑客松｜比赛现场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一黑客松｜社长「零一扬」演讲",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜AI 商业锐评会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜AI 科研锐评会",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜梦开始的地方",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一沙龙｜福州大学社团巡礼",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一群志同道合的兄弟，难得开心的一天！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "日常活动｜「零一」首次“聚餐耍起”",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "活动与共创",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "让一切，从此刻发生！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一玩家 Shadow",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一款如影随形的主角式 AI，从极致的个人主义出发，探索以你为中心的软硬件生态。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "玩家计划",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "把「玩家」理念变成具体落地路径：从一场有趣的活动或比赛开始！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "共创广场",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "一个用于链接「真实社会需求」与「高级开发玩家」的优质项目广场！",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "浏览社区资源",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "头号\n玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "头号玩家 · 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到头号玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "头号玩家成员肖像墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "头号玩家姓名搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索头号玩家姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "匹配的头号玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "没有找到相关头号玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋\n玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋玩家 · 零一玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "跳到先锋玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋玩家成员肖像墙",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "先锋玩家姓名搜索",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "搜索先锋玩家姓名",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "匹配的先锋玩家",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "和福大的同伴一起参加活动、组队共创，在实践中完成自己的从零到一。",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "下载分社申请表",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "导航",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "参与共创",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "零一共创",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "全部活动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "选择活动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "请选择活动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "暂无开放投稿的活动",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      },
+      {
+        "source": "外部活动名称（选填）",
+        "zh": "",
+        "hant": "",
+        "en": ""
+      }
+    ]
+  },
+  {
+    "key": "siteAssets",
+    "title": "全站公共标识与二维码",
+    "path": "/#join",
+    "rows": [
+      {
+        "id": "/images/club-logo-black.svg",
+        "title": "浅色导航的方形 Logo",
+        "url": "/images/club-logo-black.svg"
+      },
+      {
+        "id": "/images/club-logo-white.svg",
+        "title": "深色导航的方形 Logo",
+        "url": "/images/club-logo-white.svg"
+      },
+      {
+        "id": "/images/club-logo-horizontal-black.svg",
+        "title": "浅色横版品牌标识",
+        "url": "/images/club-logo-horizontal-black.svg"
+      },
+      {
+        "id": "/images/club-logo-horizontal-white.svg",
+        "title": "深色横版品牌标识",
+        "url": "/images/club-logo-horizontal-white.svg"
+      },
+      {
+        "id": "join-qq",
+        "title": "加入 · QQ 社区群二维码",
+        "url": "join-qq"
+      },
+      {
+        "id": "join-wechat",
+        "title": "加入 · 微信公众号二维码",
+        "url": "join-wechat"
+      },
+      {
+        "id": "/images/join-lingyiyang-wechat.jpg",
+        "title": "加入 · 官方合作二维码",
+        "url": "/images/join-xiaoyi-wechat-qr-20261127.svg"
+      },
+      {
+        "id": "/lingyi-logo.jpg",
+        "title": "页面加载标识",
+        "url": "/lingyi-logo.jpg"
+      },
+      {
+        "id": "/images/lingyiyang-logo.jpg",
+        "title": "零一扬标识",
+        "url": "/images/lingyiyang-logo.jpg"
+      },
+      {
+        "id": "/images/feishu-logo.png",
+        "title": "飞书标识",
+        "url": "/images/feishu-logo.png"
+      },
+      {
+        "id": "/images/qq-logo.png",
+        "title": "QQ 标识",
+        "url": "/images/qq-logo.png"
+      }
+    ]
+  },
+  {
+    "key": "earthGuide",
+    "title": "地球生存攻略",
+    "path": "/earth",
+    "rows": [
+      {
+        "id": "reading-campus",
+        "title": "大学生活",
+        "chapters": [
+          {
+            "id": "getting-started",
+            "title": "入学与适应",
+            "body": "刚进入大学，课程、生活和身边的人都在变化。可以先从一个正在遇到的小问题开始，用一段真实经历熟悉这本攻略。\n\n## 从一个具体问题开始\n\n把最近困扰你的事情写下来，再补充已经试过的办法和眼前的限制。例如，某门课听不懂、找不到学校提供的学习资源，或者想试一个项目却不知道第一步做什么。\n\n先选一件能在这周推进的事。完成后记下做了什么、哪里有效，以及下一次准备怎样调整。\n\n## 按需要选择下一篇\n\n- 想调整学习安排，可以继续阅读「课程与学习方法」。\n- 想了解校园内可用的支持，可以查看「校园生活与资源」。\n- 想尝试用 AI 处理一个真实任务，可以从「AI 入门」开始。\n\n目前部分章节仍在补充。页面左侧的分组和底部的 Previous / Next 可以帮助你继续阅读。点击文章上方的「大学生活」，可以回到本篇开篇。\n\n### 使用时核对学校信息\n\n课程安排、办事流程和服务入口，以所在学校当前发布的正式通知为准。涉及具体政策时，保留通知的日期和来源，方便回查。\n\n## 参与补充攻略\n\n攻略由运营团队在官网后台维护。提交内容时，请提供文章标题、Markdown 正文、公开使用的作者署名、学校和上传日期，并给需要核实的事实附上来源。",
+            "author": "",
+            "university": "",
+            "uploadedAt": "2026-11-27"
+          },
+          {
+            "id": "learning",
+            "title": "课程与学习方法",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          },
+          {
+            "id": "campus-life",
+            "title": "校园生活与资源",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          }
+        ]
+      },
+      {
+        "id": "reading-ai",
+        "title": "AI 与实践",
+        "chapters": [
+          {
+            "id": "ai-start",
+            "title": "AI 入门",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          },
+          {
+            "id": "ai-study",
+            "title": "用 AI 学专业",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          },
+          {
+            "id": "projects",
+            "title": "项目与共创",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          }
+        ]
+      },
+      {
+        "id": "reading-next",
+        "title": "下一阶段",
+        "chapters": [
+          {
+            "id": "paths",
+            "title": "升学、就业与探索",
+            "body": "本章内容待补充。",
+            "author": "",
+            "university": "",
+            "uploadedAt": ""
+          }
+        ]
+      }
+    ]
+  }
+]

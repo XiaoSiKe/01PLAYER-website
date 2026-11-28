@@ -28,48 +28,37 @@ function applyFilters(context, width, height, filter) {
   context.putImageData(pixels, 0, 0);
 }
 
-function clipLogo(context, clipPath, width, height) {
-  const inset = clipPath.match(/^inset\(([\d.]+)% round ([\d.]+)%\)$/);
-  if (!inset) return;
-  const x = width * Number(inset[1]) / 100, y = height * Number(inset[1]) / 100;
-  const right = width - x, bottom = height - y, radius = Math.min(width, height) * Number(inset[2]) / 100;
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.arcTo(right, y, right, bottom, radius);
-  context.arcTo(right, bottom, x, bottom, radius);
-  context.arcTo(x, bottom, x, y, radius);
-  context.arcTo(x, y, right, y, radius);
-  context.closePath();
-  context.clip();
-}
-
 export default async function renderDisplayedQr(media, fallbackSource) {
-  const layers = await Promise.all([...media.querySelectorAll('img')].map(async element => {
-    const source = new Image();
-    source.src = element.currentSrc || fallbackSource;
-    await source.decode();
-    return { element, source };
-  }));
+  const element = media.querySelector('img');
+  const source = new Image();
+  source.src = element.currentSrc || fallbackSource;
+  await source.decode();
+
   const bounds = media.getBoundingClientRect();
-  const first = layers[0].element.getBoundingClientRect();
-  const scale = layers[0].source.naturalWidth / first.width;
+  const rect = element.getBoundingClientRect();
+  const style = getComputedStyle(element);
+  const mediaStyle = getComputedStyle(media);
+  const fit = Math.min(rect.width / source.naturalWidth, rect.height / source.naturalHeight);
+  const width = style.objectFit === 'contain' ? source.naturalWidth * fit : rect.width;
+  const height = style.objectFit === 'contain' ? source.naturalHeight * fit : rect.height;
+  const left = rect.left - bounds.left + (rect.width - width) / 2;
+  const top = rect.top - bounds.top + (rect.height - height) / 2;
+  const scale = source.naturalWidth / width;
+
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(bounds.width * scale);
   canvas.height = Math.round(bounds.height * scale);
   const context = canvas.getContext('2d', { willReadFrequently: true });
-  for (const { element, source } of layers) {
-    const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
-    const layer = document.createElement('canvas');
-    layer.width = canvas.width; layer.height = canvas.height;
-    const paint = layer.getContext('2d', { willReadFrequently: true });
-    paint.drawImage(source, (rect.left - bounds.left) * scale, (rect.top - bounds.top) * scale, rect.width * scale, rect.height * scale);
-    applyFilters(paint, layer.width, layer.height, style.filter);
-    context.save();
-    clipLogo(context, style.clipPath, canvas.width, canvas.height);
-    context.drawImage(layer, 0, 0);
-    context.restore();
-  }
-  applyFilters(context, canvas.width, canvas.height, getComputedStyle(media).filter);
+  const layer = document.createElement('canvas');
+  layer.width = canvas.width;
+  layer.height = canvas.height;
+  const paint = layer.getContext('2d', { willReadFrequently: true });
+  paint.drawImage(source, left * scale, top * scale, width * scale, height * scale);
+  applyFilters(paint, layer.width, layer.height, style.filter);
+  context.fillStyle = mediaStyle.backgroundColor;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(layer, 0, 0);
+  applyFilters(context, canvas.width, canvas.height, mediaStyle.filter);
   const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error('QR export failed')), 'image/png'));
   return { image: URL.createObjectURL(blob), aspectRatio: canvas.width / canvas.height };
 }

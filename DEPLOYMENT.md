@@ -5,13 +5,29 @@
 - 正式域名：`https://club.01aiedu.com/`
 - ECS：华南 1（深圳），公网 IP `47.106.14.254`
 - Nginx 配置：`/etc/nginx/conf.d/020-01aiclub.conf`
-- 发布根目录：`/var/www/01aiclub`
+- 发布根目录：新装默认 `/var/www/01PLAYER`，已有站点可沿用 `/var/www/01aiclub`。受管入口与发布工具使用同一选择，记录于 `/etc/01PLAYER/static-root`。
 - 发布用户：`01aiclub-deploy`
-- 访问日志：`/var/log/nginx/01aiclub.access.log`
-- 错误日志：`/var/log/nginx/01aiclub.error.log`
+- 访问日志：`/var/log/nginx/01PLAYER.access.log`
+- 错误日志：`/var/log/nginx/01PLAYER.error.log`
 - TLS 配置：`/etc/letsencrypt-01aiclub`
 
-这些资源只属于日新社官网。不得修改或复用现有的 `000-25thgame.conf`、`010-01yang-company-website.conf`、`/var/www/25thgame`、`/var/www/01yang-company-website`。
+这些资源只属于零一玩家官网。不得修改或复用现有的 `000-25thgame.conf`、`010-01yang-company-website.conf`、`/var/www/25thgame`、`/var/www/01yang-company-website`。
+
+### 已确认的待上线地址
+
+2026-11-22 用户确认以下发布地址，11-23 补充高校分社计划。此清单用于确认地址，统一标记为待上线。
+
+| 入口 | 发布地址 | 本地预览 |
+| --- | --- | --- |
+| 零一玩家 APP 下载 | `https://app.01aiedu.com/` | — |
+| 共创广场 | `https://parade.01aiedu.com/` | `http://127.0.0.1:5173/plaza` |
+| 玩家计划 | `https://plan.01aiedu.com/` | `http://127.0.0.1:5173/players` |
+| 启航导师 | `https://club.01aiedu.com/mentors` | `http://127.0.0.1:5173/mentors` |
+| 头号玩家 | `https://club.01aiedu.com/team` | `http://127.0.0.1:5173/leadership` |
+| 先锋玩家 | `https://club.01aiedu.com/pioneers` | `http://127.0.0.1:5173/pioneers` |
+| 加入零一 | `https://club.01aiedu.com/join` | `http://127.0.0.1:5173/join` |
+| 高校分社计划 | `https://club.01aiedu.com/cooperation` | `http://127.0.0.1:5173/cooperation` |
+| 零一地球生存攻略 | `https://club.01aiedu.com/earth` | `http://127.0.0.1:5173/earth` |
 
 ### 网络与 SSH 安全基线
 
@@ -65,7 +81,7 @@ CDN 证书与 ECS 自动续期是两份独立配置。源站证书续期后，�
 ## 发布结构
 
 ```text
-/var/www/01aiclub/
+/var/www/01PLAYER/
 ├── current -> releases/<版本>
 ├── previous -> releases/<上一版本>
 ├── releases/                 # 最近五个已验证版本
@@ -77,6 +93,8 @@ CDN 证书与 ECS 自动续期是两份独立配置。源站证书续期后，�
 
 发布脚本先在临时目录校验归档路径、文件类型、SHA-256 清单和必要文件，再原子切换 `current`。健康检查失败会恢复上一版本。
 
+更新静态发布工具时，由服务器管理员在可信的完整 deploy 目录运行 `bash bootstrap.sh init`，连同依赖一起安装到强制命令使用的 `/usr/local/lib/01aiclub/`。新版健康检查会把实际响应和候选制品的 `index.html` 逐字节核对，兼容旧制品回滚。
+
 ## 本地构建和打包
 
 ```bash
@@ -85,7 +103,7 @@ npm run build
 npm run verify:dist
 ```
 
-`npm run build` 会在 `dist/` 生成 `version.json` 和 `SHA256SUMS`。已提交且工作区干净时可运行：
+`npm run build` 会在 `dist/` 生成 `version.json` 和 `SHA256SUMS`。CI 可通过 `BUILD_VCS_NUMBER` 提供构建对应的提交号。本地从干净仓库构建时读取 Git 提交号，存在未提交改动或缺少 Git 元数据时生成带 `working-tree-snapshot` 标记的预览制品。正式打包在干净工作区运行以下命令。
 
 ```bash
 npm run release:package
@@ -99,7 +117,7 @@ npm run release:package
 
 ```bash
 git clone --depth 1 --branch main \
-  https://github.com/XiaoSiKe/01-ai-club-website.git /tmp/01aiclub-bootstrap
+  https://github.com/XiaoSiKe/01PLAYER-website.git /tmp/01aiclub-bootstrap
 bash /tmp/01aiclub-bootstrap/deploy/bootstrap.sh init
 ```
 
@@ -111,15 +129,15 @@ DNS 生效且首次制品发布成功后启用 TLS：
 bash /tmp/01aiclub-bootstrap/deploy/bootstrap.sh tls
 ```
 
-TLS 脚本会签发 `club.01aiedu.com` 证书、切换到 HTTPS 配置并启用独立续期定时器。
+首次从匹配的纯 HTTP 模板启用 TLS 时，脚本会签发名为 `01aiclub` 的官网证书、切换到 HTTPS 配置并启用续期。已有 HTTPS 配置会保留。遇到定制 HTTP 配置，先备份并在现有 server 中合入 HTTPS，保留业务和玩家路由，通过 `nginx -t` 后重载，再按脚本提示同步工具。报名服务的路由安装、数据库备份和验收见[运营后台部署手册](docs/OPERATIONS-ADMIN.md)。
 
 ## 云效 CI/CD
 
 - 流水线名称：`01aiclub-website-prod`
 - 流水线 ID：`5236605`
 - 版本化配置：`deploy/aliyun-flow.yml`
-- 代码源：公共 GitHub 仓库 `XiaoSiKe/01-ai-club-website`
-- 触发条件：`main` 分支 push 经 GitHub Actions 检查通过后，以 HTTPS 自动触发云效并等待线上版本验收
+- 代码源：公共 GitHub 仓库 `XiaoSiKe/01PLAYER-website`
+- 触发条件：仓库变量 `CLUB_AUTO_DEPLOY=1` 时，`main` 分支 push 经 GitHub Actions 检查通过后，以 HTTPS 自动触发云效并等待线上版本验收；当前变量为 `0`，合并仅检查，不发布
 - 构建集群：云效香港公共集群
 - 私密变量组：`01aiclub-website-prod-secrets`
 - 变量组 ID：`aiclubprodsecret`
@@ -146,3 +164,9 @@ curl -fsS https://club.01aiedu.com/version.json
 - `arch.25thgame.vip` 与 `www.01yang.space` 保持原状态。
 
 完整日常操作、日志、回滚与故障处理见 [docs/OPERATIONS.md](./docs/OPERATIONS.md)。
+
+## 2026-11-27 云效触发修复
+
+官网仓库更名后，云效控制台保留了旧代码源 `01-ai-club-website`，导致 GitHub 推送被拒绝并返回 1400003。已在流水线 5236605 将代码源和触发设置更新到 `https://github.com/XiaoSiKe/01PLAYER-website.git` 的 `main`。代码源地址与本仓库 `deploy/aliyun-flow.yml` 一致。更名后再次核对控制台已保存的代码源和触发设置。
+
+GitHub Actions 检查通过后触发云效，随后最多等待十分钟，核对正式官网 `version.json` 与本次合并提交一致。PR 只执行检查；合并到 `main` 且 `CLUB_AUTO_DEPLOY=1` 才触发发布。当前处于暂停状态，用户确认前保持 `0`。构建和静态发布继续使用现有受限通道。

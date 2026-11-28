@@ -88,7 +88,7 @@ in the homepage footer instead of the local map corner.
 
 ## Branch flags (updated 2026-10-26)
 
-User-supplied source PDFs: 零一AI日新社总社旗帜.pdf; 零一AI日新社-福师大分社-旗帜-印刷矢量版-RGB.pdf; 零一AI日新社-福理工分社-旗帜-印刷矢量版-RGB.pdf; 零一AI日新社-福大至诚分社-旗帜-印刷矢量版-RGB.pdf; 零一AI日新社-闽江分社-旗帜-印刷矢量版-RGB.pdf. scripts/extract-branch-flags.py extracts 56 / 62 / 62 / 70 / 60 / 62 SVG paths into src/data/branch-flags.json (fzu / fjnu / fjut / fuzc / mju / fit). The FIT flag is generated locally from the supplied common brand artwork rather than a user-provided FIT PDF. It can update individual supplied PDFs while preserving other flag entries. BranchFlag.jsx renders those paths inline, without raster/image elements, preserving the original outlined lettering and artwork.
+Current website flags use the official 01PLAYER vector logo. The rendered flag paths are stored in `src/data/branch-flags.json` and drawn inline by `BranchFlag.jsx`. Print copies are listed under [website deliverables](../../../deliverables/README.md).
 
 ## Fujian Normal University branch (2026-10-25)
 
@@ -113,7 +113,7 @@ The user supplied 福州理工分社, founding date 2026-10-26 and leader Eug. T
 - Official crest: https://www.fit.edu.cn/About/Badgemotto/ , original PNG https://www.fit.edu.cn/images/image/20210524092676507650.png (587×587, unchanged).
 - Geographic reference: OpenStreetMap way 582302622, `amenity=university`, with Nominatim lookup centre 119.4655281° E, 26.2428289° N. The OSM area is unnamed. It was matched to the public FIT campus reference near its official address, using https://www.bigemap.net/city-26898.html only as a location clue; that page's map-coordinate datum is unspecified, so its coordinates were not copied directly. The polygon is an approximate campus-area reference, not an official surveyed institutional boundary. Initial fuzzy Nominatim search results naming 福建理工大学 were discarded.
 - Local geographic context: https://api.openstreetmap.org/api/0.6/map?bbox=119.455,26.225,119.490,26.255 . The curated addition contains 207 nonduplicate OSM ways: 130 roads, 15 water features, 44 buildings, 1 neighboring university area and 17 land-use areas. Original OSM IDs are retained; the featured area is rendered through its separate campus polygon. The finite clipping rectangle now derives from all supplied campus extents plus padding.
-- Branch flag: generated with `scripts/create-fit-flag.py`, preserving 36 logo/main-wordmark paths from the user's 福大至诚 template. New Heiti SC Medium and Arial Bold lettering is converted to paths. The PDF and SVG contain no raster images and no live text; the final PDF is extracted into 62 inline paths for `branch-flags.json`.
+- Branch flag uses the official 01PLAYER lockup and the outlined branch name.
 
 ## Quanzhou Ocean branch (2026-10-30)
 
@@ -140,4 +140,10 @@ are reused. The official website uses 泉州海洋职业学院; both names are s
 - Flag: `scripts/create-fit-flag.py --branch-name 泉州海洋分社 --branch-code QZOI`
   preserves the 36 shared brand paths from the bundled FIT flag and outlines
   the new branch lettering. The SVG and PDF have no live fonts or raster images;
-  `branch-flags.json` contains 63 paths for `qzoi`.
+
+## 福软分社（2026-11-25）
+
+- 用户确认福州软件职业技术学院分社成立，简称福软分社，分社长为许钧泓，GitHub 为 [encoXJH](https://github.com/encoXJH)。先锋玩家头像来自该账号的公开头像。
+- 学校名称及校址按[学校章程](https://www.fzrjxy.com/info/1012/47061.htm)核对，文岭校区按[学校招生章程](https://zsw.fzrjxy.com/info/1009/25744.htm)核对。
+- 校园点位采用 [Mapcarta 的 OpenStreetMap 校园条目](https://mapcarta.com/W1310615512)，经纬度为 119.69825、25.97278。校区边界和周边地物取自 [OpenFreeMap](https://openfreemap.org/) 的 OpenMapTiles / OpenStreetMap 矢量图块，版本 `20261122_124456_pt`。取第 14 级图块 x=13638–13641、y=6965–6968；提取道路、轨道、建筑、水域、绿地及文岭站。
+- 校区边界为 OpenStreetMap way 1310615512 在 landuse 图层中的几何，来源图块 ID 为 13106155122。周边数据存于 `fzrjxy-neighborhood.geojson`，保留图块坐标、图层和条目顺序作为来源 ID。仅作为官网地图背景。 [OpenStreetMap 署名](https://www.openstreetmap.org/copyright) · [OpenMapTiles](https://openmaptiles.org/)

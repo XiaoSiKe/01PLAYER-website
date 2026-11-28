@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { imageDimensions, imageSource } from './imageSource';
 import { observeImage } from './imageVisibility';
 
-export default function ResponsiveImage({ src, active = true, eager = false, maxDpr = 1.5,
+export default function ResponsiveImage({ src, active = true, eager = false, maxDpr = 1.5, original = false,
   fit = 'contain', decoding = 'async', ...props }) {
   const ref = useRef(null);
   const [candidate, setCandidate] = useState();
@@ -11,13 +11,13 @@ export default function ResponsiveImage({ src, active = true, eager = false, max
     let previous = Symbol('uninitialized');
     return observeImage(ref.current, { source: src, eager, update: item => {
       const source = item.ready && item.width > 0 && item.height > 0
-        ? imageSource(src, item.width, item.height, Math.min(window.devicePixelRatio || 1, maxDpr), fit)
+        ? (original ? src : imageSource(src, item.width, item.height, Math.min(window.devicePixelRatio || 1, maxDpr), fit))
         : undefined;
       if (source === previous) return;
       previous = source;
       setCandidate(source ? { source, original: src } : undefined);
     } });
-  }, [src, active, eager, maxDpr, fit]);
+  }, [src, active, eager, maxDpr, fit, original]);
 
   // Keep a bounded warm margin for reverse scrolling and closing previews.
   // Hidden tabs and images whose copies all leave that margin release sources.

@@ -2,8 +2,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { atlasFlightTarget, atlasLayerOpacity, atlasMarkerLabels, atlasMarkerLayout, atlasSpringResponse, fitAtlasCamera, stepAtlasSpring, parentAtlasView } from '../src/components/atlasCamera.js';
 import { branches, branchCities, searchBranches } from '../src/data/branches.js';
+import { encodeAtlas, decodeAtlas } from '../src/components/atlasCodec.js';
 
 const atlas = JSON.parse(readFileSync(new URL('../src/data/maps/branch-atlas.json', import.meta.url)));
+const packed = encodeAtlas(atlas);
+assert.deepEqual(decodeAtlas(packed), atlas, 'Packing must preserve every path, coordinate, label and metadata value');
+assert.throws(() => decodeAtlas(packed.subarray(0, -1)), /Incomplete/);
 for (const name of ['china', 'fujian', 'fuzhou', 'quanzhou', 'campuses', 'localDetails', 'context']) {
   const ids = atlas[name].map(item => item.id);
   assert(ids.every(id => id && id !== 'undefined'), `${name} render IDs must be defined`);
@@ -14,7 +18,7 @@ for (const kind of ['road', 'water', 'green', 'building']) {
 }
 assert(atlas.localDetails.filter(item => item.kind === 'building').length > 100, 'Campus surroundings must include real building footprints');
 for (const item of atlas.localDetails) {
-  assert(/^way:|^relation:/.test(item.id), 'Neighborhood shapes must retain their OSM source IDs');
+  assert(/^(?:way:|relation:|openmaptiles:\d+\/\d+\/\d+:[a-z]+:\d+$)/.test(item.id), 'Neighborhood shapes must retain their OSM or tile source IDs');
   assert(item.bounds.flat().every(Number.isFinite), `Invalid local geometry: ${item.id}`);
   assert(item.bounds[0][0] >= atlas.localClipBounds[0][0] - .0001 && item.bounds[0][1] >= atlas.localClipBounds[0][1] - .0001
     && item.bounds[1][0] <= atlas.localClipBounds[1][0] + .0001 && item.bounds[1][1] <= atlas.localClipBounds[1][1] + .0001,
@@ -32,6 +36,7 @@ for (let scale = 1; scale < 5000; scale *= 1.05) {
 assert.equal(atlasLayerOpacity('world', 10), 0, 'Do not rasterize the world at regional zoom');
 assert.equal(atlasLayerOpacity('china', 40), 0, 'Do not rasterize the country at campus zoom');
 assert.equal(atlasLayerOpacity('fuzhou', 1000), 0, 'Do not retain distant district geometry at campus zoom');
+assert.equal(atlasLayerOpacity('fuzhou', 1000, false), 1, 'Use district geometry outside detailed campus coverage');
 for (const [w, h, pad] of [[644, 660, 64], [804, 660, 64], [356, 400, 42], [286, 400, 42]]) {
 const overviewPoses = [atlas.bounds.china, atlas.bounds.fujian, atlas.bounds.campuses, ...Object.values(atlas.campusViews)].map((bounds, i) => fitAtlasCamera(bounds, w, h, pad, i === 0 ? 1.21 : 1));
 for (const start of overviewPoses) for (const target of overviewPoses) {
@@ -43,10 +48,11 @@ for (const start of overviewPoses) for (const target of overviewPoses) {
     pose = step.position; velocity = step.velocity;
     const scale = Math.exp(pose.z);
     const viewport = [[pose.x - w / 2 / scale, pose.y - h / 2 / scale], [pose.x + w / 2 / scale, pose.y + h / 2 / scale]];
-    assert(layers.some(layer => {
-      const b = atlas.bounds[layer];
-      return atlasLayerOpacity(layer, scale) > .05 && b[0][0] <= viewport[1][0] && b[1][0] >= viewport[0][0] && b[0][1] <= viewport[1][1] && b[1][1] >= viewport[0][1];
-    }), 'A whole-level zoom must not fly into an empty culled region');
+    const reaches = b => b[0][0] <= viewport[1][0] && b[1][0] >= viewport[0][0]
+      && b[0][1] <= viewport[1][1] && b[1][1] >= viewport[0][1];
+    const hasLocalCoverage = reaches(atlas.bounds.local);
+    assert(layers.some(layer => atlasLayerOpacity(layer, scale, hasLocalCoverage) > .05
+      && reaches(atlas.bounds[layer])), 'A whole-level zoom must not fly into an empty culled region');
   }
 }
 }
@@ -89,14 +95,22 @@ assert.equal(atlas.china.length, 35);
 for (const code of ['710000','460000','810000','820000','100000_JD']) assert(atlas.china.some(item => item.id === code), `Missing complete-map feature: ${code}`);
 for (const branch of branches) {
   assert(atlas.points[branch.id]?.every(Number.isFinite), `Missing campus point: ${branch.id}`);
-  assert(atlas.campuses.some(item => item.id === branch.id && item.d.length > 10), `Missing campus outline: ${branch.id}`);
+  if (branch.osmId) assert(atlas.campuses.some(item => item.id === branch.id && item.d.length > 10), `Missing campus outline: ${branch.id}`);
 }
 assert.equal(new Set(branches.map(item => item.id)).size, branches.length);
 assert.deepEqual(searchBranches(' 福理工 ').map(item => item.id), ['fjut']);
 assert.deepEqual(searchBranches('闽江学院').map(item => item.id), ['mju']);
 assert.deepEqual(searchBranches('闽江大学').map(item => item.id), ['mju']);
 assert.deepEqual(searchBranches('FZU').map(item => item.id), ['fzu']);
-assert.equal(searchBranches('福州').length, 6);
+assert.equal(searchBranches('福州').length, 7);
+assert.deepEqual(searchBranches('福软').map(item => item.id), ['fzrjxy']);
+const softwareCampus = atlas.campusViews.fzrjxy;
+for (const kind of ['road', 'building', 'green']) {
+  assert(atlas.localDetails.some(item => item.kind === kind && item.id.startsWith('openmaptiles:')
+    && item.bounds[0][0] <= softwareCampus[1][0] && item.bounds[1][0] >= softwareCampus[0][0]
+    && item.bounds[0][1] <= softwareCampus[1][1] && item.bounds[1][1] >= softwareCampus[0][1]),
+  `Missing ${kind} detail near the Fuzhou Software College campus`);
+}
 assert.deepEqual(searchBranches('泉州').map(item => item.id), ['qzoi']);
 assert.deepEqual(searchBranches('郑鑫尧').map(item => item.id), ['qzoi']);
 assert.equal(parentAtlasView('school:qzoi'), 'quanzhou');
@@ -117,8 +131,8 @@ assert.deepEqual(searchBranches('郑航').map(item => item.id), ['fuzc']);
 assert.deepEqual(searchBranches('福州理工').map(item => item.id), ['fit']);
 assert.deepEqual(searchBranches('Eug').map(item => item.id), ['fit']);
 assert.deepEqual(searchBranches('FIT').map(item => item.id), ['fit']);
-assert.deepEqual(branches.map(item => item.id), ['fzu', 'fjnu', 'fjut', 'fuzc', 'mju', 'fit', 'qzoi']);
-assert.deepEqual(atlas.campuses.map(item => item.id).sort(), branches.map(item => item.id).sort());
+assert.deepEqual(branches.map(item => item.id), ['fzu', 'fjnu', 'fjut', 'fuzc', 'mju', 'fit', 'qzoi', 'fzrjxy']);
+assert.deepEqual(atlas.campuses.map(item => item.id).sort(), branches.filter(item => item.osmId).map(item => item.id).sort());
 assert(atlas.campusViews.mju.flat().every(Number.isFinite));
 assert.deepEqual(searchBranches('Spark').map(item => item.id), ['mju']);
 assert.equal(branches.find(item => item.id === 'fuzc').founded, '2026-10-26');

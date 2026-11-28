@@ -1,0 +1,68 @@
+.time-machine { min-height:100dvh; color:var(--site-ink); background:var(--site-background); --tm-border:color-mix(in srgb,var(--site-ink) 18%,transparent); }
+.time-machine--immersive { background:#000; }
+.time-machine--immersive .staggered-menu-header { background:var(--site-background); }
+.time-machine .sm-brand-controls { min-width:0; max-width:100%; }
+.tm-catalog-controls { display:flex; align-items:center; gap:6px; min-width:0; }
+.tm-catalog-toggle { flex:none; }
+.tm-catalog-controls .tm-session-select { width:clamp(88px,26vw,210px); min-width:0; flex:0 1 auto; }
+.tm-catalog-controls .tm-session-select .language-switcher__trigger {
+  width:100%; max-width:none; min-width:0; min-height:44px; padding:0 8px;
+  border:1px solid var(--tm-border); border-radius:12px; background:var(--site-background);
+  color:var(--site-ink); font:inherit; font-size:16px; box-shadow:none;
+}
+.tm-session-select .specular-button__label { width:100%; min-width:0; justify-content:space-between; gap:6px; }
+.tm-session-select .language-switcher__chevron { flex:none; }
+.tm-wall-status { position:fixed; inset:44% 16px auto; text-align:center; color:#ddd; font-size:clamp(22px,2vw,30px); line-height:1.5; }
+.tm-event-controls {
+  position:fixed; inset:auto auto max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); z-index:20;
+}
+.tm-event-controls .specular-button { min-height:44px; }
+.tm-directory {
+  position:fixed; inset:0 0 0 auto; margin:0; padding:0; width:min(620px,100%); height:100dvh;
+  max-width:none; max-height:none; overflow:auto; overscroll-behavior:contain;
+  border:0; border-inline-start:1px solid var(--tm-border); background:var(--site-background); color:var(--site-ink);
+}
+.tm-directory::backdrop { background:#0008; }
+.tm-directory-body { padding:0 20px; }
+.tm-header { position:sticky; top:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; background:var(--site-background); }
+.tm-header h2 { font-size:clamp(20px,2.8vw,28px); margin:0; }
+.tm-header .specular-button { min-height:44px; }
+.pg-focus-controls { display:none; }
+body.pg-focused .pg-focus-controls { display:block; position:fixed; inset:0; z-index:45; pointer-events:none; }
+body.pg-focused .time-machine--immersive :is(.staggered-menu-wrapper,.tm-event-controls) { visibility:hidden; }
+.tm-archive-menu {
+  position:fixed; inset:auto; margin:0; padding:4px;
+  border:1px solid var(--tm-border); border-radius:12px; background:var(--site-background); color:var(--site-ink);
+}
+.tm-archive-menu::backdrop { background:transparent; }
+.tm-directory-list { list-style:none; margin:0; padding:0; }
+.tm-directory-list li + li { border-top:1px solid var(--tm-border); }
+.tm-directory-list button {
+  width:100%; min-height:44px; padding:8px 10px; border:0; border-radius:8px;
+  font:inherit; font-size:14px; color:inherit; text-align:start;
+  background:transparent; cursor:pointer; overflow-wrap:anywhere;
+}
+.tm-directory-list button:is(:hover,[aria-current=true]) { background:color-mix(in srgb,var(--site-ink) 7%,transparent); }
+.time-machine :is(button,a,select):focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+.time-machine .tm-directory-list button:focus-visible { outline-offset:-2px; }
+@media(max-width:700px) {
+  .tm-directory-body { padding-inline:12px; }
+}
+@media(max-width:520px) {
+  .time-machine .sm-brand-controls:has(.tm-session-select) .site-account-link { width:44px; padding-inline:0; }
+  .time-machine .sm-brand-controls:has(.tm-session-select) .site-account-label { display:none; }
+  .time-machine .tm-catalog-toggle { padding-inline:8px; }
+}
+
+.tm-photo-form { display:grid; gap:16px; padding:12px 0 24px; }
+.tm-photo-form p { margin:0; font-size:14px; }
+.tm-photo-form label { display:grid; gap:8px; }
+.tm-photo-form :is(input,select) {
+  width:100%; min-height:44px; padding:12px; border:1px solid var(--tm-border); border-radius:12px;
+  background:var(--site-background); color:var(--site-ink); font:inherit; font-size:16px;
+}
+
+.tm-directory-types { list-style: none; margin: 0 0 4px 14px; padding: 0 0 0 8px; border-left: 1px solid var(--tm-border); }
+.tm-directory-types button { font-size: 13px; color: color-mix(in srgb,var(--site-ink) 76%,transparent); }
+
+.tm-directory-list > li:has(.tm-directory-types) > button { font-weight: 600; }

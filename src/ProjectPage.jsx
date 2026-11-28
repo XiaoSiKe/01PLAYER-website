@@ -3,6 +3,7 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import { useEffect, useState } from 'react';
 import { projects } from './data/projects';
 import ProjectArtwork from './components/ProjectArtwork';
+import ResponsiveImage from './components/ResponsiveImage';
 import './components/ProjectShowcase.css';
 import './ProjectPage.css';
 
@@ -65,20 +66,20 @@ export default function ProjectPage({ projectId }) {
   const project = projects.find(item => item.id === projectId);
   useEffect(() => {
     const previous = document.title;
-    document.title = project ? t('{0} · 示例项目｜零一 AI 日新社', [project.name]) : t('项目未找到｜零一 AI 日新社');
+    document.title = project ? t(project.demo ? '{0} · 示例项目｜零一玩家' : '{0} · 零一玩家', [project.name]) : t('项目未找到｜零一玩家');
     return () => { document.title = previous; };
   }, [project, t]);
 
-  if (!project) return <main className="project-page project-not-found"><LanguageSwitcher /><p className="section-eyebrow">01AIClub / PROJECTS</p><h1>{t("这个项目还没来到这里。")}</h1><p>{t("回到官网，了解社团的探索方向。")}</p><a className="demo-button" href="./#directions">{t("返回官网 ↗")}</a></main>;
+  if (!project) return <main className="project-page project-not-found"><LanguageSwitcher /><p className="section-eyebrow">01PLAYER / PROJECTS</p><h1>{t("这个项目还没来到这里。")}</h1><p>{t("回到官网，了解零一玩家的探索方向。")}</p><a className="demo-button" href="./#directions">{t("返回")}</a></main>;
   const Demo = demos[project.id];
   return <div className="project-page">
     <a className="skip-link" href="#project-main">{t("跳到主要内容")}</a>
-    <header className="project-page-header"><a href="./#directions" className="project-back"><span aria-hidden="true">←</span>{t(" 返回官网")}</a><div className="project-page-language"><LanguageSwitcher /><a href="./#top" className="project-page-brand">01<span>AIClub</span></a></div></header>
+    <header className="project-page-header"><a href="./#directions" className="project-back"><span aria-hidden="true">←</span>{t("返回")}</a><div className="project-page-language"><LanguageSwitcher /><a href="./#top" className="project-page-brand">01<span>PLAYER</span></a></div></header>
     <main id="project-main" className="project-page-main">
-      <section className="project-page-hero" aria-labelledby="project-page-title"><div><p className="section-eyebrow">PROJECT {project.number} / {project.english}</p><span className="project-detail-badge">{t("示例项目 · 可交互体验")}</span><h1 id="project-page-title">{t(project.name)}</h1><p className="project-page-tagline">{t(project.description)}</p><p className="project-page-description">{t(project.detail)}</p><a href="#project-demo" className="demo-button">{t("体验一下 ")}<span aria-hidden="true">↓</span></a></div><div className="project-page-art"><ProjectArtwork kind={project.id} /></div></section>
-      <section className="project-demo-section" id="project-demo" aria-labelledby="demo-title"><div className="project-demo-intro"><p className="section-eyebrow">A SMALL FIRST STEP</p><h2 id="demo-title">{t("先动手，试试看。")}</h2><p>{t("一个小小的原型，")}<br />{t("让想法变得具体。")}</p><span>{t("示例体验，欢迎带着新想法来。")}</span></div><div className="project-demo-surface">{Demo ? <Demo /> : <p className="demo-empty">{t("这个项目的体验正在准备中，欢迎先加入社群交流想法。")}</p>}</div></section>
-      <section className="project-feature-grid" aria-label={t("项目构想")}>{project.features.map(([title, text], index) => <article key={title}><span>0{index + 1}</span><h2>{t(title)}</h2><p>{t(text)}</p></article>)}</section>
+      <section className="project-page-hero" aria-labelledby="project-page-title"><div><p className="section-eyebrow">PROJECT {project.number} / {project.english}</p><span className="project-detail-badge">{t(project.demo ? "示例项目 · 可交互体验" : project.category)}</span><h1 id="project-page-title">{t(project.name)}</h1><p className="project-page-tagline">{t(project.description)}</p><p className="project-page-description">{t(project.detail)}</p>{project.demo ? <a href="#project-demo" className="demo-button">{t("体验一下 ")}<span aria-hidden="true">↓</span></a> : project.url && <a className="demo-button" href={project.url} target="_blank" rel="noreferrer">{t("访问项目")} ↗</a>}</div><div className="project-page-art"><>{project.image ? <ResponsiveImage src={project.image} alt={project.name} eager fit="cover" style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <ProjectArtwork kind={project.id} />}</></div></section>
+      {project.demo && <section className="project-demo-section" id="project-demo" aria-labelledby="demo-title"><div className="project-demo-intro"><p className="section-eyebrow">A SMALL FIRST STEP</p><h2 id="demo-title">{t("先动手，试试看。")}</h2><p>{t("一个小小的原型，")}<br />{t("让想法变得具体。")}</p><span>{t("示例体验，欢迎带着新想法来。")}</span></div><div className="project-demo-surface">{Demo ? <Demo /> : <p className="demo-empty">{t("这个项目的体验正在准备中，欢迎先加入社群交流想法。")}</p>}</div></section>}
+      <section className="project-feature-grid" aria-label={t("项目构想")}>{(project.features || []).map(([title, text], index) => <article key={title}><span>0{index + 1}</span><h2>{t(title)}</h2><p>{t(text)}</p></article>)}</section>
       <div className="project-page-invitation"><div><p className="section-eyebrow">FROM ZERO TO ONE</p><h2>{t("下一个作品，也可以从你开始。")}</h2><p>{t("这里展示的是项目构想与体验原型，欢迎一起把想法变成真实作品。")}</p></div><a href="./#join" className="demo-button">{t("加入我们 ")}<span aria-hidden="true">↗</span></a></div>
-    </main><footer className="project-page-footer"><span>{t("零一 AI 日新社 / 01AIClub")}</span><span>{t("保持好奇，持续创造。")}</span></footer>
+    </main><footer className="project-page-footer"><span>{t("零一玩家 / 01PLAYER")}</span><span>{t("保持好奇，持续创造。")}</span></footer>
   </div>;
 }

@@ -14,12 +14,28 @@
     "preview": "vite preview",
     "verify:dist": "node scripts/verify-dist.mjs",
     "verify:atlas": "node scripts/verify-branch-atlas.mjs",
-    "test:runtime": "node --test scripts/viewport-readiness.test.mjs scripts/pioneers-search.test.mjs scripts/image-visibility.test.mjs scripts/logo-loop-motion.test.mjs scripts/language.test.mjs",
+    "test:runtime": "node --test scripts/viewport-readiness.test.mjs scripts/pioneers-search.test.mjs scripts/image-visibility.test.mjs scripts/logo-loop-motion.test.mjs scripts/language.test.mjs scripts/operations-smoke.test.mjs scripts/operations-route.test.mjs scripts/earth-guide-sync.test.mjs",
     "release:package": "bash deploy/package-release.sh",
     "ops:check": "node scripts/ops.mjs check",
     "ops:status": "node scripts/ops.mjs status",
     "ops:runs": "node scripts/ops.mjs runs",
-    "i18n:build": "node scripts/build-translations.mjs"
+    "i18n:build": "node scripts/build-translations.mjs",
+    "start": "node server/start.mjs",
+    "bench:enrollment": "node scripts/benchmark-enrollment.mjs",
+    "bench:guide": "node scripts/benchmark-guide.mjs",
+    "test:community": "node --test scripts/community*.test.mjs",
+    "test:deployment": "node --test scripts/trigger-flow.test.mjs scripts/static-deploy.test.mjs scripts/operations-stage.test.mjs scripts/operations-snapshot.test.mjs",
+    "test:registration:browser": "node scripts/check-web-registration.mjs",
+    "test:community:browser": "node scripts/check-community-pages.mjs",
+    "test:accounts:browser": "node scripts/check-community-accounts.mjs",
+    "test:release:browser": "node scripts/check-release-pages.mjs",
+    "test:operations:browser": "node scripts/check-operations-editor.mjs",
+    "cms:prepare": "node scripts/prepare-editorial.mjs",
+    "cms:dev": "npm --prefix cms run dev",
+    "cms:build": "npm --prefix cms run build",
+    "cms:start": "npm --prefix cms start",
+    "test:operations": "node --test cms/src/ops/*.test.mjs scripts/editorial-content.test.mjs && node scripts/operations-integration.mjs",
+    "dev:all": "node scripts/dev-operations.mjs"
   },
   "dependencies": {
     "face-api.js": "^0.22.2",
@@ -30,15 +46,18 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "rehype-slug": "^6.0.0",
     "three": "^0.180.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.1.0",
     "d3-geo": "^3.1.1",
+    "opencc-js": "^1.4.2",
+    "playwright-core": "1.65.1",
     "topojson-client": "^3.1.0",
-    "vite": "8.2.2",
-    "world-atlas": "^2.0.2",
-    "opencc-js": "^1.4.2"
+    "vite": "8.2.6",
+    "world-atlas": "^2.0.2"
   },
   "overrides": {
     "node-fetch": "2.6.7"

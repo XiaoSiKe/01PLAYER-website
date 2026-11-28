@@ -1,17 +1,18 @@
-import { memberPortraits } from './member-portraits.js';
+import { siteRows } from '../editorial/content.js';
+import { memberPortraits, sharedPortrait } from './member-portraits.js';
 import { localizedSearchText } from '../i18n/translate.js';
 
 // Branch names, statuses and leaders supplied by the user.
 // Coordinates refer to the universities' public campuses, not an event venue.
-export const branches = [
+const branchDefaults = [
   {
-    id: 'fzu', city: 'fuzhou', school: '福州大学', shortName: '福大', name: '零一 AI 日新社', role: '总社',
+    id: 'fzu', city: 'fuzhou', school: '福州大学', shortName: '福大', name: '零一玩家', role: '总社',
     founded: '2026-09-01',
-    leader: { name: '零一扬', title: '社长', avatar: memberPortraits['零一扬'] },
+    leader: { name: '零一扬', memberId: 'XiaoSiKe', title: '社长', avatar: memberPortraits['零一扬'] },
     coordinates: [119.1933416, 26.0614068], osmId: 12658065, campus: '旗山校区',
     address: '福建省福州市大学新区学园路2号',
-    description: '从零到一，让技术进步成为每个人的机会。和福大的同伴一起，把好奇心带进真实的学习与实践。',
-    crest: '/images/branches/fzu-crest.png', searchTerms: '福州大学 福大 fzu 总社 零一 AI 日新社 零一AI日新社 福建 福州 旗山',
+    description: '和福大的同伴一起参加活动、组队共创，在实践中完成自己的从零到一。',
+    crest: '/images/branches/fzu-crest.png', searchTerms: '福州大学 福大 fzu 总社 零一玩家 01PLAYER 福建 福州 旗山',
     website: 'https://www.fzu.edu.cn/',
     addressSource: 'https://zsb.fzu.edu.cn/xxgk/xyfg/qsxy.htm',
     labelSide: 'right',
@@ -19,7 +20,7 @@ export const branches = [
   {
     id: 'fjnu', city: 'fuzhou', school: '福建师范大学', shortName: '福师大', name: '福师大分社', role: '分社',
     founded: '2026-10-25',
-    leader: { name: 'Miracle', title: '分社长', avatar: memberPortraits.Miracle },
+    leader: { name: 'Miracle', memberId: 'miracle-fjnu', title: '分社长', avatar: memberPortraits.Miracle },
     coordinates: [119.2045602, 26.0327333], osmId: 12658062, campus: '旗山校区',
     address: '福建省福州市闽侯县上街镇乌龙江中大道18号',
     description: '和福师大的同伴一起，在学习、交流与实践中探索 AI。',
@@ -31,7 +32,7 @@ export const branches = [
   {
     id: 'fjut', city: 'fuzhou', school: '福建理工大学', shortName: '福理工', name: '福理工分社', role: '分社',
     founded: '2026-10-21',
-    leader: { name: '黄铉', title: '分社长', avatar: memberPortraits['黄铉'] },
+    leader: { name: '黄铉', memberId: 'huang-xuan', title: '分社长', avatar: memberPortraits['黄铉'] },
     coordinates: [119.1910378, 26.0383264], osmId: 12658060, campus: '旗山校区',
     address: '福建省福州市闽侯县上街镇学府南路69号',
     description: '在交流中分享新发现，在共创中尝试新可能。和福理工的同伴一起，让学习走向实践。',
@@ -43,7 +44,7 @@ export const branches = [
   {
     id: 'fuzc', city: 'fuzhou', school: '福州大学至诚学院', shortName: '福大至诚', name: '福大至诚分社', role: '分社',
     founded: '2026-10-26',
-    leader: { name: '郑航', title: '分社长', avatar: memberPortraits['郑航'] },
+    leader: { name: '郑航', memberId: 'rezhoukang', title: '分社长', avatar: memberPortraits['郑航'] },
     coordinates: [119.2680121, 26.0786045], osmId: 717445438, campus: '杨桥西路50号',
     address: '福建省福州市鼓楼区杨桥西路50号',
     description: '和福大至诚的同伴一起，在学习、交流与实践中探索 AI。',
@@ -55,7 +56,7 @@ export const branches = [
   {
     id: 'mju', city: 'fuzhou', school: '闽江大学', shortName: '闽大', name: '闽江分社', role: '分社',
     founded: '2026-10-22',
-    leader: { name: 'Spark', title: '分社长', avatar: memberPortraits.Spark },
+    leader: { name: 'Spark', memberId: 'Sparkfengtu', title: '分社长', avatar: memberPortraits.Spark },
     coordinates: [119.1649388, 26.0693679], osmId: 938005192, campus: '大学城校区',
     address: '福建省福州市闽侯县上街镇溪源宫路200号',
     description: '连接愿意学习、分享与共创的伙伴。在闽江大学，一起探索 AI 的更多可能。',
@@ -67,7 +68,7 @@ export const branches = [
   {
     id: 'fit', city: 'fuzhou', school: '福州理工学院', shortName: '福州理工', name: '福州理工分社', role: '分社',
     founded: '2026-10-26',
-    leader: { name: 'Eug', title: '分社长', avatar: memberPortraits.Eug },
+    leader: { name: 'Eug', memberId: 'Eug-Y', title: '分社长', avatar: memberPortraits.Eug },
     coordinates: [119.4655281, 26.2428289], osmId: 582302622, campus: '连江校区',
     address: '福建省福州市连江西江滨大道8号',
     description: '和福州理工的同伴一起，在学习、交流与实践中探索 AI。',
@@ -79,7 +80,7 @@ export const branches = [
   {
     id: 'qzoi', city: 'quanzhou', school: '泉州海洋学院', shortName: '泉州海洋', name: '泉州海洋分社', role: '分社',
     founded: '2026-10-30',
-    leader: { name: '郑鑫尧', title: '分社长', avatar: memberPortraits['郑鑫尧'] },
+    leader: { name: '郑鑫尧', memberId: 'qwq2008123-star', title: '分社长', avatar: memberPortraits['郑鑫尧'] },
     coordinates: [118.74615565, 24.76465065], osmId: 621503484, campus: '石狮校区',
     address: '福建省泉州市石狮市祥芝镇古浮二十区1号',
     description: '和泉州海洋的同伴一起，在学习、交流与实践中探索 AI。',
@@ -89,7 +90,26 @@ export const branches = [
     addressSource: 'https://www.qzoi.edu.cn/xygk/lxwm.htm',
     labelSide: 'right',
   },
-];
+  {
+    id: 'fzrjxy', city: 'fuzhou', school: '福州软件职业技术学院', shortName: '福软', name: '福软分社', role: '分社',
+    founded: '2026-11-25',
+    leader: { name: '许钧泓', memberId: 'encoXJH', title: '分社长', avatar: memberPortraits['许钧泓'] },
+    coordinates: [119.69825, 25.97278], osmId: 1310615512, campus: '文岭校区',
+    crest: '/images/branches/fzrjxy-crest.png', crestBackground: '#fff',
+    searchTerms: '福州软件职业技术学院 福软 fzrjxy 福州 长乐 文岭',
+    website: 'https://www.fzrjxy.com/',
+    addressSource: 'https://www.fzrjxy.com/info/1012/47061.htm',
+    labelSide: 'left',
+  },
+].map(branch => ({ ...branch, flag: `/images/branches/flags/${branch.id}.svg` }));
+
+export const branches = siteRows('branches', branchDefaults).map(branch => branch.leader ? {
+  ...branch,
+  leader: {
+    ...branch.leader,
+    avatar: sharedPortrait(branch.leader.name, branch.leader.memberId, branch.leader.avatar),
+  },
+} : branch);
 
 export const branchCities = [
   { id: 'fuzhou', name: '福州', adcode: '350100', coordinates: [119.200519, 26.047886] },

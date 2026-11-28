@@ -1,6 +1,15 @@
 import { useCallback, useRef } from 'react';
 import './BorderGlow.css';
 
+export const SITE_BORDER_GLOW = {
+  edgeSensitivity: 30,
+  backgroundColor: 'var(--site-surface)',
+  borderRadius: 28,
+  glowRadius: 40,
+  glowIntensity: 2.1,
+  coneSpread: 25,
+};
+
 export function clearBorderGlow(element) {
   if (!element) return;
   if (element.style.getPropertyValue('--edge-proximity') !== '0') element.style.setProperty('--edge-proximity', '0');
@@ -34,11 +43,16 @@ export default function BorderGlow({
   glowIntensity = 1,
   coneSpread = 25,
   animated = false,
-  className = ''
+  className = '',
+  ...elementProps
 }) {
   const rootRef = useRef(null);
 
   const handlePointerMove = useCallback(event => {
+    if (event.pointerType === 'touch' || event.target.closest('.border-glow') !== event.currentTarget) {
+      clearBorderGlow(rootRef.current);
+      return;
+    }
     updateBorderGlow(rootRef.current, event.clientX, event.clientY);
   }, []);
 
@@ -49,11 +63,13 @@ export default function BorderGlow({
 
   return (
     <Tag
+      {...elementProps}
       ref={rootRef}
       className={`border-glow${className ? ` ${className}` : ''}`}
       data-animated={animated || undefined}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
+      onPointerCancel={handlePointerLeave}
       style={{
         '--border-glow-background': backgroundColor,
         '--border-glow-radius': `${borderRadius}px`,

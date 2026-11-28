@@ -26,12 +26,12 @@
   const background = document.querySelector('.homepage-background canvas');
   const backgroundPixels = background ? background.width * background.height : 0;
   const decodedBytes = [...images.values()].reduce((sum, bytes) => sum + bytes, 0);
-  const logo = document.querySelector('.sm-logo-img');
-  const criticalImageLoaded = Boolean(logo?.complete && logo.naturalWidth && logo.currentSrc);
+  const logos = [document.querySelector('.sm-logo > svg'), document.querySelector('.echo-text__echo--front > svg.hero-brand-logo')];
+  const inlineLogosReady = logos.every(logo => logo?.querySelector('path') && logo.getBoundingClientRect().width > 0);
   const ready = performance.getEntriesByName('site:first-screen-ready').at(-1);
   const preparedPhotos = resources.filter(entry => entry.name.includes('/assets/images/activity-'));
   const tunnelPhotoCount = document.querySelectorAll('.tunnel-hero__card').length;
-  const firstScreenPrepared = tunnelPhotoCount > 0 && ready?.detail.images === tunnelPhotoCount + 1 && preparedPhotos.length === tunnelPhotoCount
+  const firstScreenPrepared = tunnelPhotoCount > 0 && ready?.detail.images === tunnelPhotoCount && preparedPhotos.length === tunnelPhotoCount
     && preparedPhotos.every(entry => entry.responseEnd <= ready.startTime);
   const photoRequestSpreadMs = preparedPhotos.length
     ? Math.max(...preparedPhotos.map(entry => entry.startTime)) - Math.min(...preparedPhotos.map(entry => entry.startTime)) : Infinity;
@@ -46,9 +46,9 @@
     estimatedDecodedImageMB: decodedBytes / 1e6,
     canvasCount: document.querySelectorAll('canvas').length, backgroundPixels,
     initialTunnelImages: document.querySelectorAll('.tunnel-hero__card img[src]').length,
-    criticalImageLoaded, firstScreenPrepared, photoRequestSpreadMs, preloadHintsReleased,
+    inlineLogosReady, firstScreenPrepared, photoRequestSpreadMs, preloadHintsReleased,
     modelRequests: modelRequests.length, belowFoldDeferred: deferred,
     pass: modelRequests.length === 0 && backgroundPixels > 0 && backgroundPixels <= 1800000
-      && decodedBytes < 1000000 && criticalImageLoaded && firstScreenPrepared && preloadHintsReleased && document.querySelectorAll('.tunnel-hero__card img[src]').length === 0 && deferred,
+      && decodedBytes < 1000000 && inlineLogosReady && firstScreenPrepared && preloadHintsReleased && document.querySelectorAll('.tunnel-hero__card img[src]').length === 0 && deferred,
   };
 })()

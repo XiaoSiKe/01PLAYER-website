@@ -1,0 +1,31 @@
+storage:
+  type: sqlite
+  path: /data/gatus.db
+web:
+  address: 127.0.0.1
+  port: 8089
+endpoints:
+  - name: origin-tls
+    group: origin
+    url: https://club.01aiedu.com/version.json
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+      - "len([BODY].commit) == 40"
+  - name: origin-homepage
+    group: origin
+    url: https://club.01aiedu.com/
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == pat(*零一玩家*)"
+  - name: origin-api
+    group: origin
+    url: https://club.01aiedu.com/api/community/health
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].service == 01player-community"
+      - "[BODY].status == ok"
+      - "[BODY].demo == false"

@@ -21,4 +21,7 @@ compressed for the local website preview, with monochrome treatment in CSS.
 - **fuzc-crest.png**: original official color crest of 福州大学至诚学院, retrieved 2026-10-26 from the admissions office's 院徽院训 page, https://zsb.fdzcxy.edu.cn/article/678.html . Asset: https://zsb.fdzcxy.edu.cn/uploads/ueditor/image/20240416/1713232751580474.png . The 737×737 PNG is preserved unchanged.
 
 - **fit-crest.png**: unchanged official 587×587 crest from https://www.fit.edu.cn/About/Badgemotto/ ; asset https://www.fit.edu.cn/images/image/20210524092676507650.png , retrieved 2026-10-26.
-- **fit-flag.svg**: club branch flag generated locally from the established club vector artwork, with outlined “福州理工分社” / “01 AI CLUB · FIT BRANCH” lettering. It is club artwork, not the university's official flag.
+- **fit-flag.svg**: club branch flag generated locally from the established club vector artwork, with outlined “福州理工分社” / “01PLAYER · FIT BRANCH” lettering. It is club artwork, not the university's official flag.
+
+- **fzrjxy-crest.png**：2026-11-25 从[福州软件职业技术学院校训校徽页](https://www.fzrjxy.com/xxgk/xxxh.htm)获取的官方 480 × 480 校徽原图。
+- **flags/*.svg**：2026-11-25 按用户要求制作的总社及分社旗帜，使用正式横版 Logo，以及转曲的中文标语和英文译文；中文使用系统冬青黑体简体中文 W6，英文使用 [Orbitron Black](https://fonts.google.com/specimen/Orbitron)，原字体及 OFL 许可见 `scripts/fonts/`。旗帜由 `scripts/create-branch-flags.py` 生成。

@@ -18,16 +18,17 @@ const walk = directory => {
 };
 walk(dist);
 
-for (const required of ['index.html', 'CNAME', 'lingyi-logo.jpg', 'version.json', 'SHA256SUMS']) {
+for (const required of ['index.html', 'CNAME', 'lingyi-logo.jpg', 'images/club-logo-black.svg', 'images/club-logo-white.svg', 'images/club-logo-horizontal-white.svg', 'version.json', 'SHA256SUMS']) {
   if (!actual.has(required)) throw new Error(`构建产物缺少 ${required}。`);
 }
 if (![...actual].some(name => /^assets\/.+\.js$/.test(name))) throw new Error('构建产物缺少 JavaScript 资源。');
 if (![...actual].some(name => /^assets\/.+\.css$/.test(name))) throw new Error('构建产物缺少 CSS 资源。');
 if (readFileSync(join(dist, 'CNAME'), 'utf8').trim() !== 'club.01aiedu.com') throw new Error('CNAME 与正式域名不一致。');
-if (!readFileSync(join(dist, 'index.html'), 'utf8').includes('零一 AI 日新社')) throw new Error('首页品牌标识缺失。');
+if (!readFileSync(join(dist, 'index.html'), 'utf8').includes('零一玩家')) throw new Error('首页品牌标识缺失。');
 
 const version = JSON.parse(readFileSync(join(dist, 'version.json'), 'utf8'));
-if (!/^[a-f0-9]{40}$/.test(version.commit)) throw new Error('version.json 的提交 SHA 无效。');
+const snapshot = version.source === 'working-tree-snapshot';
+if (!(snapshot && version.commit === null) && !/^[a-f0-9]{40}$/.test(version.commit)) throw new Error('version.json 的提交 SHA 无效。');
 if (Number.isNaN(Date.parse(version.builtAt))) throw new Error('version.json 的构建时间无效。');
 
 const listed = new Set();
@@ -42,4 +43,4 @@ for (const line of readFileSync(join(dist, 'SHA256SUMS'), 'utf8').trim().split('
 }
 if (listed.size !== actual.size - 1) throw new Error('构建产物存在未列入校验清单的文件。');
 
-console.log(`已验证 ${listed.size} 个静态文件，提交 ${version.commit.slice(0, 12)}。`);
+console.log(`已验证 ${listed.size} 个静态文件，${snapshot ? '工作区快照' : '提交 ' + version.commit.slice(0, 12)}。`);

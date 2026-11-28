@@ -1,36 +1,29 @@
+import NavigationAccount from '../community/account/NavigationAccount';
 import StaggeredMenu from '../StaggeredMenu';
-import { ThemeToggle, useTheme } from '../Theme';
+import { ThemeToggle } from '../Theme';
 import LanguageSwitcher from './LanguageSwitcher';
+import { menu } from '../data/menu';
 
-const HOME_ITEMS = [
-  { label: '首页', ariaLabel: '返回首页', link: '#top' },
-  { label: '关于我们', ariaLabel: '了解零一 AI 日新社', link: '#about' },
-  { label: '我们在做什么', ariaLabel: '了解社团正在开展的方向', link: '#directions' },
-  { label: '零一商业', ariaLabel: '浏览零一商业', link: '#business' },
-  { label: '零一科研与竞赛', ariaLabel: '浏览零一科研与竞赛', link: '#research' },
-  { label: '零一合作生态', ariaLabel: '浏览合作品牌', link: '#partners' },
-  { label: '零一高校分社', ariaLabel: '浏览零一高校分社地图', link: '#cooperation' },
-  { label: '加入我们', ariaLabel: '查看加入我们的说明', link: '#join' },
-];
-const RETURN_ITEMS = HOME_ITEMS.map(item => ({ ...item, link: `./${item.link}` }));
 const MENU_COLORS = ['var(--menu-layer-one)', 'var(--menu-layer-two)', 'var(--menu-layer-three)'];
 
-export default function SiteNavigation({ standalone = false }) {
-  const { theme } = useTheme();
+export default function SiteNavigation({ standalone = false, textOnly = false, accountUser, accountSection, accountSource, headerBrand, headerTools, mobileDetail = standalone }) {
+  const items = menu.map(item => standalone && item.link.startsWith('#') ? { ...item, link: `/${item.link}` } : item);
   return (
     <StaggeredMenu
+      className={mobileDetail ? 'site-navigation--detail' + (headerTools ? '' : ' site-navigation--detail-no-tools') : undefined}
       position="right"
-      items={standalone ? RETURN_ITEMS : HOME_ITEMS}
+      textOnly={textOnly}
+      headerBrand={headerBrand}
+      items={items}
       displaySocials={false}
-      displayItemNumbering
+      displayItemNumbering={false}
       menuButtonColor="var(--site-ink)"
       openMenuButtonColor="var(--site-ink)"
       changeMenuColorOnOpen={false}
       colors={MENU_COLORS}
-      logoUrl={theme === 'light' ? '/images/club-logo-black.svg' : '/images/club-logo-white.svg'}
-      logoHref={standalone ? './#top' : '#top'}
+      logoHref={standalone ? '/#top' : '#top'}
       accentColor="var(--site-ink)"
-      headerActions={<><LanguageSwitcher /><ThemeToggle /></>}
+      headerActions={<>{headerTools}<NavigationAccount user={accountUser} section={accountSection} fallbackSource={accountSource}/><LanguageSwitcher /><ThemeToggle /></>}
       isFixed
     />
   );

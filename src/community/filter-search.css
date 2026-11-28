@@ -1,0 +1,10 @@
+
+.community-search-toggle { display: inline-flex; flex: none; width: 40px; min-width: 40px; min-height: 40px; padding: 0; }
+.community-search-toggle svg { width: 18px; height: 18px; }
+.community-filter-search-dialog { width: min(420px,calc(100% - 32px)); padding: 20px; border: 1px solid var(--community-border,color-mix(in srgb,var(--site-ink) 18%,transparent)); border-radius: 14px; color: var(--site-ink); background: var(--site-background); }
+.community-filter-search-dialog::backdrop { background: #0008; }
+.community-filter-search-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.community-filter-search-dialog h2 { margin: 0; font-size: 18px; }
+.community-filter-search-dialog header .specular-button,
+.community-page .community-filter-search-dialog header .specular-button { width: 40px; min-height: 40px; padding: 0; }
+.community-filter-search-dialog > input { width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--community-border,color-mix(in srgb,var(--site-ink) 18%,transparent)); border-radius: 8px; color: inherit; background: transparent; font: inherit; font-size: 16px; }

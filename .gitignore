@@ -23,3 +23,13 @@ tmp/
 
 # 本地验收截图保留在磁盘，不纳入源码仓库
 deliverables/验收截图/
+
+# Persistent local community data (accounts, submissions and sessions)
+.local/
+
+# Payload admin build and local development caches
+.next*/
+*.tsbuildinfo
+
+# Local source originals kept with the asset deliverables
+deliverables/原始素材/

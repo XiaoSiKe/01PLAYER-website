@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright-core';
+export async function verifyGuideEditor({site, operator, endpoint}) {
+  const initial = await endpoint('guide',{auth:operator});
+  const browser = await chromium.launch({channel:'chrome',headless:true});
+  try {
+    const context = await browser.newContext({viewport:{width:1440,height:1000}});
+    await context.addCookies([{name:'payload-token',value:operator,url:site,httpOnly:true,sameSite:'Lax'}]);
+    const page = await context.newPage();
+    const errors=[];page.on('pageerror',error=>errors.push(error.message));
+    await page.goto(site+'/admin/guide');
+    await page.getByRole('heading',{name:'地球生存攻略',exact:true}).waitFor();
+    await page.getByRole('button',{name:'添加目录',exact:true}).click();
+    await page.getByLabel('目录标题',{exact:true}).fill('浏览器验收目录');
+    await page.getByRole('button',{name:'添加文章',exact:true}).click();
+    await page.getByLabel('文章标题',{exact:true}).fill('浏览器验收文章');
+    await page.getByText('作者、日期与所属目录',{exact:true}).click();
+    await page.getByLabel('作者',{exact:true}).fill('验收玩家');
+    await page.getByLabel('作者大学',{exact:true}).fill('验收大学');
+    await page.getByLabel('上传日期',{exact:true}).fill('2026-11-27');
+    await page.getByLabel('Markdown 正文',{exact:true}).fill('## 浏览器二级标题\n\n这是后台编写的正文。\n\n### 浏览器三级标题\n\n下一步。');
+    await page.getByRole('button',{name:'保存草稿',exact:true}).click();
+    await page.getByText('草稿已保存。',{exact:true}).waitFor();
+    let draft = await endpoint('guide',{auth:operator});
+    const article = draft.rows.at(-1).chapters[0];
+    const published = async()=> (await (await fetch(site+'/site-content/earth-guide.json')).json());
+    assert.ok(!(await published()).articles[article.id]);
+    const popupPromise=page.waitForEvent('popup');
+    await page.getByRole('button',{name:'预览草稿',exact:true}).click();
+    const popup=await popupPromise;
+    await popup.getByRole('heading',{name:'浏览器验收文章',exact:true}).waitFor();
+    await popup.getByRole('heading',{name:'浏览器二级标题'}).waitFor();
+    await popup.getByText('验收大学',{exact:true}).waitFor();
+    assert.ok(!errors.length,errors.join('\n'));
+    await popup.close();
+    await page.getByRole('button',{name:'发布攻略',exact:true}).click();
+    await page.getByText('攻略已发布，官网内容已更新。',{exact:true}).waitFor();
+    assert.equal((await published()).articles[article.id].author,'验收玩家');
+    const front=await context.newPage();
+    await front.goto(site+'/earth#'+article.id);
+    await front.getByRole('heading',{name:'浏览器验收文章',exact:true}).waitFor();
+    assert.equal(await front.locator('.guide-breadcrumb a').getAttribute('href'),'#'+article.id);
+    await front.locator('.guide-breadcrumb a').click();
+    const heading=front.getByRole('heading',{name:'浏览器二级标题'});
+    await heading.hover();
+    await front.locator('.guide-heading').filter({has:heading}).getByRole('link').click();
+    await front.reload();
+    await heading.waitFor();
+    assert.match(new URL(front.url()).hash,/guide|%/);
+    await front.close();
+    await page.setViewportSize({width:390,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    assert.ok(!errors.length,errors.join('\n'));
+    console.log('攻略后台浏览器通过：新增目录与文章、作者资料、草稿预览、发布、Markdown 标题链接及手机布局。');
+  } finally {
+    await browser.close();
+    const latest=await endpoint('guide',{auth:operator});
+    await endpoint('guide',{method:'POST',auth:operator,staff:true,body:{rows:initial.rows,revision:latest.revision,status:initial.status}});
+  }
+}

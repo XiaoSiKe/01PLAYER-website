@@ -12,7 +12,7 @@ with `noopener noreferrer`. Unconfirmed destinations remain display-only.
 | MoneyAI | https://moneyai.top/ |
 | 百度搭子 | https://www.dumate.cn/ |
 | Trae | https://www.trae.cn/ |
-| 华为 | https://www.huawei.com/cn/ |
+| 华为云 | https://www.huaweicloud.com/ |
 | 得物 | https://www.dewu.com/ |
 | workbuddy | https://www.workbuddy.cn/ |
 | Adventure X | https://www.adventure-x.cn/zh/ |
@@ -45,6 +45,10 @@ display-only because no official destinations were supplied.
   the undersized artwork inside its former 32px square.
 - **华为 — `huawei.png`:** original logo referenced by https://www.huawei.com/en .
   Asset: https://www.huawei.com/-/media/hcomponent-header/1.0.1.20260908162100/component/img/huawei_logo.png
+- **华为云 — `huawei-cloud.svg`:** original transparent Chinese lockup from the
+  Huawei Cloud Developer site assets, retrieved 2026-11-22.
+  Asset: https://res-static.hc-cdn.cn/cloudbu-site/china/zh-cn/wangxue/header/logo.svg
+  `huawei-cloud-dark.svg` uses white lettering with the original red emblem.
 - **Linkathon — `linkathon-original.jpg`:** the user's original JPEG is preserved
   byte-for-byte. An SVG viewport crops only the outer padding to
   `150 205 1135 720`. A source-pixel alpha filter removes the near-black backdrop
@@ -183,7 +187,7 @@ display-only because no official destinations were supplied.
   dimensions than the initial integration. The existing dark-theme inversion
   renders the black vector white. No destination was supplied, so it remains
   display-only. Both original PNGs are retained in
-  `output/image-originals/partner-logos/atomhub/`.
+  `deliverables/原始素材/partner-logos/atomhub/`.
 
 ## 英语口语协会（2026-11-08）
 
@@ -191,7 +195,7 @@ display-only because no official destinations were supplied.
   使用 imagegen 制作的 2078 × 757px 透明展示版。中英文字样为
   “英语口语协会 / Oral English Association”。生成处理可能带来细微轮廓、
   色彩和边缘差异，不是官方矢量母版。用户原图完整保存在
-  `output/image-originals/partner-logos/oral-english-association/original.png`，
+  `deliverables/原始素材/partner-logos/oral-english-association/original.png`，
   并收录于交付 ZIP。
 - 网站使用无损 WebP 尺寸变体；`oral-english-association-dark.svg` 内嵌
   320px WebP，并以 alpha 蒙版将文字改为白色，保留彩色图标。
@@ -201,7 +205,7 @@ display-only because no official destinations were supplied.
 ## 大湾区黑客松 BayHack（2026-11-09）
 
 - 用户提供的原始压缩包归档于
-  `output/image-originals/partner-logos/bayhack/大湾区黑客松BayHack【Logo】.zip`。
+  `deliverables/原始素材/partner-logos/bayhack/大湾区黑客松BayHack【Logo】.zip`。
   `bayhack.png` 取自压缩包中的黑字 `-01.png`，
   `bayhack-dark.png` 取自白字 `-02.png`。两版均裁去外围透明留白，
   保留 5132 × 984px 的原始标识像素，网站使用无损 WebP 尺寸变体。
@@ -219,7 +223,7 @@ display-only because no official destinations were supplied.
 
 - **福州 AI 共学社**使用用户提供的 520 × 151px JPG，经 VTracer 0.6.12 分色描摹为透明 SVG。官网在「社区合作伙伴」展示 `fuzhou-ai-learning.svg`，深色主题使用 `fuzhou-ai-learning-dark.svg`，英文副标改用浅色。
 - **FZU 薄肌俱乐部**使用用户提供的 1279 × 1618px JPG，经 VTracer 0.6.12 分色描摹为透明 SVG。官网在「高校合作伙伴」展示树形图标 `fzu-lean-club.svg` 及俱乐部名称，完整图文标识收录于交付 ZIP。
-- 原图保存在 `output/image-originals/partner-logos/` 下对应目录。两项官网标识均为展示项。
+- 原图保存在 `deliverables/原始素材/partner-logos/` 下对应目录。两项官网标识均为展示项。
 
 ## JIKO（2026-11-17）
 
@@ -230,6 +234,10 @@ display-only because no official destinations were supplied.
 - **温州大学开源社**由用户提供的 256 × 256px JPG 分色描摹。`wzu-open-source-club.svg` 保留圆标内的深蓝与轨道图案，圆形以外透明。官网在「高校合作伙伴」展示该 SVG 和用户确认的全称。
 - **原子游创 AtomCraft**由用户上传的 `LOGO(1).zip` 内 1806 × 724px 的 `长LOGO.png` 分色描摹。`atomcraft.svg` 去除白底并保留黑金标志；`atomcraft-dark.svg` 将文字换成白色。两个版本用于官网「社区合作伙伴」。
 - 三个 SVG 均由 VTracer 0.6.15 描摹，内部为矢量路径。素材库的两个交付 ZIP 仅收录对应的透明 SVG。未提供官网地址，两个 Logo 均仅展示。
+
+## 摩力创境 Molispark（2026-11-21）
+
+- `molispark.svg` 依据用户提供的 842 × 842px JPG 分色描摹，保留橙色中英文字标及橙黄圆环，背景透明。官网在「社区合作伙伴」沿用同一份矢量 Logo。官网地址待确认，Logo 仅展示。
 
 ## Original-color display (2026-11-02)
 

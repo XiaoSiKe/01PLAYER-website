@@ -16,10 +16,13 @@ function PartnerMark({ logo }) {
   const name = logo.name || logo.alt || '';
   const source = theme === 'dark' && logo.darkSrc ? logo.darkSrc : logo.src;
   const hasImage = Boolean(source && failedSource !== source);
+  const offsetY = typeof logo.offsetY === 'number'
+    ? `calc(${logo.offsetY}px * var(--partner-logo-scale, 1))`
+    : logo.offsetY;
   const imageStyle = {
     width: `calc(${logo.width || 120}px * var(--partner-logo-scale, 1))`,
     height: `calc(${logo.height || 36}px * var(--partner-logo-scale, 1))`,
-    ...(logo.offsetY ? { transform: `translateY(calc(${logo.offsetY}px * var(--partner-logo-scale, 1)))` } : {}),
+    ...(offsetY ? { transform: `translateY(${offsetY})` } : {}),
     ...(theme === 'dark' && logo.darkBrightness ? { filter: `brightness(${logo.darkBrightness})` } : {}),
   };
   return (

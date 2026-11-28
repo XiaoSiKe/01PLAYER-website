@@ -1,14 +1,14 @@
 .home-partners-marquee {
-  --partner-logo-row-height: 80px;
+  --partner-logo-row-height: 70px;
   min-width: 0;
   /* Reserve five logo rows plus category headings and gaps before mounting. */
-  min-height: calc(5 * var(--partner-logo-row-height) + 183.6px);
+  min-height: calc(5 * var(--partner-logo-row-height) + 148px);
 }
-.logo-marquee { --partner-logo-scale: 1.05; display: grid; gap: 36px; width: 100%; min-width: 0; }
+.logo-marquee { --partner-logo-scale: 1.05; display: grid; gap: 22px; width: 100%; min-width: 0; }
 .logo-marquee > section { min-width: 0; }
 .logo-marquee__heading { margin: 0 0 4px; color: var(--site-ink); font-size: clamp(14.58px, 1.458vw, 17.496px); font-weight: 650; line-height: 32px; }
 .logo-marquee__single { --logo-loop-height: 64px; display: flex; align-items: center; min-height: var(--partner-logo-row-height); }
-.logo-marquee__rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.8px; }
+.logo-marquee__rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
 .logo-marquee .logo-marquee__row { height: var(--partner-logo-row-height); }
 .logo-marquee__row:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; border-radius: 6px; }
 .logo-marquee a.logo-loop-item:focus-visible { color: var(--site-ink); outline-color: var(--site-ink); }
@@ -24,3 +24,25 @@
 }
 html[data-theme='light'] .logo-marquee__mark--white-artwork img { filter: invert(1); }
 html:not([data-theme='light']) .logo-marquee__mark--black-artwork img { filter: invert(1); }
+
+@media (max-width: 760px) {
+  .home-partners-marquee { --partner-logo-row-height: 44px; min-height: calc(5 * var(--partner-logo-row-height) + 112px); }
+  .logo-marquee { --partner-logo-scale: .47; gap: 18px; }
+  .logo-marquee__heading { font-size: 12px; line-height: 22px; margin-bottom: 2px; }
+  .logo-marquee__rows { gap: 0; }
+  .logo-marquee .logo-loop-group { gap: 22px; padding-right: 22px; }
+  .logo-marquee .logo-loop-item { height: 38px; }
+}
+
+@media(max-width:760px) {
+  .home-partners-marquee { --partner-logo-row-height: 38px; min-height: calc(5 * var(--partner-logo-row-height) + 90px); }
+  .logo-marquee { gap: 12px; }
+  .logo-marquee__heading { line-height: 20px; }
+  .logo-marquee .logo-loop-item { height: 34px; }
+}
+
+@media(max-width:760px) {
+  .home-partners-marquee { --partner-logo-row-height: 34px; min-height: calc(5 * var(--partner-logo-row-height) + 82px); }
+  .logo-marquee { gap: 8px; }
+  .logo-marquee .logo-loop-item { height: 34px; }
+}
