@@ -4,8 +4,18 @@ import { readFileSync } from 'node:fs';
 import { createTranslator, initialLocale, normalizeLocale, LOCALE_STORAGE_KEY } from '../src/i18n/translate.js';
 import { searchBranches } from '../src/data/branches.js';
 import { searchPioneers } from '../src/data/pioneers.js';
+import { buildTraditional } from './build-translations.mjs';
 
 const catalogue = locale => JSON.parse(readFileSync(new URL(`../src/i18n/${locale}.json`, import.meta.url), 'utf8'));
+
+test('catalogue refresh preserves curated phrases, generates missing keys and removes retired keys', () => {
+  const source = { '玩家计划': 'Player plan', '新增条目': 'New entry' };
+  const curated = { '玩家计划': '玩家計畫', '旧内容': '舊內容' };
+  const next = buildTraditional(source, curated);
+  assert.deepEqual(next, { '玩家计划': '玩家計畫', '新增条目': '新增條目' });
+  assert.deepEqual(buildTraditional(source, next), next);
+  assert.deepEqual(curated, { '玩家计划': '玩家計畫', '旧内容': '舊內容' });
+});
 
 test('locale aliases accept supported languages and reject invalid preferences', () => {
   for (const locale of ['zh-Hans', 'zh-CN', 'zh-SG']) assert.equal(normalizeLocale(locale), 'zh-Hans');
