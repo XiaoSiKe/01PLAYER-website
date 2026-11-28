@@ -136,6 +136,39 @@ test('报名唯一、联系方式私密；注册不能提权，退出后失去�
  await player('logout',{}); await player('mine',undefined,401);
  assert.ok(!readFileSync(dataFile,'utf8').includes('A-strong-password'));
 });
+test('活动会话返回本人报名编号，票根列表和单笔查询省略问卷及其他个人记录', async t => {
+  const { client } = await fixture(t);
+  const player = client(), other = client(), visitor = client();
+  await player('login', playerLogin);
+  await other('login', adminLogin);
+  const path = 'events/weekend-lab/registrations';
+  const registration = { name: '验收玩家', phone: '13800000000', wechat: 'test-contact',
+    note: '私人备注', idempotencyKey: 'player-registration-key-01' };
+  const receipt = await player(path, registration);
+  const otherReceipt = await other(path, { ...registration, phone: '13800000001', idempotencyKey: 'other-registration-key-01' });
+  const lookup = 'session?registrationEvent=weekend-lab';
+  assert.equal((await player(lookup)).eventReceiptId, receipt.id);
+  assert.equal((await other(lookup)).eventReceiptId, otherReceipt.id);
+  assert.equal((await visitor(lookup)).eventReceiptId, null);
+  assert.equal((await player('session?registrationEvent=autumn-hack')).eventReceiptId, null);
+  assert.equal(Object.hasOwn(await player('session'), 'eventReceiptId'), false);
+
+  const view = 'mine?view=registrations';
+  const mine = await player(view);
+  assert.deepEqual(Object.keys(mine), ['registrations']);
+  assert.deepEqual(mine.registrations.map(row => row.id), [receipt.id]);
+  assert.equal(mine.registrations[0].name, registration.name);
+  for (const key of ['contact', 'phone', 'wechat', 'answers', 'formFields', 'note', 'receiptToken', 'keyDigest']) {
+    assert.equal(Object.hasOwn(mine.registrations[0], key), false, key);
+  }
+  assert.deepEqual(await player(view + '&receipt=' + receipt.id), mine);
+  assert.deepEqual(await player(view + '&receipt=' + otherReceipt.id), { registrations: [] });
+  await visitor(view, undefined, 401);
+  const legacy = await player('mine');
+  assert.equal(legacy.registrations[0].phone, registration.phone);
+  assert.ok(Array.isArray(legacy.projects) && Array.isArray(legacy.recruitments));
+});
+
 test('先锋玩家与头号玩家按稳定 ID 去重，现有成员链接进入正确人物页',()=>{
  assert.equal(pageFromPath('/team'), 'leadership');
  assert.equal(pioneerRoster.filter(p=>leadership.some(l=>l.id===p.id)).length,0);

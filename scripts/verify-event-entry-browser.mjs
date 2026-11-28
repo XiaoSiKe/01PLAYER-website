@@ -141,7 +141,7 @@ export async function verifyEventEntry({site,operator,desk}) {
     await guest.close();
     await publisher.click();
     await page.getByRole('heading',{name:'报名入口验收玩家',exact:true,level:1}).waitFor();
-    await page.locator('.public-player-page').getByRole('link',{name:'返回',exact:true}).click();
+    await page.locator('.site-nav-return').click();
     await page.locator('.recruitment-detail h1').waitFor();
     assert.equal(await page.locator('.detail-hero').count(),0);
     await page.getByRole('link',{name:'返回',exact:true}).click();

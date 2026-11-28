@@ -77,10 +77,13 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.setDefaultTimeout(12000);
+  let releaseResponse;
+  const heldResponse = new Promise(resolve => { releaseResponse = resolve; });
   await page.route('**/api/community/events/web-direct/registrations', async route => {
     const response = await route.fetch();
     assert.equal(response.status(), 200);
-    await route.abort('failed');
+    await heldResponse;
+    await route.abort('failed').catch(() => {});
   });
   await fill(page, 'web-direct', '13800000000');
   assert.equal(await page.getByText('查看我的报名',{exact:true}).count(),0);
@@ -89,7 +92,11 @@ try {
   assert.ok(returnRect.y<submitRect.y);
   assert.equal(await page.locator('.registration-submit-row').getByRole('link',{name:'返回',exact:true}).count(),0);
   await page.getByRole('button', { name: '提交报名', exact: true }).click();
-  await page.getByRole('button', { name: '重试并确认报名', exact: true }).waitFor();
+  try {
+    await page.getByRole('button', { name: '重试并确认报名', exact: true }).waitFor({ timeout: 20000 });
+  } finally {
+    releaseResponse();
+  }
   await page.unroute('**/api/community/events/web-direct/registrations');
   await page.reload();
   await page.getByRole('button', { name: '重试并确认报名', exact: true }).click();
@@ -197,7 +204,11 @@ try {
     headers: { 'X-Community-Request': '1' }, data: { email: 'player@example.test', password: 'Player-2026!' },
   });
   assert.ok(login.ok());
+  const accountReads = [];
+  accountPage.on('request', request => { accountReads.push(new URL(request.url())); });
   await fill(accountPage, 'web-account', '13800000004');
+  assert.ok(accountReads.some(url => url.pathname === '/api/community/session' && url.searchParams.get('registrationEvent') === 'web-account'));
+  assert.ok(!accountReads.some(url => url.pathname === '/api/community/mine'));
   await accountPage.getByRole('button', { name: '提交报名', exact: true }).click();
   const accountId = await ticket(accountPage, '报名成功');
   assert.ok(Math.abs((await accountPage.locator('.registration-ticket').boundingBox()).width-552)<1);
@@ -207,11 +218,23 @@ try {
   await accountPage.evaluate(() => localStorage.clear());
   await accountPage.goto(origin+'/players?view=register&event=web-account');
   assert.equal(await ticket(accountPage,'报名成功'),accountId);
+  assert.ok(accountReads.some(url => url.pathname === '/api/community/mine' && url.searchParams.get('receipt') === accountId));
+  assert.ok(!accountReads.some(url => url.pathname === '/api/community/mine' && !url.search));
+  // A previous community runtime ignores the optional query on /session.
+  await accountPage.route('**/api/community/session?registrationEvent=web-account', async route => {
+    const response = await route.fetch();
+    const { eventReceiptId, ...legacySession } = await response.json();
+    await route.fulfill({ response, json: legacySession });
+  });
+  await accountPage.goto(origin+'/players?view=register&event=web-account');
+  assert.equal(await ticket(accountPage,'报名成功'),accountId);
+  assert.ok(accountReads.some(url => url.pathname === '/api/community/mine' && !url.search));
+  await accountPage.unroute('**/api/community/session?registrationEvent=web-account');
   await accountPage.goto(origin+'/players?event=web-account');
   await accountPage.getByRole('link',{name:'查看报名',exact:true}).click();
   assert.equal(await ticket(accountPage, '报名成功'), accountId);
   assert.ok(await accountPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-  console.log('通过 官网四类问卷、直报票根、待审核/通过/未通过、丢包恢复、同浏览器多页去重、刷新回看、账号报名与跨本机存储恢复。');
+  console.log('通过 官网四类问卷、直报票根、待审核/通过/未通过、响应超时后同笔恢复、多页去重、账号单笔查询与旧运行时兼容。');
 } finally {
   await browser?.close();
   vite.kill('SIGTERM');

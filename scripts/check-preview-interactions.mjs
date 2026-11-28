@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright-core';
 const origin=process.env.COMMUNITY_PREVIEW_URL||'http://127.0.0.1:5173';
 const projects=await(await fetch(origin+'/api/community/projects')).json();
-const project=projects.find(p=>p.name==='课余日历（虚拟项目）');
-assert.ok(project,'请先创建本地虚拟项目与招募。');
+const project=projects.find(p=>p.id==='campus-agent');
+assert.ok(project,'请启动带默认示例数据的隔离预览。');
 const teams=await(await fetch(origin+'/api/community/recruitments')).json();
 const team=teams.find(t=>t.projectId===project.id);
 assert.ok(team);
@@ -19,7 +19,9 @@ try{
   const facts=page.locator('.project-detail-facts');
   await facts.getByRole('link',{name:project.author,exact:true}).click();
   await page.getByRole('heading',{name:project.author,exact:true,level:1}).waitFor();
-  await page.locator('.public-player-page').getByRole('link',{name:'返回',exact:true}).click();
+  const back = width <= 760 ? page.locator('.site-nav-return')
+    : page.locator('.public-player-page').getByRole('link',{name:'返回',exact:true});
+  await back.click();
   const share=page.locator('.detail-section-actions').getByRole('button',{name:'分享',exact:true});
   await share.waitFor();assert.equal(await share.locator('svg').count(),0);
   await page.getByRole('button',{name:'收藏 '+(project.saves||0),exact:true}).waitFor();
@@ -36,9 +38,11 @@ try{
   await page.getByRole('navigation',{name:'项目详情目录'}).getByRole('link',{name:'项目招募',exact:true}).waitFor();
   await page.goto(origin+'/plaza?q='+encodeURIComponent(project.name));
   await card.getByRole('link',{name:'示例',exact:true}).click();
+  await page.waitForURL(url => url.searchParams.get('q') === '示例');
   if(width<=760) await page.getByRole('button',{name:'搜索项目或作者',exact:true}).click();
-  await page.getByRole('searchbox',{name:'搜索项目或作者'}).waitFor();
-  assert.equal(await page.getByRole('searchbox',{name:'搜索项目或作者'}).inputValue(),'示例');
+  const search = page.getByRole('searchbox',{name:'搜索项目或作者'});
+  await search.waitFor();
+  assert.equal(await search.inputValue(), width<=760 ? '' : '示例');
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
   await page.close();console.log('通过 虚拟玩家主页、项目作者与来源、标签点击、收藏数字、纯文字分享',width);
  }

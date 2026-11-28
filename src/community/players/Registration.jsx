@@ -2,13 +2,13 @@ import { linkWithSource, pageLocation, returnDestination } from '../account/navi
 import { orderRegistrations } from './registration-order';
 import { saveTicket } from './save-ticket';
 import { usesExternalRegistration } from '../../../server/event-state.mjs';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FiArrowRight, FiCheck, FiClock, FiX } from 'react-icons/fi';
 import ClubLogo from '../../components/ClubLogo';
 import { Button, DetailBack, Empty, Frame } from '../CommunityUi';
-import { communityApi, communityLink as link } from '../api';
+import { communityLink as link } from '../api';
 import { acceptsSignup, eventDate, eventLocationLabel, eventStatus, eventStatuses } from './events';
-import { localReceipts, pendingRegistration, refreshReceipt, submitRegistration } from './registration-store';
+import { accountReceipts, localReceipt, localReceipts, pendingRegistration, refreshReceipt, submitRegistration } from './registration-store';
 import './registration.css';
 
 const statusText = {
@@ -61,7 +61,7 @@ export function RegistrationTicket({ receipt, event, user }) {
 }
 
 export function RegistrationReceipt({ id, event, user }) {
-  const [receipt, setReceipt] = useState(() => localReceipts().find(row => row.id === id));
+  const [receipt, setReceipt] = useState(() => localReceipt(id));
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const requestVersion = useRef(0);
@@ -71,14 +71,13 @@ export function RegistrationReceipt({ id, event, user }) {
     const version = ++requestVersion.current;
     setBusy(true); setError('');
     try {
-      const saved = localReceipts().find(row => row.id === id);
+      const saved = localReceipt(id);
       if (saved) {
         const latest = await refreshReceipt(saved);
         if (version === requestVersion.current) setReceipt(latest);
       }
       else if (user) {
-        const mine = await communityApi('mine');
-        const row = mine.registrations.find(row => row.id === id);
+        const [row] = id ? await accountReceipts(id) : [];
         if (!row) throw Error('没有找到这份报名回执。');
         if (version === requestVersion.current) setReceipt({ ...row, checkedAt: new Date().toISOString() });
       } else throw Error('此浏览器没有这份回执，请使用报名时的浏览器，或登录报名账号查看。');
@@ -117,24 +116,38 @@ export function RegistrationReceipt({ id, event, user }) {
 export function RegistrationList({ user, events = [] }) {
   const [receipts, setReceipts] = useState(localReceipts);
   const [error, setError] = useState('');
+  const eventById = useMemo(() => new Map(events.map(event => [event.id, event])), [events]);
   useEffect(() => {
-    let active = true;
+    let previous;
     const sync = async () => {
+      previous?.abort();
       const local = localReceipts();
-      if (!user) { if (active) setReceipts(local); return; }
+      if (!user) { setReceipts(local); setError(''); return; }
+      const controller = new AbortController();
+      previous = controller;
       try {
-        const mine = await communityApi('mine');
+        const rows = await accountReceipts(null, controller.signal);
+        if (controller.signal.aborted) return;
         const byId = new Map(local.map(row => [row.id, row]));
-        mine.registrations.forEach(row => byId.set(row.id, {
-          ...byId.get(row.id), ...row,
-          event: byId.get(row.id)?.event || events.find(event => event.id === row.eventId),
-        }));
-        if (active) setReceipts([...byId.values()]);
-      } catch (reason) { if (active) setError(reason.message); }
+        for (const row of rows) {
+          const stored = byId.get(row.id);
+          byId.set(row.id, { ...stored, ...row, event: stored?.event || eventById.get(row.eventId) });
+        }
+        setReceipts([...byId.values()]);
+        setError('');
+      } catch (reason) {
+        if (!controller.signal.aborted) setError(reason.message);
+      }
     };
-    sync(); window.addEventListener('storage', sync); window.addEventListener('01player-receipts', sync);
-    return () => { active = false; window.removeEventListener('storage', sync); window.removeEventListener('01player-receipts', sync); };
-  }, [user?.id, events]);
+    sync();
+    window.addEventListener('storage', sync);
+    window.addEventListener('01player-receipts', sync);
+    return () => {
+      previous?.abort();
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('01player-receipts', sync);
+    };
+  }, [user?.id, eventById]);
   const pending = events.filter(event => pendingRegistration(event.id));
   return <div className="web-registration">
     {error && <p role="alert">{error}</p>}
@@ -142,7 +155,7 @@ export function RegistrationList({ user, events = [] }) {
     <div className="registration-records">
       {pending.map(event => <Button key={event.id} href={linkWithSource(link('players', { view: 'register', event: event.id }))}>待确认 · {event.name}</Button>)}
       {orderRegistrations(receipts,events).map((row,index) => {
-        const event = { ...row.event, ...events.find(event => event.id === row.eventId) };
+        const event = { ...row.event, ...eventById.get(row.eventId) };
         return <Frame as="a" radius={12} flush key={row.id} className="registration-record"
         href={linkWithSource(link('players', { view: 'receipt', event: row.eventId, receipt: row.id }))}>
         <div className="registration-record-heading"><span className="registration-record-order" aria-label={`第 ${index+1} 份报名`}>{String(index+1).padStart(2,'0')}</span><span>{statusText[row.status]?.[0] || '状态待确认'}</span></div>
@@ -155,15 +168,15 @@ export function RegistrationList({ user, events = [] }) {
   </div>;
 }
 
-export default function RegistrationForm({ event, user, existing }) {
+export default function RegistrationForm({ event, user, existingReceiptId }) {
   const back = returnDestination(new URLSearchParams(location.search).get('from'),link('players',{event:event.id}),pageLocation());
   const [pending, setPending] = useState(() => pendingRegistration(event.id));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const saved = localReceipts().find(row => row.eventId === event.id) || existing;
+  const savedId = localReceipts().find(row => row.eventId === event.id)?.id || existingReceiptId;
   useEffect(() => {
-    if (saved) location.replace(linkWithSource(link('players', { view: 'receipt', event: event.id, receipt: saved.id }),back));
-  }, [saved?.id]);
+    if (savedId) location.replace(linkWithSource(link('players', { view: 'receipt', event: event.id, receipt: savedId }),back));
+  }, [savedId]);
   const status = eventStatus(event);
   const canRegister = acceptsSignup(event);
   async function submit(e) {
@@ -193,7 +206,7 @@ export default function RegistrationForm({ event, user, existing }) {
     <p className="community-muted">{eventDate(event)}{event.location && ' · ' + event.location}</p>
     {pending ? <p role="status">上次报名结果待确认，重试会继续确认同一笔报名。</p>
       : <p>{canRegister ? usesExternalRegistration(event) ? '请前往主办方报名页面完成报名。' : event.registrationMode === 'review' ? '主办方审核后确认报名。' : '提交后即可确认报名。' : eventStatuses[status]}{event.example && ' · 示例活动'}</p>}
-    {saved ? <p role="status">正在打开已有票根…</p> : usesExternalRegistration(event) && !pending && canRegister ? <Frame><p>本场活动通过主办方的报名页面报名。</p><Button href={event.registrationUrl}>前往报名 <FiArrowRight aria-hidden="true" /></Button></Frame> : !canRegister && !pending ? <Empty>本场活动已停止接受报名。</Empty>
+    {savedId ? <p role="status">正在打开已有票根…</p> : usesExternalRegistration(event) && !pending && canRegister ? <Frame><p>本场活动通过主办方的报名页面报名。</p><Button href={event.registrationUrl}>前往报名 <FiArrowRight aria-hidden="true" /></Button></Frame> : !canRegister && !pending ? <Empty>本场活动已停止接受报名。</Empty>
       : <Frame radius={16}><form className="community-form" onSubmit={submit}>
         <fieldset className="registration-form-fields" disabled={busy || Boolean(pending)}>
           <label className="community-field"><span>姓名或昵称 *</span><input name="name" required maxLength={60} autoComplete="name" defaultValue={pending?.body.name} /></label>

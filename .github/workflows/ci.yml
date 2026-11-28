@@ -37,6 +37,10 @@ jobs:
         run: npm run build
         env:
           BUILD_VCS_NUMBER: ${{ github.sha }}
+      - name: Run public pages and enrollment in Chrome
+        run: |
+          npm run test:release:browser
+          npm run test:registration:browser
 
   operations:
     name: Verify operations, publishing and registration integration
@@ -63,6 +67,10 @@ jobs:
           BUILD_VCS_NUMBER: ${{ github.sha }}
       - name: Verify migrations, staff permissions, publishing, uploads and registration
         run: npm run test:operations
+        env:
+          OPERATIONS_BROWSER: '1'
+          GUIDE_BROWSER: '1'
+          EVENT_ENTRY_BROWSER: '1'
 
   publish:
     name: Publish only after all checks and explicit enablement

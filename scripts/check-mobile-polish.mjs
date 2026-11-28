@@ -77,6 +77,10 @@ try {
   const desktop=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
   desktop.on('pageerror',e=>errors.push(e.message));
   await desktop.route('**/api/community/session',r=>r.fulfill({json:{user:{id:'demo-player',name:'验收玩家',role:'player'}}}));
+  await desktop.route('**/api/community/projects/campus-agent', async route => {
+    const response = await route.fetch();
+    await route.fulfill({ response, json: { ...await response.json(), demoUrl: 'https://example.test/project' } });
+  });
   await desktop.goto(origin+'/plaza?project=campus-agent');
   const actions=desktop.locator('.detail-section-actions');
   await actions.getByRole('link',{name:'修改',exact:true}).waitFor();

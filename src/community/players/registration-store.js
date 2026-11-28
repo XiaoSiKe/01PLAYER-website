@@ -1,5 +1,7 @@
 import { communityApi } from '../api';
 
+const registrationTimeoutMs = 15_000;
+
 const receiptPrefix = '01player.web.receipt.';
 const pendingPrefix = '01player.web.pending.';
 const running = new Map();
@@ -12,6 +14,17 @@ function write(key, value) {
   catch { throw new Error('浏览器未能保存报名回执，请检查本站存储权限或空间后重试。'); }
 }
 export function pendingRegistration(eventId) { return read(pendingPrefix + eventId); }
+export function localReceipt(id) {
+  const row = read(receiptPrefix + id);
+  return row?.id === id && row.eventId && row.receiptToken ? row : undefined;
+}
+export async function accountReceipts(id, signal) {
+  const query = new URLSearchParams({ view: 'registrations' });
+  if (id != null) query.set('receipt', id);
+  const { registrations } = await communityApi('mine?' + query, undefined, undefined, signal);
+  // Older community runtimes still return the full /mine representation.
+  return id == null ? registrations : registrations.filter(row => row.id === id);
+}
 export function localReceipts() {
   try {
     return Object.keys(localStorage).filter(key => key.startsWith(receiptPrefix))
@@ -27,8 +40,17 @@ export function saveReceipt(receipt) {
   window.dispatchEvent(new Event('01player-receipts'));
   return receipt;
 }
+async function requestRegistration(path, body, account) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), registrationTimeoutMs);
+  try {
+    return await communityApi(path, body, account, controller.signal);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 export async function refreshReceipt(receipt) {
-  const next = await communityApi('registration-status', { id: receipt.id, receiptToken: receipt.receiptToken });
+  const next = await requestRegistration('registration-status', { id: receipt.id, receiptToken: receipt.receiptToken });
   if (next.id !== receipt.id || next.eventId !== receipt.eventId) throw Error('回执与本次报名不符，请重新打开。');
   const updated = { ...receipt, ...next, checkedAt: new Date().toISOString() };
   if (!next.ticketGroupQrUrl) delete updated.ticketGroupQrUrl;
@@ -49,9 +71,13 @@ export function submitRegistration(event, body, userId) {
       write(pendingPrefix + event.id, pending);
     }
     let result;
-    try { result = await communityApi('events/' + encodeURIComponent(event.id) + '/registrations', pending.body, pending.account || 'anonymous'); }
-    catch (error) {
-      if ([400, 403, 404, 409, 410, 413, 422].includes(error.status)) localStorage.removeItem(pendingPrefix + event.id);
+    try {
+      result = await requestRegistration('events/' + encodeURIComponent(event.id) + '/registrations',
+        pending.body, pending.account || 'anonymous');
+    } catch (error) {
+      if ([400, 403, 404, 409, 410, 413, 422].includes(error.status)) {
+        try { localStorage.removeItem(pendingPrefix + event.id); } catch { /* Preserve the service error. */ }
+      }
       throw error;
     }
     if (!result.id || !result.receiptToken || result.eventId !== event.id) throw Error('服务尚未确认本次报名，请重试确认。');

@@ -60,7 +60,7 @@ async function checkRecruitmentReturn() {
   const page = await pageFor(1440, false);
   const filters = 'category=competition&q=AI';
   await page.goto(origin + '/players?' + filters);
-  await page.locator(':is(.calendar-lead,.calendar-card)[href*="event=ai-build-sprint"]').click();
+  await page.locator('.calendar-card[href*="event=ai-build-sprint"]').click();
   await page.locator('.community-team-link').first().click();
   await page.getByRole('link', { name: '返回', exact: true }).click();
   await page.goBack();

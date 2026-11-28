@@ -31,6 +31,15 @@ async function loadEvent(id) {
   }
 }
 
+async function loadSession(knownSession, eventId) {
+  if (!eventId || (knownSession && !knownSession.user)) return knownSession || api('session');
+  const session = await api('session?registrationEvent=' + encodeURIComponent(eventId));
+  if (!session.user || Object.hasOwn(session, 'eventReceiptId')) return session;
+  // The static site and the community runtime can be released independently.
+  const { registrations } = await api('mine');
+  return { ...session, eventReceiptId: registrations.find(row => row.eventId === eventId)?.id ?? null };
+}
+
 function RecordGroup({ title, empty, children, showTitle = true }) {
   return <Frame as="section" className={`player-space-card player-record-group${showTitle ? '' : ' player-record-group--plain'}`} aria-label={title} radius={16} flush>
     {showTitle && <h3>{title}</h3>}
@@ -55,7 +64,7 @@ function PlayerAccount({ section, submitted, revision, user, back, tab, notice, 
     const read = path => api(path, undefined, undefined, controller.signal);
     setError('');
     setResult(null);
-    const loading = recordsOpen ? Promise.all([read('mine'), read('events')]).then(([mine, events]) => ({mine,events}))
+    const loading = recordsOpen ? Promise.all([read('mine'), read('events?view=card')]).then(([mine, events]) => ({mine,events}))
       : read('projects').then(projects => ({projects}));
     loading.then(result => {
         if (!controller.signal.aborted) setResult({ tab, ...result });
@@ -215,9 +224,13 @@ export default function CommunityPage({ section, Listing, Detail }) {
     }
     // Registration and receipt pages share the existing public event and account session.
     if (['register', 'receipt', 'tickets'].includes(view)) {
-      const [event, session, catalog] = await Promise.all([loadEvent(eventId), api('session').catch(() => ({ user: null })), view === 'tickets' ? api('events') : []]);
-      const mine = view === 'register' && session.user ? await api('mine') : null;
-      commit({ ...session, events: event ? [event] : catalog, projects: [], recruitments: [], mine });
+      const session = loadSession(knownSession, view === 'register' ? eventId : null);
+      const [event, account, catalog] = await Promise.all([
+        loadEvent(eventId),
+        view === 'register' ? session : session.catch(() => ({ user: null })),
+        view === 'tickets' ? api('events?view=card') : [],
+      ]);
+      commit({ ...account, events: event ? [event] : catalog, projects: [], recruitments: [] });
       return;
     }
     const eventDetail = Boolean(eventId) && !view;
@@ -225,13 +238,13 @@ export default function CommunityPage({ section, Listing, Detail }) {
     const projectList = eventDetail ? 'projects?event=' + encodeURIComponent(eventId) : 'projects';
     const singleEvent = section === 'players' && eventDetail;
     const [session, eventData, projects, recruitments] = await Promise.all([
-      knownSession || api('session'),
+      loadSession(knownSession, singleEvent ? eventId : null),
       singleEvent ? loadEvent(eventId) : api('events'),
       needsProjects ? api(projectList) : [],
       eventDetail ? api('recruitments?event=' + encodeURIComponent(eventId)) : [],
     ]);
     const events = singleEvent ? [eventData].filter(Boolean) : eventData;
-    const needsMine = session.user && (eventDetail || ['publish', 'team'].includes(view));
+    const needsMine = session.user && ['publish', 'team'].includes(view);
     const reviewing = session.user?.role === 'admin' && view === 'review';
     const [mine, review, project] = await Promise.all([
       needsMine ? api('mine') : null,
@@ -435,7 +448,7 @@ export default function CommunityPage({ section, Listing, Detail }) {
     content = <PublicPlayer profile={data.profile} events={data.events} back={backUrl} />;
   } else if (view === 'register') {
     const back = <DetailBack href={event ? backUrl : link('players', listFilters('players',query))} inline>返回</DetailBack>;
-    content = event ? <RegistrationForm key={event.id} event={event} user={user} existing={data.mine?.registrations.find(row => row.eventId === event.id)} />
+    content = event ? <RegistrationForm key={event.id} event={event} user={user} existingReceiptId={data.eventReceiptId} />
       : <div className="event-detail-meta"><p>{eventId ? '没有找到这场活动。' : '请选择想报名的活动。'}</p>{back}</div>;
   } else if (view === 'receipt') {
     content = <RegistrationReceipt key={query.get('receipt')} id={query.get('receipt')} event={event} user={user} />;

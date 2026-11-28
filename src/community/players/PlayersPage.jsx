@@ -179,8 +179,8 @@ function EventDetail({ data, event, query, user, load }) {
   const participationLabel = eventParticipationLabels[eventCategory(event)];
   const submissionAction = acceptsProjectSubmissions(event) ? <Button size="sm" className="discovery-action"
     href={accountLink('publish', pageLocation(), 'players', {event:event.id})}>提交作品 <FiArrowRight aria-hidden="true" /></Button> : null;
-  const receipt = localReceipts().find(row => row.eventId === event.id) || data.mine?.registrations.find(row => row.eventId === event.id);
-  const registrationLink = receipt ? linkWithSource(link('players', {view:'receipt',event:event.id,receipt:receipt.id})) : usesExternalRegistration(event) ? event.registrationUrl : linkWithSource(link('players', { view: 'register', event: event.id }));
+  const receiptId = localReceipts().find(row => row.eventId === event.id)?.id || data.eventReceiptId;
+  const registrationLink = receiptId ? linkWithSource(link('players', {view:'receipt',event:event.id,receipt:receiptId})) : usesExternalRegistration(event) ? event.registrationUrl : linkWithSource(link('players', { view: 'register', event: event.id }));
   const date = eventDate(event);
   const deadline = eventDate({ startsAt: event.registrationClosesAt });
   const sections = [{ id: 'event-overview', label: '概览' }];
@@ -208,7 +208,7 @@ function EventDetail({ data, event, query, user, load }) {
             {deadline && <div><dt>报名截止时间</dt><dd>{deadline}</dd></div>}
             {event.location && <div><dt>活动地点</dt><dd>{event.location}</dd></div>}
             <div className="event-entry-participation"><dt>参与方式</dt><dd className="event-participation-actions">
-              {acceptsSignup(event) ? <Button size="sm" href={registrationLink}>{receipt ? '查看报名' : participationLabel} <FiArrowRight aria-hidden="true" /></Button>
+              {acceptsSignup(event) ? <Button size="sm" href={registrationLink}>{receiptId ? '查看报名' : participationLabel} <FiArrowRight aria-hidden="true" /></Button>
                 : <span className="event-registration-closed">报名已截止</span>}
               {mobile && submissionAction}
             </dd></div>

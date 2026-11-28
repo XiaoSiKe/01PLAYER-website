@@ -13,6 +13,14 @@
 
 **已有同域玩家系统时先确认身份来源。** 06 服务通过同一个 `createCommunityApi` 实例解析账号和会话，它的数据目录还包含玩家档案、加密材料与配对的身份文件。当前由 06 持有官网身份时，将本次更新的 05 社区模块与兼容的 06 版本按原先的相邻目录结构一起部署，保留已有 `/player/`、`/api/player/` 和 `/api/community/` upstream。为 06 配置桥接密钥和报名数据目录。4173 单元的社区环境增加 `COMMUNITY_EXTERNAL=1`，只供应静态文件和公开快照。CMS 的 `COMMUNITY_INTERNAL_ORIGIN` 改成该唯一业务 upstream，默认玩家端口为 4186。每个 `community.json` 只能由一个进程持有。测试既有玩家账号仍可登录、打开自己的档案及跳回官网。独立 05 业务模式使用表内 4173 的默认配置。
 
+## 运行栈与报名存储
+
+官网使用 React/Vite 生成静态资源，由 Nginx 和 CDN 提供。报名与账号业务使用 Node.js 24，运营后台继续使用 Next.js 和 Payload。报名保存在社区服务的本机 SQLite，启用 WAL 和完整提交同步。运营后台通过受权限约束的桥接 API 读取同一个服务的报名数据，CMS 自己的 SQLite 存运营账号、草稿和发布历史。报名数据库和社区身份文件须成对保留。备份、校验和恢复见下文。
+
+当前按一台 ECS、一个报名写入进程运行。一次性预发布环境已用 10,000 条历史报名演练 100 人同一出口同时打开活动、提交和取回票根。SQLite 在本机持久盘上满足这次数据规模与恢复要求。若业务需要多台实例同时写入、跨可用区故障切换或更细的恢复点，再迁移至与 ECS 同地域、同 VPC 的阿里云 RDS PostgreSQL 高可用版。切换前应将报名幂等规则、旧回执及身份归属迁移到共享事务模型，并在隔离实例中逐笔比对。
+
+[SQLite WAL](https://www.sqlite.org/wal.html) · [Payload 数据库适配器](https://payloadcms.com/docs/database/overview) · [阿里云 RDS 高可用与容灾](https://www.alibabacloud.com/help/en/rds/product-overview/high-availability-and-disaster-recovery)
+
 ## 构建和预发布
 
 1. 从同一已提交版本在与目标机器同架构、同 libc 的 Linux 构建机安装与 CMS 锁定版本一致的 Node 24.22.3，并按 [Node 官方 SHA-256 清单](https://nodejs.org/dist/v24.22.3/SHASUMS256.txt) 核验对应架构的归档。在这个环境安装 CMS 依赖及原生 sharp、SQLite 包。已有独立静态网页流水线继续使用自己的 Node 24.16.0 固定版本。

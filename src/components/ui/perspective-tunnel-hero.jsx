@@ -5,10 +5,10 @@ import { useLanguage } from '../../Language';
 import BorderGlow, { clearBorderGlow, updateBorderGlow } from '../../BorderGlow';
 import ResponsiveImage from '../ResponsiveImage';
 import ImageLightbox from '../ImageLightbox';
-import { tunnelCardWidth, tunnelPhotos } from '../heroImages';
+import { getTunnelPhotos, tunnelCardWidth } from '../heroImages';
 import './perspective-tunnel-hero.css';
 
-const TUNNEL_CARDS = tunnelPhotos.map((item, index) => {
+const TUNNEL_CARDS = getTunnelPhotos().map((item, index) => {
   const goldenAngle = index * 137.5 * (Math.PI / 180);
   return {
     item, index,
