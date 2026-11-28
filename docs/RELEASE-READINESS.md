@@ -11,7 +11,7 @@
 | F-release-hold | main 原先检查后直接发布。新增默认关闭的 `CLUB_AUTO_DEPLOY` 门禁，工作流和触发脚本双重检查；发布任务依赖官网与后台两个检查任务成功。 | 缺省、`0`、`true` 均不读取发布密钥、不请求云效。仓库变量已设为 `0`，原生 GitHub Webhook 保持停用。 |
 | F-upload-dependencies | 后台图片解码库存在高危公告，嵌套净化库与迁移工具也有告警。升级 sharp 0.34.5 → 0.35.5、DOMPurify 3.4.15 → 3.5.0，并限定旧迁移工具使用修复后的 esbuild。 | 两套生产依赖审计均为 0 项；干净安装、实际图片上传、迁移及后台构建通过。React、Payload、Next 与 Monaco 版本保持原值。 |
 | F-guide-revalidation | 未变化的攻略检查请求仍重复解析、校验和序列化全部正文。按已发布快照复用唯一响应表示，仅发布版本变化时重建。 | 相同样本的内容版本完全一致；原子更新、删除、错误版本隔离、恢复、GET/HEAD/304 回归通过。 |
-| F-i18n-generated | 繁体语言包漏生成保存票根的进行中提示。 | 按既有生成器补齐；语言包键集合、插值及跨语言搜索测试通过。 |
+| F-i18n-generated | 繁体语言包漏生成保存票根的进行中提示。 | 补齐缺项并保留人工译文；生成器仅转换新增内容，移除退役键。语言包键集合、插值、跨语言搜索、人工译文保留和生成幂等测试通过。 |
 | 测试维护 | 攻略元信息已折叠，旧测试未展开；相册请求新增查询参数后旧拦截未命中；图片测试曾依赖 sharp 内部路径。 | 按真实界面展开资料、拦截完整接口、使用 sharp 正式包入口。完整浏览器流程重跑通过。 |
 
 安全依据：[sharp 发布者公告](https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w)、[DOMPurify 发布者公告](https://github.com/cure53/DOMPurify/security/advisories/GHSA-hrxw-jjj6-2g2j)。依赖审计反映检查当天的公开数据库，并不等于不存在未公开问题。
@@ -35,7 +35,7 @@
 
 ## 可重复执行的检查
 
-- `npm run test:runtime`：48 项通过。
+- `npm run test:runtime`：49 项通过。
 - `npm run test:community`：81 项通过。
 - `npm run test:deployment`：18 项通过。
 - `node --test cms/src/ops/*.test.mjs scripts/editorial-content.test.mjs`：21 项通过。
@@ -84,7 +84,7 @@
 
 ## 文件整理与保留
 
-- 本次移除无用途的 Finder 索引，临时测试数据、日志与锁文件试验集中在系统临时目录，验收后清理。
+- 本次移除无用途的 Finder 索引，重建依赖升级后失效的本地后台编译缓存；临时测试数据、日志与锁文件试验集中在系统临时目录，验收后清理。
 - 合并此前已从工作区移除的微信小程序交接代码、旧远端攻略传输代码、本地内置文章副本；已确认当前源码、后台和脚本无剩余引用。官网攻略初始种子保留在 CMS。
 - 已整理的旧 Logo 试稿及过期预览不重新放回官网；正式品牌副本、来源说明、原始图片、旗帜与历史验收档案保留。`deliverables/README.md` 继续作为素材入口。
 - `.local/` 的真实本机账号、报名、密钥与 CMS 数据，正在使用的构建缓存和依赖均保留，不提交到 Git。
