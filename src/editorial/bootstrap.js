@@ -1,11 +1,13 @@
 async function start() {
   const preview = new URLSearchParams(location.search).get('editPreview');
-  const controller = new AbortController();
+  const prepared = preview ? null : window.__clubContentRequest;
+  delete window.__clubContentRequest;
+  const controller = prepared?.controller || new AbortController();
   const timeout = setTimeout(() => controller.abort(), preview ? 12000 : 1100);
   const target = preview ? '/cms-api/site-preview?key=' + encodeURIComponent(preview) : '/site-content/manifest.json';
   try {
-    const response = await fetch(target, { credentials:'same-origin', signal:controller.signal });
-    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+    const response = await (prepared?.response || fetch(target, { credentials:'same-origin', signal:controller.signal }));
+    if (response?.ok && response.headers.get('content-type')?.includes('application/json')) {
       const content = await response.json();
       if (!content || !content.sections || typeof content.sections !== 'object') throw Error('栏目内容暂时无法读取。');
       globalThis.__clubContent=content;

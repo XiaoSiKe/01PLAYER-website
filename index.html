@@ -12,12 +12,11 @@
         document.documentElement.style.colorScheme = theme;
         document.querySelector('meta[name="theme-color"]').content = theme === 'light' ? '#f4f4f2' : '#090909';
         if (!new URLSearchParams(location.search).get('editPreview')) {
-          const preload = document.createElement('link');
-          preload.rel = 'preload';
-          preload.as = 'fetch';
-          preload.crossOrigin = 'anonymous';
-          preload.href = '/site-content/manifest.json';
-          document.head.appendChild(preload);
+          const controller = new AbortController();
+          const response = fetch('/site-content/manifest.json', {
+            credentials: 'same-origin', signal: controller.signal,
+          }).catch(() => null);
+          window.__clubContentRequest = { controller, response };
         }
       })();
     </script>
