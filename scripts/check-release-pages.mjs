@@ -88,27 +88,38 @@ try {
     } finally { await context.close(); }
   }
   const page = await browser.newPage({ reducedMotion: 'reduce' });
-  const editedPhoto = { ...activityPhotos[0], title: '延迟发布快照的首屏照片' };
-  await page.route('**/site-content/manifest.json', async route => {
-    await delay(450);
-    await route.fulfill({ json: { sections: { activityPhotos: [editedPhoto] } } });
+  const editedPhoto = { ...activityPhotos[0], title: '弱网发布快照的首屏照片' };
+  const manifestWithPhotos = JSON.stringify({
+    sections: { activityPhotos: [editedPhoto] },
+    padding: 'x'.repeat(112000),
   });
+  await writeFile(join(temp, 'manifest.json'), manifestWithPhotos);
+  const network = await page.context().newCDPSession(page);
+  await network.send('Network.enable');
+  await network.send('Network.setCacheDisabled', { cacheDisabled: true });
+  await network.send('Network.emulateNetworkConditions', { offline: false, latency: 150,
+    downloadThroughput: 1.6 * 1024 * 1024 / 8, uploadThroughput: 750 * 1024 / 8 });
   await page.goto(origin);
   const tunnelPhoto = page.locator('.tunnel-hero__card');
   await tunnelPhoto.waitFor({ state: 'attached' });
   assert.ok((await tunnelPhoto.getAttribute('aria-label')).includes(editedPhoto.title));
   const startup = await page.evaluate(() => {
     const resources = performance.getEntriesByType('resource');
+    const snapshots = resources.filter(resource => resource.name.endsWith('/site-content/manifest.json'));
     return {
-      scriptStart: resources.find(resource => /\/assets\/main-[^/]+\.js$/.test(resource.name))?.startTime,
-      contentEnd: resources.find(resource => resource.name.endsWith('/site-content/manifest.json'))?.responseEnd,
+      snapshotStart: snapshots[0]?.startTime,
+      snapshotBytes: snapshots[0]?.decodedBodySize,
+      snapshotTransfers: snapshots.filter(resource => resource.transferSize > 0).length,
+      entryEnd: resources.find(resource => /\/assets\/index-[^/]+\.js$/.test(resource.name))?.responseEnd,
       photos: performance.getEntriesByName('site:first-screen-ready').at(-1)?.detail.images,
     };
   });
-  assert.ok(startup.scriptStart < startup.contentEnd, JSON.stringify(startup));
+  assert.ok(startup.snapshotStart < startup.entryEnd, JSON.stringify(startup));
+  assert.equal(startup.snapshotBytes, Buffer.byteLength(manifestWithPhotos));
+  assert.equal(startup.snapshotTransfers, 1, JSON.stringify(startup));
   assert.equal(startup.photos, 1);
   await page.close();
-  console.log('通过：生产制品公共路由、资源、桌面与手机、冷启动以及发布快照与应用脚本并行下载。');
+  console.log('通过：生产制品公共路由、资源、桌面与手机、冷启动以及弱网提前获取并采用完整发布快照。');
 } finally {
   await browser?.close();
   if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');

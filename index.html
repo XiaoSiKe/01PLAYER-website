@@ -11,6 +11,13 @@
         document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
         document.querySelector('meta[name="theme-color"]').content = theme === 'light' ? '#f4f4f2' : '#090909';
+        if (!new URLSearchParams(location.search).get('editPreview')) {
+          const controller = new AbortController();
+          const response = fetch('/site-content/manifest.json', {
+            credentials: 'same-origin', signal: controller.signal,
+          }).catch(() => null);
+          window.__clubContentRequest = { controller, response };
+        }
       })();
     </script>
     <link rel="canonical" href="https://club.01aiedu.com/" />

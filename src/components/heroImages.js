@@ -1,8 +1,8 @@
-import { getActivityPhotos } from '../data/activity-photos.js';
+import { activityPhotos } from '../data/activity-photos.js';
 import { imageSource } from './imageSource.js';
 
 // The homepage features the first sixteen photos. The archive keeps every published photo.
-export function getTunnelPhotos() { return getActivityPhotos().slice(0, 16); }
+export const tunnelPhotos = activityPhotos.slice(0, 16);
 
 export function tunnelCardWidth(width, photo) {
   const preferredWidth = width < 768
@@ -14,7 +14,7 @@ export function tunnelCardWidth(width, photo) {
 export function startupImageSources(homepage, width, dpr) {
   if (!homepage) return [];
   const density = Math.min(dpr || 1, 1.5);
-  return getTunnelPhotos().map(photo => {
+  return tunnelPhotos.map(photo => {
     const cardWidth = tunnelCardWidth(width, photo);
     return imageSource(photo.src, cardWidth, cardWidth * photo.height / photo.width, density);
   });
